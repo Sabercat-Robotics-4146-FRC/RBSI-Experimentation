@@ -1,3 +1,18 @@
+// Copyright (c) 2024 Az-FIRST
+// http://github.com/AZ-First
+// Copyright (c) 2024 Michael Jansen
+// http://gist.github.com/mjansen4857
+//
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// version 3 as published by the Free Software Foundation or
+// available in the root directory of this project.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+
 package frc.robot.util;
 
 import com.pathplanner.lib.path.GoalEndState;
@@ -15,6 +30,7 @@ import org.littletonrobotics.junction.LogTable;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.inputs.LoggableInputs;
 
+// PathPlannerLib pathfinder compatible with AdvantageKit log replay
 // NOTE: This file is available at
 // https://gist.github.com/mjansen4857/a8024b55eb427184dbd10ae8923bd57d
 

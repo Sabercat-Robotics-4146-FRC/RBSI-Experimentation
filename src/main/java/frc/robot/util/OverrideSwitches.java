@@ -1,7 +1,7 @@
+// Copyright (c) 2024 Az-FIRST
+// http://github.com/AZ-First
 // Copyright (c) 2024 FRC 6328
 // http://github.com/Mechanical-Advantage
-// Copyright (c) 2024 FRC 2486
-// http://github.com/Coconuts2486-FRC
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -21,17 +21,17 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /** Interface for physical override switches on operator console. */
 public class OverrideSwitches {
-  private final GenericHID joystick;
+  private final GenericHID consoleSwitches;
 
   public OverrideSwitches(int port) {
-    joystick = new GenericHID(port);
+    consoleSwitches = new GenericHID(port);
   }
 
   /** Returns whether the controller is connected. */
   public boolean isConnected() {
-    return joystick.isConnected()
-        && !DriverStation.getJoystickIsXbox(joystick.getPort())
-        && joystick.getName().equals("Generic   USB  Joystick");
+    return consoleSwitches.isConnected()
+        && !DriverStation.getJoystickIsXbox(consoleSwitches.getPort())
+        && consoleSwitches.getName().equals("Generic   USB  Joystick");
   }
 
   /** Gets the state of a driver-side switch (0-2 from left to right). */
@@ -40,7 +40,7 @@ public class OverrideSwitches {
       throw new RuntimeException(
           "Invalid driver override index " + Integer.toString(index) + ". Must be 0-2.");
     }
-    return joystick.getRawButton(index + 1);
+    return consoleSwitches.getRawButton(index + 1);
   }
 
   /** Gets the state of an operator-side switch (0-4 from left to right). */
@@ -49,14 +49,14 @@ public class OverrideSwitches {
       throw new RuntimeException(
           "Invalid operator override index " + Integer.toString(index) + ". Must be 0-4.");
     }
-    return joystick.getRawButton(index + 8);
+    return consoleSwitches.getRawButton(index + 8);
   }
 
   /** Gets the state of the multi-directional switch. */
   public MultiDirectionSwitchState getMultiDirectionSwitch() {
-    if (joystick.getRawButton(4)) {
+    if (consoleSwitches.getRawButton(4)) {
       return MultiDirectionSwitchState.LEFT;
-    } else if (joystick.getRawButton(5)) {
+    } else if (consoleSwitches.getRawButton(5)) {
       return MultiDirectionSwitchState.RIGHT;
     } else {
       return MultiDirectionSwitchState.NEUTRAL;

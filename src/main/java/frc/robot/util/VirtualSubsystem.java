@@ -1,7 +1,7 @@
+// Copyright (c) 2024 Az-FIRST
+// http://github.com/AZ-First
 // Copyright (c) 2024 FRC 6328
 // http://github.com/Mechanical-Advantage
-// Copyright (c) 2024 FRC 2486
-// http://github.com/Coconuts2486-FRC
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -24,15 +24,18 @@ import java.util.List;
 public abstract class VirtualSubsystem {
   private static List<VirtualSubsystem> subsystems = new ArrayList<>();
 
+  // Load all defined virtual subsystems into a list
   public VirtualSubsystem() {
     subsystems.add(this);
   }
 
   public static void periodicAll() {
+    // Call each virtual subsystem during robotPeriodic()
     for (VirtualSubsystem subsystem : subsystems) {
       subsystem.periodic();
     }
   }
 
+  // Each virtual subsystem must implement its own periodic() method
   public abstract void periodic();
 }

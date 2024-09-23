@@ -1,7 +1,7 @@
+// Copyright (c) 2024 Az-FIRST
+// http://github.com/AZ-First
 // Copyright (c) 2024 FRC 6328
 // http://github.com/Mechanical-Advantage
-// Copyright (c) 2024 FRC 2486
-// http://github.com/Coconuts2486-FRC
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
