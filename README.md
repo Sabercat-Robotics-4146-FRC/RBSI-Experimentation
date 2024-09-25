@@ -1,6 +1,7 @@
 # Az-RBSI
 Arizona's Reference Build and Software Implementation for FRC Robots (read: "A-Z-ribsy")
 
+
 ## Purpose
 
 The purpose of Az-RBSI is to help Arizona FRC teams with:
@@ -25,10 +26,11 @@ and currently maintained FIRST- and community-sponsored software libraries to
 provide a baseline robot functionality that combines robust reliability with
 effective logging for troubleshooting.
 
+
 ## Library Dependencies
 
-* [WPILib](https://docs.wpilib.org/en/stable/index.html)
-* [AdvantageKit](https://github.com/Mechanical-Advantage/AdvantageKit/blob/main/docs/WHAT-IS-ADVANTAGEKIT.md)
-* [YAGSL](https://yagsl.gitbook.io/yagsl)
-* [PathPlanner](https://pathplanner.dev/home.html)
-* [PhotonVision](https://docs.photonvision.org/en/latest/)
+* [WPILib](https://docs.wpilib.org/en/stable/index.html) -- FIRST basic libraries
+* [AdvantageKit](https://github.com/Mechanical-Advantage/AdvantageKit/blob/main/docs/WHAT-IS-ADVANTAGEKIT.md) -- Logging
+* [YAGSL](https://yagsl.gitbook.io/yagsl) -- Swerve drive library
+* [PathPlanner](https://pathplanner.dev/home.html) -- Autonomous path planning
+* [PhotonVision](https://docs.photonvision.org/en/latest/) -- Robot vision / tracking
