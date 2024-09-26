@@ -32,5 +32,5 @@ effective logging for troubleshooting.
 * [WPILib](https://docs.wpilib.org/en/stable/index.html) -- FIRST basic libraries
 * [AdvantageKit](https://github.com/Mechanical-Advantage/AdvantageKit/blob/main/docs/WHAT-IS-ADVANTAGEKIT.md) -- Logging
 * [YAGSL](https://yagsl.gitbook.io/yagsl) -- Swerve drive library
-* [PathPlanner](https://pathplanner.dev/home.html) -- Autonomous path planning
+* [PathPlanner](https://pathplanner.dev/home.html) / [Choreo](https://sleipnirgroup.github.io/Choreo/) -- Autonomous path planning
 * [PhotonVision](https://docs.photonvision.org/en/latest/) -- Robot vision / tracking
