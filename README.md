@@ -1,3 +1,5 @@
+![AzFIRST Logo](https://github.com/AZ-First/Az-RBSI/blob/main/AZ-First-logo.png?raw=true)
+
 # Az-RBSI
 Arizona's Reference Build and Software Implementation for FRC Robots (read: "A-Z-ribsy")
 
