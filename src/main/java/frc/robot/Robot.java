@@ -38,9 +38,9 @@ import swervelib.parser.SwerveParser;
  * project.
  */
 public class Robot extends LoggedRobot {
-  private Command autonomousCommand;
-  private RobotContainer robotContainer;
-  private Timer disabledTimer;
+  private Command m_autonomousCommand;
+  private RobotContainer m_robotContainer;
+  private Timer m_disabledTimer;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -99,11 +99,11 @@ public class Robot extends LoggedRobot {
 
     // Instantiate our RobotContainer. This will perform all our button bindings,
     // and put our autonomous chooser on the dashboard.
-    robotContainer = new RobotContainer();
+    m_robotContainer = new RobotContainer();
 
     // Create a timer to disable motor brake a few seconds after disable.  This will let the robot
     // stop immediately when disabled, but then also let it be pushed more
-    disabledTimer = new Timer();
+    m_disabledTimer = new Timer();
   }
 
   /** This function is called periodically during all modes. */
@@ -124,30 +124,30 @@ public class Robot extends LoggedRobot {
   @Override
   public void disabledInit() {
     // Set the brakes to stop robot motion
-    robotContainer.setMotorBrake(true);
-    disabledTimer.reset();
-    disabledTimer.start();
+    m_robotContainer.setMotorBrake(true);
+    m_disabledTimer.reset();
+    m_disabledTimer.start();
   }
 
   /** This function is called periodically when disabled. */
   @Override
   public void disabledPeriodic() {
     // After WHEEL_LOCK_TIME has elapsed, release the drive brakes
-    if (disabledTimer.hasElapsed(Constants.DrivebaseConstants.WHEEL_LOCK_TIME)) {
-      robotContainer.setMotorBrake(false);
-      disabledTimer.stop();
+    if (m_disabledTimer.hasElapsed(Constants.DrivebaseConstants.WHEEL_LOCK_TIME)) {
+      m_robotContainer.setMotorBrake(false);
+      m_disabledTimer.stop();
     }
   }
 
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-    robotContainer.setMotorBrake(true);
-    autonomousCommand = robotContainer.getAutonomousCommand();
+    m_robotContainer.setMotorBrake(true);
+    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     // schedule the autonomous command (example)
-    if (autonomousCommand != null) {
-      autonomousCommand.schedule();
+    if (m_autonomousCommand != null) {
+      m_autonomousCommand.schedule();
     }
   }
 
@@ -162,11 +162,11 @@ public class Robot extends LoggedRobot {
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
     // this line or comment it out.
-    if (autonomousCommand != null) {
-      autonomousCommand.cancel();
+    if (m_autonomousCommand != null) {
+      m_autonomousCommand.cancel();
     }
-    robotContainer.setDriveMode();
-    robotContainer.setMotorBrake(true);
+    m_robotContainer.setDriveMode();
+    m_robotContainer.setMotorBrake(true);
   }
   /** This function is called periodically during operator control. */
   @Override
