@@ -1,4 +1,6 @@
-// Copyright 2021-2024 FRC 6328
+// Copyright (c) 2024 Az-FIRST
+// http://github.com/AZ-First
+// Copyright (c) 2021-2024 FRC 6328
 // http://github.com/Mechanical-Advantage
 //
 // This program is free software; you can redistribute it and/or
@@ -121,6 +123,7 @@ public class Robot extends LoggedRobot {
   /** This function is called once when the robot is disabled. */
   @Override
   public void disabledInit() {
+    // Set the brakes to stop robot motion
     robotContainer.setMotorBrake(true);
     disabledTimer.reset();
     disabledTimer.start();
@@ -129,6 +132,7 @@ public class Robot extends LoggedRobot {
   /** This function is called periodically when disabled. */
   @Override
   public void disabledPeriodic() {
+    // After WHEEL_LOCK_TIME has elapsed, release the drive brakes
     if (disabledTimer.hasElapsed(Constants.DrivebaseConstants.WHEEL_LOCK_TIME)) {
       robotContainer.setMotorBrake(false);
       disabledTimer.stop();
