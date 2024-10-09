@@ -1,7 +1,5 @@
 // Copyright (c) 2024 Az-FIRST
 // http://github.com/AZ-First
-// Copyright (c) 2021-2024 FRC 6328
-// http://github.com/Mechanical-Advantage
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -22,6 +20,7 @@ package frc.robot;
 import com.pathplanner.lib.util.PIDConstants;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.RobotBase;
 import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
@@ -41,6 +40,25 @@ public final class Constants {
   public static final double loopPeriodSecs = 0.02;
   private static RobotType robotType = RobotType.COMPBOT;
   public static final boolean tuningMode = false;
+
+  /* Power Distribution Module Constants */
+  public static final class PowerDistributionConstants {
+
+    // Set this to either kRev or kCTRE for the type of Power Distribution Module
+    public static final ModuleType kPowerModule = ModuleType.kRev;
+
+    public static final double kTotalMaxCurrent = 120.;
+    public static final double kMotorPortMaxCurrent = 40.;
+    public static final double kSmallPortMaxCurrent = 20.;
+
+    // The Power Distribution Module ports into which the DRIVE motors are plugged
+    public static final int[] kDrivePowerPorts = {0, 2, 4, 6};
+    // The Power Distribution Module ports into which the STEER motors are plugged
+    public static final int[] kSteerPowerPorts = {1, 3, 5, 7};
+    // Add additional subsystem port enumerations here for combined monitoring
+    // Example:
+    // public static final int[] kElevatorPowerPorts = {9, 10};
+  }
 
   /* Physical Constants for Robot Operation */
   public static final double ROBOT_MASS = (148 - 20.3) * 0.453592; // 32lbs * kg per pound

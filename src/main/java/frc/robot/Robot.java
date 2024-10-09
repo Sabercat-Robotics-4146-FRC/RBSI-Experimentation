@@ -26,6 +26,7 @@ import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LogTable;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.inputs.LoggedPowerDistribution;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
@@ -72,6 +73,8 @@ public class Robot extends LoggedRobot {
         // Running on a real robot, log to a USB stick ("/U/logs")
         Logger.addDataReceiver(new WPILOGWriter());
         Logger.addDataReceiver(new NT4Publisher());
+        LoggedPowerDistribution.getInstance(
+            Ports.POWER_CAN_DEVICE_ID.getDeviceNumber(), Constants.kPowerModule);
         break;
 
       case SIM:
@@ -101,7 +104,8 @@ public class Robot extends LoggedRobot {
     // and put our autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
 
-    // Create a timer to disable motor brake a few seconds after disable.  This will let the robot
+    // Create a timer to disable motor brake a few seconds after disable. This will
+    // let the robot
     // stop immediately when disabled, but then also let it be pushed more
     m_disabledTimer = new Timer();
   }
@@ -168,6 +172,7 @@ public class Robot extends LoggedRobot {
     m_robotContainer.setDriveMode();
     m_robotContainer.setMotorBrake(true);
   }
+
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {}
