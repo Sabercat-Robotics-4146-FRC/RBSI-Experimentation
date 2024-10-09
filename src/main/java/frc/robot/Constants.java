@@ -47,6 +47,7 @@ public final class Constants {
     // Set this to either kRev or kCTRE for the type of Power Distribution Module
     public static final ModuleType kPowerModule = ModuleType.kRev;
 
+    // Current Limits
     public static final double kTotalMaxCurrent = 120.;
     public static final double kMotorPortMaxCurrent = 40.;
     public static final double kSmallPortMaxCurrent = 20.;

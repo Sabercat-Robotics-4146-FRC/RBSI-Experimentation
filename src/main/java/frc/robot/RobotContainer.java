@@ -17,13 +17,14 @@
 
 package frc.robot;
 
+import static frc.robot.Constants.OperatorConstants.*;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteDriveAdv;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import java.io.File;
@@ -55,10 +56,9 @@ public class RobotContainer {
     AbsoluteDriveAdv closedAbsoluteDriveAdv =
         new AbsoluteDriveAdv(
             m_drivebase,
-            () -> -MathUtil.applyDeadband(driverXbox.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
-            () -> -MathUtil.applyDeadband(driverXbox.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
-            () ->
-                -MathUtil.applyDeadband(driverXbox.getRightX(), OperatorConstants.RIGHT_X_DEADBAND),
+            () -> -MathUtil.applyDeadband(driverXbox.getLeftY(), LEFT_Y_DEADBAND),
+            () -> -MathUtil.applyDeadband(driverXbox.getLeftX(), LEFT_X_DEADBAND),
+            () -> -MathUtil.applyDeadband(driverXbox.getRightX(), RIGHT_X_DEADBAND),
             driverXbox.getHID()::getYButtonPressed,
             driverXbox.getHID()::getAButtonPressed,
             driverXbox.getHID()::getXButtonPressed,
@@ -71,8 +71,8 @@ public class RobotContainer {
     // right stick controls the desired angle NOT angular rotation
     Command driveFieldOrientedDirectAngle =
         m_drivebase.driveCommand(
-            () -> MathUtil.applyDeadband(driverXbox.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
-            () -> MathUtil.applyDeadband(driverXbox.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
+            () -> MathUtil.applyDeadband(driverXbox.getLeftY(), LEFT_Y_DEADBAND),
+            () -> MathUtil.applyDeadband(driverXbox.getLeftX(), LEFT_X_DEADBAND),
             () -> driverXbox.getRightX(),
             () -> driverXbox.getRightY());
 
@@ -83,14 +83,14 @@ public class RobotContainer {
     // right stick controls the angular velocity of the robot
     Command driveFieldOrientedAnglularVelocity =
         m_drivebase.driveCommand(
-            () -> MathUtil.applyDeadband(driverXbox.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
-            () -> MathUtil.applyDeadband(driverXbox.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
+            () -> MathUtil.applyDeadband(driverXbox.getLeftY(), LEFT_Y_DEADBAND),
+            () -> MathUtil.applyDeadband(driverXbox.getLeftX(), LEFT_X_DEADBAND),
             () -> driverXbox.getRightX() * 0.5);
 
     Command driveFieldOrientedDirectAngleSim =
         m_drivebase.simDriveCommand(
-            () -> MathUtil.applyDeadband(driverXbox.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
-            () -> MathUtil.applyDeadband(driverXbox.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
+            () -> MathUtil.applyDeadband(driverXbox.getLeftY(), LEFT_Y_DEADBAND),
+            () -> MathUtil.applyDeadband(driverXbox.getLeftX(), LEFT_X_DEADBAND),
             () -> driverXbox.getRawAxis(2));
 
     m_drivebase.setDefaultCommand(
