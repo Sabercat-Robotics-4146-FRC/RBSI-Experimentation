@@ -1,0 +1,73 @@
+Az-RBSI -- Java Root Directory
+
+--------------------
+This directory contains the basic Java files needed to define and run an FRC
+robot.  The files that should exist in this directory are listed below, along
+with a brief description of their contents and which files MUST be edited to
+include information about the specific robot being controlled.
+
+BuildConstants.java
+    Not tracked by git, used by the build system to record information about
+    the latest build of the code.  This file should NOT be altered, and will be
+    overwritten each time the code is built / compiled.
+
+Constants.java
+    A file for enumerating physical and software constants for the robot.  The
+    main Constants class should contain subsystem-specific classes that list
+    the constants for each subsystem.  This is useful for organization and
+    importing only the constants needed for a particular software module.  This
+    file MUST be modified to include the proper robot constants in the code.
+
+FieldConstants2024.java
+    Dimensions of the field and 2024 ("Crescendo") specific field elements.
+    An updated field constants file will be made available each year following
+    FRC Kickoff.  Teams should feel free to add specific field information to
+    this file they feel is useful for developing commands and/or autonomous
+    actions.
+
+Main.java
+    This is the file run by the RoboRIO virtual machine.  Do NOT alter this
+    file.
+
+Ports.java
+    A file for enumerating the CANbus and DIO ports utilized by the various
+    devices on the robot.  This file MUST be modified so that the subsystems
+    can find their proper devices.
+
+Robot.java
+    This file is called by Main.java and directs the operation of the robot
+    according to the currently commanded mode (disabled, autonomous, teleop,
+    test, and simulation).  Care should be taken when modifying this module
+    to ensure proper operation of the robot.  One section that would be useful
+    to modify is the test mode, where teams can implement pre-match systems
+    testing in a known sequence.
+
+RobotContainer.java
+    A file for holding robot subsystems and commands.  This file is called
+    from Robot.java and is where all subsystems and commands should be gathered
+    and organized, including button bindings for operator controls.
+
+
+--------------------
+Subdirectories:
+
+commands/
+    Commands build in separate modules (rather than in subsystem definitions or
+    inline commands in RobotContainer.java) live in this directory.
+    Organization of files and subdirectories herein is left to the discrection
+    of teams.
+
+subsystems/
+    The hardware definition of subsystems is done in this directory.
+    Organization of files and subdirectories herein is left to the discrection
+    of teams.
+
+util/
+    Various utility functions used by the Az-RBSI are included in this
+    directory.  Most teams will not need to modify these routines, but
+    additional utilities deemed necessary by individual teams may be placed
+    here for organizational purposes.
+
+
+--------------------
+Last Modified: 10 Oct 2024, TPEB

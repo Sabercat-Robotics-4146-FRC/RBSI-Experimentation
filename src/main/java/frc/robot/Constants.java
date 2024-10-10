@@ -36,12 +36,76 @@ import swervelib.math.Matter;
  */
 public final class Constants {
 
-  /* General Constants */
+  /***************************************************************************/
+  /**
+   * Define the various multiple robots that use this same code (e.g., COMPBOT, DEVBOT, SIMBOT,
+   * etc.) and the operating modes of the code (REAL, SIM, or REPLAY)
+   */
+  public static boolean disableHAL = false;
+  /** Enumerate the robot types (add additional bots here) */
+  public static enum RobotType {
+    DEVBOT, // Development / Alpha / Practice Bot
+    COMPBOT, // Competition robot
+    SIMBOT // Simulated robot
+  }
+  /** Enumerate the robot operation modes */
+  public static enum Mode {
+    REAL, // REAL == Running on a real robot
+    SIM, // SIM == Running a physics simulator
+    REPLAY // REPLAY == Replaying from a log file
+  }
+
+  /** Get the current robot */
+  public static RobotType getRobot() {
+    if (!disableHAL && RobotBase.isReal() && robotType == RobotType.SIMBOT) {
+      new Alert("Invalid robot selected, using competition robot as default.", AlertType.ERROR)
+          .set(true);
+      robotType = RobotType.COMPBOT;
+    }
+    return robotType;
+  }
+
+  /** Get the current mode for robot operation, based on robot type */
+  public static Mode getMode() {
+    return switch (robotType) {
+      case DEVBOT, COMPBOT -> RobotBase.isReal() ? Mode.REAL : Mode.REPLAY;
+      case SIMBOT -> Mode.SIM;
+    };
+  }
+
+  /** Disable the Hardware Abstraction Layer, if requested */
+  public static void disableHAL() {
+    disableHAL = true;
+  }
+
+  /** Checks whether the correct robot is selected when deploying. */
+  public static void main(String... args) {
+    if (robotType == RobotType.SIMBOT) {
+      System.err.println("Cannot deploy, invalid robot selected: " + robotType);
+      System.exit(1);
+    }
+  }
+
+  /***************************************************************************/
+  /* The remainder of this file contains physical and/or software constants for the various subsystems of the robot */
+
+  /** General Constants */
+  private static RobotType robotType = getRobot();
+
   public static final double loopPeriodSecs = 0.02;
-  private static RobotType robotType = RobotType.COMPBOT;
   public static final boolean tuningMode = false;
 
-  /* Power Distribution Module Constants */
+  /** Physical Constants for Robot Operation */
+  public static final class PhysicalConstants {
+    public static final double kRobotMass = (148 - 20.3) * 0.453592; // 32lbs * kg per pound
+    public static final Matter kChassis =
+        new Matter(new Translation3d(0, 0, Units.inchesToMeters(8)), PhysicalConstants.kRobotMass);
+    public static final double kLoopTime = 0.13; // s, 20ms + 110ms sprk max velocity lag
+    public static final double kMaxSpeed = Units.feetToMeters(14.5);
+    // Maximum speed of the robot in meters per second, used to limit acceleration.
+  }
+
+  /** Power Distribution Module Constants */
   public static final class PowerDistributionConstants {
 
     // Set this to either kRev or kCTRE for the type of Power Distribution Module
@@ -61,17 +125,8 @@ public final class Constants {
     // public static final int[] kElevatorPowerPorts = {9, 10};
   }
 
-  /* Physical Constants for Robot Operation */
-  public static final double ROBOT_MASS = (148 - 20.3) * 0.453592; // 32lbs * kg per pound
-  public static final Matter CHASSIS =
-      new Matter(new Translation3d(0, 0, Units.inchesToMeters(8)), ROBOT_MASS);
-  public static final double LOOP_TIME = 0.13; // s, 20ms + 110ms sprk max velocity lag
-  public static final double MAX_SPEED = Units.feetToMeters(14.5);
-  // Maximum speed of the robot in meters per second, used to limit acceleration.
-
   /** Autonomous Action Constants */
   public static final class AutonConstants {
-
     public static final PIDConstants TRANSLATION_PID = new PIDConstants(0.7, 0, 0);
     public static final PIDConstants ANGLE_PID = new PIDConstants(0.4, 0, 0.01);
   }
@@ -91,57 +146,5 @@ public final class Constants {
     public static final double LEFT_Y_DEADBAND = 0.1;
     public static final double RIGHT_X_DEADBAND = 0.1;
     public static final double TURN_CONSTANT = 6;
-  }
-
-  /** Location to define multiple robots (e.g., COMPBOT, DEVBOT, SIMBOT, etc.) */
-  public static RobotType getRobot() {
-    if (!disableHAL && RobotBase.isReal() && robotType == RobotType.SIMBOT) {
-      new Alert("Invalid robot selected, using competition robot as default.", AlertType.ERROR)
-          .set(true);
-      robotType = RobotType.COMPBOT;
-    }
-    return robotType;
-  }
-
-  /** Get the current mode for robot operation, based on robot type */
-  public static Mode getMode() {
-    return switch (robotType) {
-      case DEVBOT, COMPBOT -> RobotBase.isReal() ? Mode.REAL : Mode.REPLAY;
-      case SIMBOT -> Mode.SIM;
-    };
-  }
-
-  /** Enumerate the robot operation modes */
-  public static enum Mode {
-    /** Running on a real robot. */
-    REAL,
-
-    /** Running a physics simulator. */
-    SIM,
-
-    /** Replaying from a log file. */
-    REPLAY
-  }
-
-  /** Enumerate the robot types (add additional bots here) */
-  public enum RobotType {
-    SIMBOT,
-    DEVBOT,
-    COMPBOT
-  }
-
-  /** Disable the Hardware Abstraction Layer, if needed */
-  public static boolean disableHAL = false;
-
-  public static void disableHAL() {
-    disableHAL = true;
-  }
-
-  /** Checks whether the correct robot is selected when deploying. */
-  public static void main(String... args) {
-    if (robotType == RobotType.SIMBOT) {
-      System.err.println("Cannot deploy, invalid robot selected: " + robotType);
-      System.exit(1);
-    }
   }
 }
