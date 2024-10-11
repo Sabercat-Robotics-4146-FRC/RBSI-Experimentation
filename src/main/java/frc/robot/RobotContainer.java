@@ -180,7 +180,7 @@ public class RobotContainer {
     // public static final int INTAKE_SERVO = 0;
   }
 
-  /* Vision Constants and Camera Posses */
+  /** Vision Constants and Camera Posses *********************************** */
   public static class VisionConstants {
     public static final double ambiguityThreshold = 0.4;
     public static final double targetLogTimeSecs = 0.1;

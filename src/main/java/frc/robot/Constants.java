@@ -97,15 +97,11 @@ public final class Constants {
   /***************************************************************************/
   /* The remainder of this file contains physical and/or software constants for the various subsystems of the robot */
 
-  /** General Constants ********************************* */
+  /** General Constants **************************************************** */
   private static RobotType robotType = getRobot();
 
   public static final double loopPeriodSecs = 0.02;
   public static final boolean tuningMode = false;
-
-  /** AprilTag field layout -- SEASON SPECIFIC! */
-  public static final AprilTagFieldLayout aprilTagFieldLayout =
-      AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
 
   /** Physical Constants for Robot Operation ************ */
   public static final class PhysicalConstants {
@@ -117,7 +113,7 @@ public final class Constants {
     // Maximum speed of the robot in meters per second, used to limit acceleration.
   }
 
-  /** Power Distribution Module Constants *************** */
+  /** Power Distribution Module Constants ********************************** */
   public static final class PowerConstants {
 
     // Set this to either kRev or kCTRE for the type of Power Distribution Module
@@ -137,20 +133,20 @@ public final class Constants {
     // public static final int[] kElevatorPowerPorts = {9, 10};
   }
 
-  /** Autonomous Action Constants *********************** */
+  /** Autonomous Action Constants ****************************************** */
   public static final class AutonConstants {
     public static final PIDConstants TRANSLATION_PID = new PIDConstants(0.7, 0, 0);
     public static final PIDConstants ANGLE_PID = new PIDConstants(0.4, 0, 0.01);
   }
 
-  /** Drive Base Constants ****************************** */
+  /** Drive Base Constants ************************************************* */
   public static final class DrivebaseConstants {
 
     // Hold time on motor brakes when disabled
     public static final double WHEEL_LOCK_TIME = 10; // seconds
   }
 
-  /** Operator Constants ******************************** */
+  /** Operator Constants *************************************************** */
   public static class OperatorConstants {
 
     // Joystick Deadband
@@ -159,6 +155,11 @@ public final class Constants {
     public static final double RIGHT_X_DEADBAND = 0.1;
     public static final double TURN_CONSTANT = 6;
   }
+
+  /** AprilTag Field Layout ************************************************ */
+  /* SEASON SPECIFIC! */
+  public static final AprilTagFieldLayout aprilTagFieldLayout =
+      AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
 
   @Getter
   public enum AprilTagLayoutType {

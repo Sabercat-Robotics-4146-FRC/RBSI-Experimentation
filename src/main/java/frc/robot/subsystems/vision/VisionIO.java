@@ -21,7 +21,7 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 
 public interface VisionIO {
 
-  class AprilTagVisionIOInputs implements LoggableInputs {
+  class VisionIOInputs implements LoggableInputs {
     public String camname = "";
     public double latency = 0.0;
     public double timestamp = 0.0;
@@ -50,5 +50,5 @@ public interface VisionIO {
     }
   }
 
-  default void updateInputs(AprilTagVisionIOInputs inputs) {}
+  default void updateInputs(VisionIOInputs inputs) {}
 }

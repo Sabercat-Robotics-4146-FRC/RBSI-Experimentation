@@ -22,23 +22,20 @@ Main.java
     This is the file run by the RoboRIO virtual machine.  Do NOT alter this
     file.
 
-Ports.java
-    A file for enumerating the CANbus and DIO ports utilized by the various
-    devices on the robot.  This file MUST be modified so that the subsystems
-    can find their proper devices.
-
 Robot.java
     This file is called by Main.java and directs the operation of the robot
     according to the currently commanded mode (disabled, autonomous, teleop,
-    test, and simulation).  Care should be taken when modifying this module
-    to ensure proper operation of the robot.  One section that would be useful
-    to modify is the test mode, where teams can implement pre-match systems
+    test, and simulation).  Care must be taken when modifying this module to
+    ensure proper operation of the robot.  One section that would be useful to
+    modify is the test mode, where teams can implement pre-match systems
     testing in a known sequence.
 
 RobotContainer.java
     A file for holding robot subsystems and commands.  This file is called
     from Robot.java and is where all subsystems and commands should be gathered
-    and organized, including button bindings for operator controls.
+    and organized including button bindings for operator controls, CANbus and
+    DIO port enumeration for robot devices, and camera pose information (with
+    respect to robot center).
 
 
 --------------------

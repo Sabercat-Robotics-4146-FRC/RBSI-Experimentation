@@ -43,7 +43,7 @@ public class VisionIOPhoton implements VisionIO {
     disconnectedTimer.start();
   }
 
-  public void updateInputs(AprilTagVisionIOInputs inputs) {
+  public void updateInputs(VisionIOInputs inputs) {
     // Get observations
     var result = camera.getLatestResult();
 
