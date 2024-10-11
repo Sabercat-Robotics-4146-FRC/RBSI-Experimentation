@@ -17,15 +17,21 @@
 
 package frc.robot;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pathplanner.lib.util.PIDConstants;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.RobotBase;
 import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
+import java.io.IOException;
+import java.nio.file.Path;
+import lombok.Getter;
 import swervelib.math.Matter;
 
 /**
@@ -152,5 +158,40 @@ public final class Constants {
     public static final double LEFT_Y_DEADBAND = 0.1;
     public static final double RIGHT_X_DEADBAND = 0.1;
     public static final double TURN_CONSTANT = 6;
+  }
+
+  @Getter
+  public enum AprilTagLayoutType {
+    OFFICIAL("2024-official"),
+    SPEAKERS_ONLY("2024-speakers"),
+    AMPS_ONLY("2024-amps"),
+    WPI("2024-wpi");
+
+    private AprilTagLayoutType(String name) {
+      if (Constants.disableHAL) {
+        layout = null;
+      } else {
+        try {
+          layout =
+              new AprilTagFieldLayout(
+                  Path.of(Filesystem.getDeployDirectory().getPath(), "apriltags", name + ".json"));
+        } catch (IOException e) {
+          throw new RuntimeException(e);
+        }
+      }
+      if (layout == null) {
+        layoutString = "";
+      } else {
+        try {
+          layoutString = new ObjectMapper().writeValueAsString(layout);
+        } catch (JsonProcessingException e) {
+          throw new RuntimeException(
+              "Failed to serialize AprilTag layout JSON " + toString() + "for Northstar");
+        }
+      }
+    }
+
+    private final AprilTagFieldLayout layout;
+    private final String layoutString;
   }
 }

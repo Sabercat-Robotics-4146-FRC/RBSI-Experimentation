@@ -18,6 +18,9 @@
 package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -175,5 +178,28 @@ public class RobotContainer {
     // are defined
     // Example:
     // public static final int INTAKE_SERVO = 0;
+  }
+
+  /* Vision Constants and Camera Posses */
+  public static class VisionConstants {
+    public static final double ambiguityThreshold = 0.4;
+    public static final double targetLogTimeSecs = 0.1;
+    public static final double fieldBorderMargin = 0.5;
+    public static final double zMargin = 0.75;
+    public static final double xyStdDevCoefficient = 0.005;
+    public static final double thetaStdDevCoefficient = 0.01;
+
+    public static final Pose3d[] cameraPoses =
+        switch (Constants.getRobot()) {
+          case COMPBOT -> new Pose3d[] {
+            new Pose3d(
+                Units.inchesToMeters(-1.0),
+                Units.inchesToMeters(0),
+                Units.inchesToMeters(23.5),
+                new Rotation3d(0.0, Units.degreesToRadians(-20), 0.0)),
+          };
+          case DEVBOT -> new Pose3d[] {};
+          default -> new Pose3d[] {};
+        };
   }
 }
