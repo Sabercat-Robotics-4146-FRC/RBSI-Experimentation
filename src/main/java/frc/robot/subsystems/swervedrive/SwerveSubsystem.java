@@ -15,7 +15,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 //
-// NOTE: This module from the YAGSL Example Project
+// NOTE: This module based on the YAGSL Example Project
 
 package frc.robot.subsystems.swervedrive;
 
@@ -25,8 +25,6 @@ import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.ReplanningConfig;
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -41,6 +39,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
+import frc.robot.Constants;
 import frc.robot.Constants.AutonConstants;
 import frc.robot.Constants.PhysicalConstants;
 import java.io.File;
@@ -60,16 +59,11 @@ import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 /** SwerveSubsystem module */
 public class SwerveSubsystem extends SubsystemBase {
 
-  /** PhotonVision class to keep an accurate odometry. */
-  private Vision vision;
-  /** Swerve drive object. */
+  /** Swerve drive object */
   private final SwerveDrive swerveDrive;
-
-  /** AprilTag field layout. */
-  private final AprilTagFieldLayout aprilTagFieldLayout =
-      AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
-
-  /** Enable vision odometry updates while driving. */
+  /** PhotonVision class to keep an accurate odometry */
+  private Vision vision;
+  /** Enable vision odometry updates while driving */
   private final boolean visionDriveTest = false;
 
   /**
@@ -178,77 +172,6 @@ public class SwerveSubsystem extends SubsystemBase {
         },
         this // Reference to this subsystem to set requirements
         );
-  }
-
-  /**
-   * Get the distance to the speaker.
-   *
-   * @return Distance to speaker in meters.
-   */
-  public double getDistanceToSpeaker() {
-    int allianceAprilTag = DriverStation.getAlliance().get() == Alliance.Blue ? 7 : 4;
-    // Taken from PhotonUtils.getDistanceToPose
-    Pose3d speakerAprilTagPose = aprilTagFieldLayout.getTagPose(allianceAprilTag).get();
-    return getPose().getTranslation().getDistance(speakerAprilTagPose.toPose2d().getTranslation());
-  }
-
-  /**
-   * Get the yaw to aim at the speaker.
-   *
-   * @return {@link Rotation2d} of which you need to achieve.
-   */
-  public Rotation2d getSpeakerYaw() {
-    int allianceAprilTag = DriverStation.getAlliance().get() == Alliance.Blue ? 7 : 4;
-    // Taken from PhotonUtils.getYawToPose()
-    Pose3d speakerAprilTagPose = aprilTagFieldLayout.getTagPose(allianceAprilTag).get();
-    Translation2d relativeTrl =
-        speakerAprilTagPose.toPose2d().relativeTo(getPose()).getTranslation();
-    return new Rotation2d(relativeTrl.getX(), relativeTrl.getY())
-        .plus(swerveDrive.getOdometryHeading());
-  }
-
-  /**
-   * Aim the robot at the speaker.
-   *
-   * @param tolerance Tolerance in degrees.
-   * @return Command to turn the robot to the speaker.
-   */
-  public Command aimAtSpeaker(double tolerance) {
-    SwerveController controller = swerveDrive.getSwerveController();
-    return run(() -> {
-          drive(
-              ChassisSpeeds.fromFieldRelativeSpeeds(
-                  0,
-                  0,
-                  controller.headingCalculate(
-                      getHeading().getRadians(), getSpeakerYaw().getRadians()),
-                  getHeading()));
-        })
-        .until(() -> getSpeakerYaw().minus(getHeading()).getDegrees() < tolerance);
-  }
-
-  /**
-   * Aim the robot at the target returned by PhotonVision.
-   *
-   * @param camera {@link PhotonCamera} to communicate with.
-   * @return A {@link Command} which will run the alignment.
-   */
-  public Command aimAtTarget(PhotonCamera camera) {
-
-    return run(
-        () -> {
-          PhotonPipelineResult result = camera.getLatestResult();
-          if (result.hasTargets()) {
-            drive(
-                getTargetSpeeds(
-                    0,
-                    0,
-                    Rotation2d.fromDegrees(
-                        result
-                            .getBestTarget()
-                            .getYaw()))); // Not sure if this will work, more math may be required.
-          }
-        });
   }
 
   /**
@@ -627,5 +550,78 @@ public class SwerveSubsystem extends SubsystemBase {
   public void addFakeVisionReading() {
     swerveDrive.addVisionMeasurement(
         new Pose2d(3, 3, Rotation2d.fromDegrees(65)), Timer.getFPGATimestamp());
+  }
+
+  /*****************************************************************/
+  /** 2024 SEASON-SPECIFIC FUNCTIONS, INCLUDED AS EXAMPLES */
+  /**
+   * Get the distance to the speaker.
+   *
+   * @return Distance to speaker in meters.
+   */
+  public double getDistanceToSpeaker() {
+    int allianceAprilTag = DriverStation.getAlliance().get() == Alliance.Blue ? 7 : 4;
+    // Taken from PhotonUtils.getDistanceToPose
+    Pose3d speakerAprilTagPose = Constants.aprilTagFieldLayout.getTagPose(allianceAprilTag).get();
+    return getPose().getTranslation().getDistance(speakerAprilTagPose.toPose2d().getTranslation());
+  }
+
+  /**
+   * Get the yaw to aim at the speaker.
+   *
+   * @return {@link Rotation2d} of which you need to achieve.
+   */
+  public Rotation2d getSpeakerYaw() {
+    int allianceAprilTag = DriverStation.getAlliance().get() == Alliance.Blue ? 7 : 4;
+    // Taken from PhotonUtils.getYawToPose()
+    Pose3d speakerAprilTagPose = Constants.aprilTagFieldLayout.getTagPose(allianceAprilTag).get();
+    Translation2d relativeTrl =
+        speakerAprilTagPose.toPose2d().relativeTo(getPose()).getTranslation();
+    return new Rotation2d(relativeTrl.getX(), relativeTrl.getY())
+        .plus(swerveDrive.getOdometryHeading());
+  }
+
+  /**
+   * Aim the robot at the speaker.
+   *
+   * @param tolerance Tolerance in degrees.
+   * @return Command to turn the robot to the speaker.
+   */
+  public Command aimAtSpeaker(double tolerance) {
+    SwerveController controller = swerveDrive.getSwerveController();
+    return run(() -> {
+          drive(
+              ChassisSpeeds.fromFieldRelativeSpeeds(
+                  0,
+                  0,
+                  controller.headingCalculate(
+                      getHeading().getRadians(), getSpeakerYaw().getRadians()),
+                  getHeading()));
+        })
+        .until(() -> getSpeakerYaw().minus(getHeading()).getDegrees() < tolerance);
+  }
+
+  /**
+   * Aim the robot at the target returned by PhotonVision.
+   *
+   * @param camera {@link PhotonCamera} to communicate with.
+   * @return A {@link Command} which will run the alignment.
+   */
+  public Command aimAtTarget(PhotonCamera camera) {
+
+    return run(
+        () -> {
+          PhotonPipelineResult result = camera.getLatestResult();
+          if (result.hasTargets()) {
+            drive(
+                getTargetSpeeds(
+                    0,
+                    0,
+                    Rotation2d.fromDegrees(
+                        result
+                            .getBestTarget()
+                            .getYaw()))); // Not sure if this will work, more math may be required.
+          }
+        });
   }
 }

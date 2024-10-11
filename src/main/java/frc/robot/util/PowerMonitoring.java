@@ -15,30 +15,30 @@ package frc.robot.util;
 
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.Constants.PowerDistributionConstants;
-import frc.robot.Ports;
+import frc.robot.Constants.PowerConstants;
+import frc.robot.RobotContainer.Ports;
 import frc.robot.util.Alert.AlertType;
 import org.littletonrobotics.junction.Logger;
 
 public class PowerMonitoring extends VirtualSubsystem {
 
-  private PowerDistribution powerDistributionModule =
+  private PowerDistribution m_powerModule =
       new PowerDistribution(
-          Ports.POWER_CAN_DEVICE_ID.getDeviceNumber(), PowerDistributionConstants.kPowerModule);
-  private int NUM_PDH_CHANNELS = powerDistributionModule.getNumChannels();
+          Ports.POWER_CAN_DEVICE_ID.getDeviceNumber(), PowerConstants.kPowerModule);
+  private int NUM_PDH_CHANNELS = m_powerModule.getNumChannels();
   private double[] channelCurrents = new double[NUM_PDH_CHANNELS];
 
   /** Periodic Method */
   public void periodic() {
 
     // Check the total robot current and individual port currents against Constants
-    double totalCurrent = powerDistributionModule.getTotalCurrent();
-    if (totalCurrent > PowerDistributionConstants.kTotalMaxCurrent) {
+    double totalCurrent = m_powerModule.getTotalCurrent();
+    if (totalCurrent > PowerConstants.kTotalMaxCurrent) {
       new Alert("Total current draw exceeds limit!", AlertType.WARNING).set(true);
     }
     for (int i = 0; i < NUM_PDH_CHANNELS; i++) {
-      channelCurrents[i] = powerDistributionModule.getCurrent(i);
-      if (channelCurrents[i] > PowerDistributionConstants.kMotorPortMaxCurrent) {
+      channelCurrents[i] = m_powerModule.getCurrent(i);
+      if (channelCurrents[i] > PowerConstants.kMotorPortMaxCurrent) {
         new Alert("Port " + i + " current draw exceeds limit!", AlertType.WARNING).set(true);
       }
     }
@@ -46,10 +46,10 @@ public class PowerMonitoring extends VirtualSubsystem {
     // Compute DRIVE and STEER summed current
     double driveCurrent = 0.0;
     double steerCurrent = 0.0;
-    for (int port : PowerDistributionConstants.kDrivePowerPorts) {
+    for (int port : PowerConstants.kDrivePowerPorts) {
       driveCurrent += channelCurrents[port];
     }
-    for (int port : PowerDistributionConstants.kSteerPowerPorts) {
+    for (int port : PowerConstants.kSteerPowerPorts) {
       steerCurrent += channelCurrents[port];
     }
     // Add current monitoring by subsystem here

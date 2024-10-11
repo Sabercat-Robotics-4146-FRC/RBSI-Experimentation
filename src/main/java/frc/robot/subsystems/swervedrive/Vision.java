@@ -15,12 +15,10 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 //
-// NOTE: This module from the YAGSL Example Project
+// NOTE: This module based on the YAGSL Example Project
 
 package frc.robot.subsystems.swervedrive;
 
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -34,6 +32,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import frc.robot.Constants;
 import frc.robot.Robot;
 import java.awt.Desktop;
 import java.util.ArrayList;
@@ -61,9 +60,6 @@ import swervelib.telemetry.SwerveDriveTelemetry;
  */
 public class Vision {
 
-  /** April Tag Field Layout of the year. */
-  public static final AprilTagFieldLayout fieldLayout =
-      AprilTagFieldLayout.loadField(AprilTagFields.k2024Crescendo);
   /** Photon Vision Simulation */
   public VisionSystemSim visionSim;
   /** Count of times that the odom thinks we're more than 10meters away from the april tag. */
@@ -87,7 +83,7 @@ public class Vision {
 
     if (Robot.isSimulation()) {
       visionSim = new VisionSystemSim("Vision");
-      visionSim.addAprilTags(fieldLayout);
+      visionSim.addAprilTags(Constants.aprilTagFieldLayout);
 
       for (Cameras c : Cameras.values()) {
         c.addToVisionSim(visionSim);
@@ -106,12 +102,15 @@ public class Vision {
    * @return The target pose of the AprilTag.
    */
   public static Pose2d getAprilTagPose(int aprilTag, Transform2d robotOffset) {
-    Optional<Pose3d> aprilTagPose3d = fieldLayout.getTagPose(aprilTag);
+    Optional<Pose3d> aprilTagPose3d = Constants.aprilTagFieldLayout.getTagPose(aprilTag);
     if (aprilTagPose3d.isPresent()) {
       return aprilTagPose3d.get().toPose2d().transformBy(robotOffset);
     } else {
       throw new RuntimeException(
-          "Cannot get AprilTag " + aprilTag + " from field " + fieldLayout.toString());
+          "Cannot get AprilTag "
+              + aprilTag
+              + " from field "
+              + Constants.aprilTagFieldLayout.toString());
     }
   }
 
@@ -258,7 +257,7 @@ public class Vision {
    * @return Distance
    */
   public double getDistanceFromAprilTag(int id) {
-    Optional<Pose3d> tag = fieldLayout.getTagPose(id);
+    Optional<Pose3d> tag = Constants.aprilTagFieldLayout.getTagPose(id);
     return tag.map(pose3d -> PhotonUtils.getDistanceToPose(currentPose.get(), pose3d.toPose2d()))
         .orElse(-1.0);
   }
@@ -322,8 +321,9 @@ public class Vision {
 
     List<Pose2d> poses = new ArrayList<>();
     for (PhotonTrackedTarget target : targets) {
-      if (fieldLayout.getTagPose(target.getFiducialId()).isPresent()) {
-        Pose2d targetPose = fieldLayout.getTagPose(target.getFiducialId()).get().toPose2d();
+      if (Constants.aprilTagFieldLayout.getTagPose(target.getFiducialId()).isPresent()) {
+        Pose2d targetPose =
+            Constants.aprilTagFieldLayout.getTagPose(target.getFiducialId()).get().toPose2d();
         poses.add(targetPose);
       }
     }
@@ -404,7 +404,7 @@ public class Vision {
 
       poseEstimator =
           new PhotonPoseEstimator(
-              Vision.fieldLayout,
+              Constants.aprilTagFieldLayout,
               PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
               camera,
               robotToCamTransform);

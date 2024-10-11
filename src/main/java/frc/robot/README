@@ -18,13 +18,6 @@ Constants.java
     importing only the constants needed for a particular software module.  This
     file MUST be modified to include the proper robot constants in the code.
 
-FieldConstants2024.java
-    Dimensions of the field and 2024 ("Crescendo") specific field elements.
-    An updated field constants file will be made available each year following
-    FRC Kickoff.  Teams should feel free to add specific field information to
-    this file they feel is useful for developing commands and/or autonomous
-    actions.
-
 Main.java
     This is the file run by the RoboRIO virtual machine.  Do NOT alter this
     file.

@@ -17,7 +17,8 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.Constants.PowerDistributionConstants;
+import frc.robot.Constants.PowerConstants;
+import frc.robot.RobotContainer.Ports;
 import frc.robot.util.VirtualSubsystem;
 import java.io.File;
 import java.io.IOException;
@@ -76,7 +77,7 @@ public class Robot extends LoggedRobot {
         Logger.addDataReceiver(new WPILOGWriter());
         Logger.addDataReceiver(new NT4Publisher());
         LoggedPowerDistribution.getInstance(
-            Ports.POWER_CAN_DEVICE_ID.getDeviceNumber(), PowerDistributionConstants.kPowerModule);
+            Ports.POWER_CAN_DEVICE_ID.getDeviceNumber(), PowerConstants.kPowerModule);
         break;
 
       case SIM:
