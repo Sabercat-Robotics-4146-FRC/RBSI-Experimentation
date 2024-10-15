@@ -32,11 +32,16 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import frc.robot.Constants;
+import frc.robot.Constants.AprilTagConstants;
+import frc.robot.Constants.AprilTagConstants.AprilTagLayoutType;
 import frc.robot.Robot;
+import frc.robot.RobotContainer;
+import frc.robot.subsystems.vision.VisionIO.VisionIOInputs;
 import java.awt.Desktop;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
 import org.photonvision.EstimatedRobotPose;
@@ -75,6 +80,14 @@ public class Vision {
   /** Field from {@link swervelib.SwerveDrive#field} */
   private Field2d field2d;
 
+  // Tag sources and layout
+  private final Supplier<AprilTagLayoutType> aprilTagTypeSupplier;
+  private final VisionIO[] io;
+  private final VisionIOInputs[] inputs;
+  // Bookkeeping for last frame exposure and last tag detection
+  private final Map<Integer, Double> lastFrameTimes = new HashMap<>();
+  private final Map<Integer, Double> lastTagDetectionTimes = new HashMap<>();
+
   /**
    * Constructor for the Vision class.
    *
@@ -87,13 +100,32 @@ public class Vision {
 
     if (Robot.isSimulation()) {
       visionSim = new VisionSystemSim("Vision");
-      visionSim.addAprilTags(Constants.aprilTagFieldLayout);
+      visionSim.addAprilTags(AprilTagConstants.aprilTagFieldLayout);
 
       for (Cameras c : Cameras.values()) {
         c.addToVisionSim(visionSim);
       }
 
       openSimCameraViews();
+    }
+    this.aprilTagTypeSupplier = RobotContainer::staticGetAprilTagLayoutType;
+    this.io = null;
+    inputs = null;
+  }
+
+  // Class method definition, including inputs
+  // TODO: Constructor from Euclid
+  public Vision(Supplier<AprilTagLayoutType> aprilTagTypeSupplier, VisionIO... io) {
+    this.aprilTagTypeSupplier = aprilTagTypeSupplier;
+    this.io = io;
+    inputs = new VisionIOInputs[io.length];
+    for (int i = 0; i < io.length; i++) {
+      inputs[i] = new VisionIOInputs();
+    }
+
+    // Create map of last frame times for instances
+    for (int i = 0; i < io.length; i++) {
+      lastFrameTimes.put(i, 0.0);
     }
   }
 
@@ -106,7 +138,7 @@ public class Vision {
    * @return The target pose of the AprilTag.
    */
   public static Pose2d getAprilTagPose(int aprilTag, Transform2d robotOffset) {
-    Optional<Pose3d> aprilTagPose3d = Constants.aprilTagFieldLayout.getTagPose(aprilTag);
+    Optional<Pose3d> aprilTagPose3d = AprilTagConstants.aprilTagFieldLayout.getTagPose(aprilTag);
     if (aprilTagPose3d.isPresent()) {
       return aprilTagPose3d.get().toPose2d().transformBy(robotOffset);
     } else {
@@ -114,7 +146,7 @@ public class Vision {
           "Cannot get AprilTag "
               + aprilTag
               + " from field "
-              + Constants.aprilTagFieldLayout.toString());
+              + AprilTagConstants.aprilTagFieldLayout.toString());
     }
   }
 
@@ -261,7 +293,7 @@ public class Vision {
    * @return Distance
    */
   public double getDistanceFromAprilTag(int id) {
-    Optional<Pose3d> tag = Constants.aprilTagFieldLayout.getTagPose(id);
+    Optional<Pose3d> tag = AprilTagConstants.aprilTagFieldLayout.getTagPose(id);
     return tag.map(pose3d -> PhotonUtils.getDistanceToPose(currentPose.get(), pose3d.toPose2d()))
         .orElse(-1.0);
   }
@@ -325,9 +357,12 @@ public class Vision {
 
     List<Pose2d> poses = new ArrayList<>();
     for (PhotonTrackedTarget target : targets) {
-      if (Constants.aprilTagFieldLayout.getTagPose(target.getFiducialId()).isPresent()) {
+      if (AprilTagConstants.aprilTagFieldLayout.getTagPose(target.getFiducialId()).isPresent()) {
         Pose2d targetPose =
-            Constants.aprilTagFieldLayout.getTagPose(target.getFiducialId()).get().toPose2d();
+            AprilTagConstants.aprilTagFieldLayout
+                .getTagPose(target.getFiducialId())
+                .get()
+                .toPose2d();
         poses.add(targetPose);
       }
     }
@@ -412,7 +447,7 @@ public class Vision {
 
       poseEstimator =
           new PhotonPoseEstimator(
-              Constants.aprilTagFieldLayout,
+              AprilTagConstants.aprilTagFieldLayout,
               PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
               camera,
               robotToCamTransform);

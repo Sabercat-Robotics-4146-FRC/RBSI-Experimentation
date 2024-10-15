@@ -15,7 +15,7 @@ package frc.robot.subsystems.vision;
 
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.Timer;
-import frc.robot.Constants.AprilTagLayoutType;
+import frc.robot.Constants.AprilTagConstants.AprilTagLayoutType;
 import frc.robot.util.Alert;
 import java.util.List;
 import java.util.function.Supplier;

@@ -49,6 +49,8 @@ public final class Constants {
    * Define the various multiple robots that use this same code (e.g., COMPBOT, DEVBOT, SIMBOT,
    * etc.) and the operating modes of the code (REAL, SIM, or REPLAY)
    */
+  private static RobotType robotType = RobotType.SIMBOT;
+
   public static boolean disableHAL = false;
 
   /** Enumerate the robot types (add additional bots here) */
@@ -61,8 +63,8 @@ public final class Constants {
   /** Enumerate the robot operation modes */
   public static enum Mode {
     REAL, // REAL == Running on a real robot
-    SIM, // SIM == Running a physics simulator
-    REPLAY // REPLAY == Replaying from a log file
+    REPLAY, // REPLAY == Replaying from a log file
+    SIM // SIM == Running a physics simulator
   }
 
   /** Get the current robot */
@@ -75,7 +77,7 @@ public final class Constants {
     return robotType;
   }
 
-  /** Get the current mode for robot operation, based on robot type */
+  /** Get the current mode */
   public static Mode getMode() {
     return switch (robotType) {
       case DEVBOT, COMPBOT -> RobotBase.isReal() ? Mode.REAL : Mode.REPLAY;
@@ -100,9 +102,8 @@ public final class Constants {
   /* The remainder of this file contains physical and/or software constants for the various subsystems of the robot */
 
   /** General Constants **************************************************** */
-  private static RobotType robotType = getRobot();
-
   public static final double loopPeriodSecs = 0.02;
+
   public static final boolean tuningMode = false;
 
   /** Physical Constants for Robot Operation ************ */
@@ -160,41 +161,48 @@ public final class Constants {
 
   /** AprilTag Field Layout ************************************************ */
   /* SEASON SPECIFIC! */
-  public static final AprilTagFieldLayout aprilTagFieldLayout =
-      AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
+  public static class AprilTagConstants {
 
-  @Getter
-  public enum AprilTagLayoutType {
-    OFFICIAL("2024-official"),
-    SPEAKERS_ONLY("2024-speakers"),
-    AMPS_ONLY("2024-amps"),
-    WPI("2024-wpi");
+    public static final double aprilTagWidth = Units.inchesToMeters(6.50);
+    public static final AprilTagLayoutType defaultAprilTagType = AprilTagLayoutType.OFFICIAL;
 
-    private AprilTagLayoutType(String name) {
-      if (Constants.disableHAL) {
-        layout = null;
-      } else {
-        try {
-          layout =
-              new AprilTagFieldLayout(
-                  Path.of(Filesystem.getDeployDirectory().getPath(), "apriltags", name + ".json"));
-        } catch (IOException e) {
-          throw new RuntimeException(e);
+    public static final AprilTagFieldLayout aprilTagFieldLayout =
+        AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
+
+    @Getter
+    public enum AprilTagLayoutType {
+      OFFICIAL("2024-official"),
+      SPEAKERS_ONLY("2024-speakers"),
+      AMPS_ONLY("2024-amps"),
+      WPI("2024-wpi");
+
+      private AprilTagLayoutType(String name) {
+        if (Constants.disableHAL) {
+          layout = null;
+        } else {
+          try {
+            layout =
+                new AprilTagFieldLayout(
+                    Path.of(
+                        Filesystem.getDeployDirectory().getPath(), "apriltags", name + ".json"));
+          } catch (IOException e) {
+            throw new RuntimeException(e);
+          }
+        }
+        if (layout == null) {
+          layoutString = "";
+        } else {
+          try {
+            layoutString = new ObjectMapper().writeValueAsString(layout);
+          } catch (JsonProcessingException e) {
+            throw new RuntimeException(
+                "Failed to serialize AprilTag layout JSON " + toString() + "for Northstar");
+          }
         }
       }
-      if (layout == null) {
-        layoutString = "";
-      } else {
-        try {
-          layoutString = new ObjectMapper().writeValueAsString(layout);
-        } catch (JsonProcessingException e) {
-          throw new RuntimeException(
-              "Failed to serialize AprilTag layout JSON " + toString() + "for Northstar");
-        }
-      }
+
+      private final AprilTagFieldLayout layout;
+      private final String layoutString;
     }
-
-    private final AprilTagFieldLayout layout;
-    private final String layoutString;
   }
 }

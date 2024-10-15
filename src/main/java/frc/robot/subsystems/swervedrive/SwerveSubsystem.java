@@ -39,7 +39,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
-import frc.robot.Constants;
+import frc.robot.Constants.AprilTagConstants;
 import frc.robot.Constants.AutonConstants;
 import frc.robot.Constants.PhysicalConstants;
 import frc.robot.subsystems.vision.Vision;
@@ -565,7 +565,8 @@ public class SwerveSubsystem extends SubsystemBase {
   public double getDistanceToSpeaker() {
     int allianceAprilTag = DriverStation.getAlliance().get() == Alliance.Blue ? 7 : 4;
     // Taken from PhotonUtils.getDistanceToPose
-    Pose3d speakerAprilTagPose = Constants.aprilTagFieldLayout.getTagPose(allianceAprilTag).get();
+    Pose3d speakerAprilTagPose =
+        AprilTagConstants.aprilTagFieldLayout.getTagPose(allianceAprilTag).get();
     return getPose().getTranslation().getDistance(speakerAprilTagPose.toPose2d().getTranslation());
   }
 
@@ -577,7 +578,8 @@ public class SwerveSubsystem extends SubsystemBase {
   public Rotation2d getSpeakerYaw() {
     int allianceAprilTag = DriverStation.getAlliance().get() == Alliance.Blue ? 7 : 4;
     // Taken from PhotonUtils.getYawToPose()
-    Pose3d speakerAprilTagPose = Constants.aprilTagFieldLayout.getTagPose(allianceAprilTag).get();
+    Pose3d speakerAprilTagPose =
+        AprilTagConstants.aprilTagFieldLayout.getTagPose(allianceAprilTag).get();
     Translation2d relativeTrl =
         speakerAprilTagPose.toPose2d().relativeTo(getPose()).getTranslation();
     return new Rotation2d(relativeTrl.getX(), relativeTrl.getY())

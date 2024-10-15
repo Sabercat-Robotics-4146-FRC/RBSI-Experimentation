@@ -26,10 +26,20 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.AprilTagConstants;
+import frc.robot.Constants.AprilTagConstants.AprilTagLayoutType;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteDriveAdv;
+import frc.robot.subsystems.flywheel_example.Flywheel;
+import frc.robot.subsystems.flywheel_example.FlywheelIO;
+import frc.robot.subsystems.flywheel_example.FlywheelIOSim;
+import frc.robot.subsystems.flywheel_example.FlywheelIOTalonFX;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
+import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.vision.VisionIO;
+import frc.robot.subsystems.vision.VisionIOPhoton;
 import frc.robot.util.CanDeviceId;
+import frc.robot.util.OverrideSwitches;
 import java.io.File;
 
 public class RobotContainer {
@@ -38,13 +48,52 @@ public class RobotContainer {
   // Replace with CommandPS4Controller or CommandJoystick if needed
   final CommandXboxController driverXbox = new CommandXboxController(0);
   final CommandXboxController operatorXbox = new CommandXboxController(1);
+  final OverrideSwitches overrides = new OverrideSwitches(2);
 
-  // The robot's subsystems and commands are defined here...
-  private final SwerveSubsystem m_drivebase =
-      new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve/neo"));
+  // Declare the robot subsystems here
+  private final SwerveSubsystem m_drivebase;
+  private final Flywheel m_flywheel;
+  private final Vision m_vision;
+
+  /** Returns the current AprilTag layout type. */
+  public AprilTagLayoutType getAprilTagLayoutType() {
+    return AprilTagConstants.defaultAprilTagType;
+  }
+
+  public static AprilTagLayoutType staticGetAprilTagLayoutType() {
+    return AprilTagConstants.defaultAprilTagType;
+  }
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+
+    // Instantiate Robot Subsystems based on RobotType
+    switch (Constants.getMode()) {
+      case REAL:
+        // Real robot, instantiate hardware IO implementations
+        // YAGSL drivebase, get config from deploy directory
+        m_drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
+        m_flywheel = new Flywheel(new FlywheelIOTalonFX());
+        m_vision =
+            new Vision(
+                this::getAprilTagLayoutType,
+                new VisionIOPhoton(this::getAprilTagLayoutType, "Photon_CAMNAME"));
+        break;
+
+      case SIM:
+        // Sim robot, instantiate physics sim IO implementations
+        m_drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
+        m_flywheel = new Flywheel(new FlywheelIOSim());
+        m_vision = new Vision(this::getAprilTagLayoutType);
+        break;
+
+      default:
+        // Replayed robot, disable IO implementations
+        m_drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
+        m_flywheel = new Flywheel(new FlywheelIO() {});
+        m_vision = new Vision(this::getAprilTagLayoutType, new VisionIO() {}, new VisionIO() {});
+        break;
+    }
 
     // Configure the trigger bindings
     configureBindings();
