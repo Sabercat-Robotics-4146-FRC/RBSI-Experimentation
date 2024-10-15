@@ -174,3 +174,6 @@ simgui*.json
 
 # Version file
 src/main/java/frc/robot/BuildConstants.java
+
+# Do not push changes to the wpilib_preferences,json file
+wpilib_preferences.json

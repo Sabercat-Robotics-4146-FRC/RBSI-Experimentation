@@ -36,7 +36,6 @@ jobs:
     # Runs a single command using the runners shell
     - name: Compile and run tests on robot code
       run: ./gradlew build
-        - run: ./gradlew spotlessCheck
   
   # This workflow contains a job called "build" which is the main build
   spotless:

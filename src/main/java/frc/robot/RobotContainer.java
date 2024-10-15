@@ -114,6 +114,7 @@ public class RobotContainer {
 
   /** Use this method to define your TeleOp commands. */
   private void defineTeleopCommands() {
+
     // Applies deadbands and inverts controls because joysticks
     // are back-right positive while robot
     // controls are front-left positive
@@ -168,8 +169,9 @@ public class RobotContainer {
             : driveFieldOrientedDirectAngleSim);
   }
 
-  /** Use this method to define your Autonomous commands. */
+  /** Use this method to define your Autonomous commands for use with PathPlanner / Choreo */
   private void defineAutoCommands() {
+
     NamedCommands.registerCommand(
         "Zero", Commands.runOnce(() -> m_drivebase.zeroGyroWithAlliance()));
   }
@@ -184,6 +186,7 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
+
     // Manually Re-Zero the Gyro
     driverXbox.y().onTrue(Commands.runOnce(() -> m_drivebase.zeroGyroWithAlliance()));
   }
@@ -194,6 +197,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
+
     // An example command will be run in autonomous
     return m_drivebase.getAutonomousCommand("New Auto");
     // Use the ``autoChooser`` to define your auto path from the SmartDashboard
@@ -201,10 +205,12 @@ public class RobotContainer {
   }
 
   public void setDriveMode() {
+
     // drivebase.setDefaultCommand();
   }
 
   public void setMotorBrake(boolean brake) {
+
     m_drivebase.setMotorBrake(brake);
   }
 
