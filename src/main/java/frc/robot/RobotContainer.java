@@ -191,13 +191,14 @@ public class RobotContainer {
 
     public static final Pose3d[] cameraPoses =
         switch (Constants.getRobot()) {
-          case COMPBOT -> new Pose3d[] {
-            new Pose3d(
-                Units.inchesToMeters(-1.0),
-                Units.inchesToMeters(0),
-                Units.inchesToMeters(23.5),
-                new Rotation3d(0.0, Units.degreesToRadians(-20), 0.0)),
-          };
+          case COMPBOT ->
+              new Pose3d[] {
+                new Pose3d(
+                    Units.inchesToMeters(-1.0),
+                    Units.inchesToMeters(0),
+                    Units.inchesToMeters(23.5),
+                    new Rotation3d(0.0, Units.degreesToRadians(-20), 0.0)),
+              };
           case DEVBOT -> new Pose3d[] {};
           default -> new Pose3d[] {};
         };

@@ -50,12 +50,14 @@ public final class Constants {
    * etc.) and the operating modes of the code (REAL, SIM, or REPLAY)
    */
   public static boolean disableHAL = false;
+
   /** Enumerate the robot types (add additional bots here) */
   public static enum RobotType {
     DEVBOT, // Development / Alpha / Practice Bot
     COMPBOT, // Competition robot
     SIMBOT // Simulated robot
   }
+
   /** Enumerate the robot operation modes */
   public static enum Mode {
     REAL, // REAL == Running on a real robot
