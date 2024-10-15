@@ -17,6 +17,8 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -24,6 +26,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.AprilTagConstants;
@@ -41,6 +44,7 @@ import frc.robot.subsystems.vision.VisionIOPhoton;
 import frc.robot.util.CanDeviceId;
 import frc.robot.util.OverrideSwitches;
 import java.io.File;
+import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class RobotContainer {
 
@@ -54,6 +58,9 @@ public class RobotContainer {
   private final SwerveSubsystem m_drivebase;
   private final Flywheel m_flywheel;
   private final Vision m_vision;
+
+  // Dashboard inputs
+  private final LoggedDashboardChooser<Command> autoChooser;
 
   /** Returns the current AprilTag layout type. */
   public AprilTagLayoutType getAprilTagLayoutType() {
@@ -97,7 +104,16 @@ public class RobotContainer {
 
     // Configure the trigger bindings
     configureBindings();
+    // Define TeleOp commands
+    defineTeleopCommands();
+    // Define Auto commands
+    defineAutoCommands();
+    // Set up the SmartDashboard Auto Chooser
+    autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+  }
 
+  /** Use this method to define your TeleOp commands. */
+  private void defineTeleopCommands() {
     // Applies deadbands and inverts controls because joysticks
     // are back-right positive while robot
     // controls are front-left positive
@@ -152,6 +168,12 @@ public class RobotContainer {
             : driveFieldOrientedDirectAngleSim);
   }
 
+  /** Use this method to define your Autonomous commands. */
+  private void defineAutoCommands() {
+    NamedCommands.registerCommand(
+        "Zero", Commands.runOnce(() -> m_drivebase.zeroGyroWithAlliance()));
+  }
+
   /**
    * Use this method to define your trigger->command mappings. Triggers can be created via the
    * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary
@@ -161,7 +183,10 @@ public class RobotContainer {
    * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
    * joysticks}.
    */
-  private void configureBindings() {}
+  private void configureBindings() {
+    // Manually Re-Zero the Gyro
+    driverXbox.y().onTrue(Commands.runOnce(() -> m_drivebase.zeroGyroWithAlliance()));
+  }
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
@@ -171,6 +196,8 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
     return m_drivebase.getAutonomousCommand("New Auto");
+    // Use the ``autoChooser`` to define your auto path from the SmartDashboard
+    // return autoChooser.get();
   }
 
   public void setDriveMode() {
