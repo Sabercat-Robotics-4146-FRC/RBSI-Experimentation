@@ -1,3 +1,6 @@
+[![CI](https://github.com/AZ-First/Az-RBSI/actions/workflows/main.yml/badge.svg)](https://github.com/AZ-First/Az-RBSI/actions/workflows/main.yml)  
+
+
 ![AzFIRST Logo](https://github.com/AZ-First/Az-RBSI/blob/main/AZ-First-logo.png?raw=true)
 
 # Az-RBSI
