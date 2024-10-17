@@ -152,11 +152,13 @@ gversion {
 // Spotless formatting
 project.compileJava.dependsOn(spotlessApply)
 spotless {
+    enforceCheck true
     java {
-        target fileTree(".") {
-            include "**/*.java"
-            exclude "**/build/**", "**/build-*/**"
+        target fileTree('.') {
+            include '**/*.java'
+            exclude '**/build/**', '**/build-*/**'
         }
+        importOrder()
         toggleOffOn()
         googleJavaFormat()
         removeUnusedImports()
@@ -164,26 +166,29 @@ spotless {
         endWithNewline()
     }
     groovyGradle {
-        target fileTree(".") {
-            include "**/*.gradle"
-            exclude "**/build/**", "**/build-*/**"
+        target fileTree('.') {
+            include '**/*.gradle'
+            exclude '**/build/**', '**/build-*/**'
         }
         greclipse()
         indentWithSpaces(4)
         trimTrailingWhitespace()
         endWithNewline()
     }
-    json {
-        target fileTree(".") {
-            include "**/*.json"
-            exclude "**/build/**", "**/build-*/**"
+    format 'xml', {
+        target fileTree('.') {
+            include '**/*.xml'
+            exclude '**/build/**', '**/build-*/**'
         }
-        gson().indentWithSpaces(2)
+        eclipseWtp('xml')
+        trimTrailingWhitespace()
+        indentWithSpaces(2)
+        endWithNewline()
     }
-    format "misc", {
-        target fileTree(".") {
-            include "**/*.md", "**/.gitignore"
-            exclude "**/build/**", "**/build-*/**"
+    format 'misc', {
+        target fileTree('.') {
+            include '**/*.md', '**/.gitignore'
+            exclude '**/build/**', '**/build-*/**'
         }
         trimTrailingWhitespace()
         indentWithSpaces(2)
