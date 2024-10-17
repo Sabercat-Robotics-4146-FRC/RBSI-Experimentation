@@ -175,6 +175,13 @@ spotless {
         trimTrailingWhitespace()
         endWithNewline()
     }
+    json {
+        target fileTree('.'){
+            include '**/*.json'
+            exclude '**/build/**', '**/build-*/**'
+        }
+        gson().indentWithSpaces(2)
+    }
     format 'xml', {
         target fileTree('.') {
             include '**/*.xml'
