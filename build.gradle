@@ -185,10 +185,10 @@ spotless {
         indentWithSpaces(2)
         endWithNewline()
     }
-    format 'misc', {
-        target fileTree('.') {
-            include '**/*.md', '**/.gitignore'
-            exclude '**/build/**', '**/build-*/**'
+    format "misc", {
+        target fileTree(".") {
+            include "**/*.md", "**/.gitignore"
+            exclude "**/build/**", "**/build-*/**"
         }
         trimTrailingWhitespace()
         indentWithSpaces(2)
