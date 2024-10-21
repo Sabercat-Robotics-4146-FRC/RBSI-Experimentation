@@ -248,7 +248,7 @@ public final class Constants {
             layoutString = new ObjectMapper().writeValueAsString(layout);
           } catch (JsonProcessingException e) {
             throw new RuntimeException(
-                "Failed to serialize AprilTag layout JSON " + toString() + "for Northstar");
+                "Failed to serialize AprilTag layout JSON " + toString() + "for PhotonVision");
           }
         }
       }

@@ -13,15 +13,12 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.PowerConstants;
 import frc.robot.RobotContainer.Ports;
 import frc.robot.util.VirtualSubsystem;
-import java.io.File;
-import java.io.IOException;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LogTable;
 import org.littletonrobotics.junction.LoggedRobot;
@@ -30,7 +27,6 @@ import org.littletonrobotics.junction.inputs.LoggedPowerDistribution;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
-import swervelib.parser.SwerveParser;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -169,6 +165,8 @@ public class Robot extends LoggedRobot {
     // this line or comment it out.
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
+    } else {
+      CommandScheduler.getInstance().cancelAll();
     }
     m_robotContainer.setDriveMode();
     m_robotContainer.setMotorBrake(true);
@@ -183,13 +181,7 @@ public class Robot extends LoggedRobot {
   public void testInit() {
     // Cancels all running commands at the start of test mode.
     CommandScheduler.getInstance().cancelAll();
-
-    // Try setting up swerve
-    try {
-      new SwerveParser(new File(Filesystem.getDeployDirectory(), "swerve"));
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
+    m_robotContainer.setDriveMode();
   }
 
   /** This function is called periodically during test mode. */

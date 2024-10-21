@@ -17,12 +17,12 @@ package frc.robot.util;
 
 /** Class for wrapping CAN devices with a name and functionality */
 public class CanDeviceId {
-  private final int mDeviceNumber;
-  private final String mBus;
+  private final int m_DeviceNumber;
+  private final String m_Bus;
 
   public CanDeviceId(int deviceNumber, String bus) {
-    mDeviceNumber = deviceNumber;
-    mBus = bus;
+    m_DeviceNumber = deviceNumber;
+    m_Bus = bus;
   }
 
   /** Use the default bus name (empty string) */
@@ -32,16 +32,16 @@ public class CanDeviceId {
 
   /** Get the CAN ID value for a named device */
   public int getDeviceNumber() {
-    return mDeviceNumber;
+    return m_DeviceNumber;
   }
 
   /** Get the CAN bus name for a named device */
   public String getBus() {
-    return mBus;
+    return m_Bus;
   }
 
   /** Check whether two named devices are, in fact, the same */
   public boolean equals(CanDeviceId other) {
-    return other.mDeviceNumber == mDeviceNumber && other.mBus == mBus;
+    return other.m_DeviceNumber == m_DeviceNumber && other.m_Bus == m_Bus;
   }
 }
