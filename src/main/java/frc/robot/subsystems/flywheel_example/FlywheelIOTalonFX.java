@@ -13,6 +13,8 @@
 
 package frc.robot.subsystems.flywheel_example;
 
+import static frc.robot.Constants.FlywheelConstants.*;
+
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.Slot0Configs;
@@ -23,12 +25,15 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.util.Units;
+import frc.robot.RobotContainer.Ports;
 
 public class FlywheelIOTalonFX implements FlywheelIO {
-  private static final double GEAR_RATIO = 1.5;
 
-  private final TalonFX leader = new TalonFX(0);
-  private final TalonFX follower = new TalonFX(1);
+  // Define the leader / follower motors from the Ports section of RobotContainer
+  private final TalonFX leader =
+      new TalonFX(Ports.FLYWHEEL_LEADER.getDeviceNumber(), Ports.FLYWHEEL_LEADER.getBus());
+  private final TalonFX follower =
+      new TalonFX(Ports.FLYWHEEL_FOLLOWER.getDeviceNumber(), Ports.FLYWHEEL_FOLLOWER.getBus());
 
   private final StatusSignal<Double> leaderPosition = leader.getPosition();
   private final StatusSignal<Double> leaderVelocity = leader.getVelocity();

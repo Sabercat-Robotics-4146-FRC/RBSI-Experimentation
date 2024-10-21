@@ -27,10 +27,13 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import frc.robot.Constants.AprilTagConstants;
 import frc.robot.Constants.AprilTagConstants.AprilTagLayoutType;
@@ -484,5 +487,38 @@ public class Vision {
         //        cameraSim.enableDrawWireframe(true);
       }
     }
+  }
+
+  /*****************************************************************/
+  /** 2024 SEASON-SPECIFIC FUNCTIONS, INCLUDED AS EXAMPLES */
+  /**
+   * Get the distance to the speaker.
+   *
+   * @return Distance to speaker in meters.
+   */
+  public double getDistanceToSpeaker() {
+    int allianceAprilTag = DriverStation.getAlliance().get() == Alliance.Blue ? 7 : 4;
+    // Taken from PhotonUtils.getDistanceToPose
+    Pose3d speakerAprilTagPose =
+        AprilTagConstants.aprilTagFieldLayout.getTagPose(allianceAprilTag).get();
+    return currentPose
+        .get()
+        .getTranslation()
+        .getDistance(speakerAprilTagPose.toPose2d().getTranslation());
+  }
+
+  /**
+   * Get the yaw to aim at the speaker.
+   *
+   * @return {@link Rotation2d} of which you need to achieve.
+   */
+  public Rotation2d getSpeakerYaw(Rotation2d odometryHeading) {
+    int allianceAprilTag = DriverStation.getAlliance().get() == Alliance.Blue ? 7 : 4;
+    // Taken from PhotonUtils.getYawToPose()
+    Pose3d speakerAprilTagPose =
+        AprilTagConstants.aprilTagFieldLayout.getTagPose(allianceAprilTag).get();
+    Translation2d relativeTrl =
+        speakerAprilTagPose.toPose2d().relativeTo(currentPose.get()).getTranslation();
+    return new Rotation2d(relativeTrl.getX(), relativeTrl.getY()).plus(odometryHeading);
   }
 }

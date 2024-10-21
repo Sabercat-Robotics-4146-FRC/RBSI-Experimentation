@@ -112,8 +112,6 @@ public final class Constants {
     public static final Matter kChassis =
         new Matter(new Translation3d(0, 0, Units.inchesToMeters(8)), PhysicalConstants.kRobotMass);
     public static final double kLoopTime = 0.13; // s, 20ms + 110ms sprk max velocity lag
-    public static final double kMaxSpeed = Units.feetToMeters(14.5);
-    // Maximum speed of the robot in meters per second, used to limit acceleration.
   }
 
   /** Power Distribution Module Constants ********************************** */
@@ -138,15 +136,69 @@ public final class Constants {
 
   /** Autonomous Action Constants ****************************************** */
   public static final class AutonConstants {
+
+    // Translation PID constants
     public static final PIDConstants TRANSLATION_PID = new PIDConstants(0.7, 0, 0);
+    // Rotation PID constants
     public static final PIDConstants ANGLE_PID = new PIDConstants(0.4, 0, 0.01);
   }
 
   /** Drive Base Constants ************************************************* */
   public static final class DrivebaseConstants {
 
+    // Physical size of the drive base
+    private static final double TRACK_WIDTH_X = Units.inchesToMeters(20.75);
+    private static final double TRACK_WIDTH_Y = Units.inchesToMeters(20.75);
+    public static final double DRIVE_BASE_RADIUS =
+        Math.hypot(TRACK_WIDTH_X / 2.0, TRACK_WIDTH_Y / 2.0);
+
+    // Maximum chassis speeds desired for robot motion -- metric / radians
+    public static final double MAX_LINEAR_SPEED = Units.feetToMeters(18); // ft/s
+    public static final double MAX_ANGULAR_SPEED = MAX_LINEAR_SPEED / DRIVE_BASE_RADIUS;
+    // Maximum chassis accelerations desired for robot motion  -- metric / radians
+    public static final double MAX_LINEAR_ACCEL = 4.0; // m/s/s
+    public static final double MAX_ANGULAR_ACCEL = Units.degreesToRadians(720); // deg/s/s
+
+    // Wheel radius
+    public static final double WHEEL_RADIUS = Units.inchesToMeters(2.0);
+
+    // ** Gear ratios for SDS MK4i L2, adjust as necessary **
+    public static final double DRIVE_GEAR_RATIO = (50.0 / 14.0) * (17.0 / 27.0) * (45.0 / 15.0);
+    public static final double TURN_GEAR_RATIO = 150.0 / 7.0;
+
     // Hold time on motor brakes when disabled
     public static final double WHEEL_LOCK_TIME = 10; // seconds
+
+    // SysID characterization constants
+    public static final double kMaxV = 12.0; // Max volts
+    public static final double kDelay = 3.0; // seconds
+    public static final double kQuasiTimeout = 5.0; // seconds
+    public static final double kDynamicTimeout = 3.0; // seconds
+  }
+
+  /** Example Flywheel Mechanism Constants ********************************* */
+  public static final class FlywheelConstants {
+
+    // Mechanism motor gear ratio
+    public static final double GEAR_RATIO = 1.5;
+
+    // MODE == REAL / REPLAY
+    // Feedforward constants
+    public static final double kStaticGainReal = 0.1;
+    public static final double kVelocityGainReal = 0.05;
+    // Feedback (PID) constants
+    public static final double kPReal = 1.0;
+    public static final double kIReal = 0.0;
+    public static final double kDReal = 0.0;
+
+    // MODE == SIM
+    // Feedforward constants
+    public static final double kStaticGainSim = 0.0;
+    public static final double kVelocityGainSim = 0.03;
+    // Feedback (PID) constants
+    public static final double kPSim = 1.0;
+    public static final double kISim = 0.0;
+    public static final double kDSim = 0.0;
   }
 
   /** Operator Constants *************************************************** */

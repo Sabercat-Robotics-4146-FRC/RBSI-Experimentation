@@ -14,6 +14,7 @@
 package frc.robot.subsystems.flywheel_example;
 
 import static edu.wpi.first.units.Units.*;
+import static frc.robot.Constants.FlywheelConstants.*;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.util.Units;
@@ -39,12 +40,12 @@ public class Flywheel extends SubsystemBase {
     switch (Constants.getMode()) {
       case REAL:
       case REPLAY:
-        ffModel = new SimpleMotorFeedforward(0.1, 0.05);
-        io.configurePID(1.0, 0.0, 0.0);
+        ffModel = new SimpleMotorFeedforward(kStaticGainReal, kVelocityGainReal);
+        io.configurePID(kPReal, kIReal, kDReal);
         break;
       case SIM:
-        ffModel = new SimpleMotorFeedforward(0.0, 0.03);
-        io.configurePID(0.5, 0.0, 0.0);
+        ffModel = new SimpleMotorFeedforward(kStaticGainSim, kVelocityGainSim);
+        io.configurePID(kPSim, kISim, kDSim);
         break;
       default:
         ffModel = new SimpleMotorFeedforward(0.0, 0.0);
@@ -98,7 +99,7 @@ public class Flywheel extends SubsystemBase {
   }
 
   /** Returns the current velocity in RPM. */
-  @AutoLogOutput
+  @AutoLogOutput(key = "Mechanism/Flywheel")
   public double getVelocityRPM() {
     return Units.radiansPerSecondToRotationsPerMinute(inputs.velocityRadPerSec);
   }
