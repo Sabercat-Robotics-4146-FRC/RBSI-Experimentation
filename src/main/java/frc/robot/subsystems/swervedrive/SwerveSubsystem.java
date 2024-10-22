@@ -43,6 +43,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.robot.Constants.AutonConstants;
 import frc.robot.subsystems.vision.Vision;
+import frc.robot.util.YAGSL_AzRBSI.SwerveParser_RBSI;
 import java.io.File;
 import java.util.Arrays;
 import java.util.function.DoubleSupplier;
@@ -56,7 +57,6 @@ import swervelib.SwerveDriveTest;
 import swervelib.math.SwerveMath;
 import swervelib.parser.SwerveControllerConfiguration;
 import swervelib.parser.SwerveDriveConfiguration;
-import swervelib.parser.SwerveParser;
 import swervelib.telemetry.SwerveDriveTelemetry;
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 
@@ -99,9 +99,9 @@ public class SwerveSubsystem extends SubsystemBase {
     // created.
     SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
     try {
-      swerveDrive = new SwerveParser(directory).createSwerveDrive(MAX_LINEAR_SPEED);
+      swerveDrive = new SwerveParser_RBSI(directory).createSwerveDrive(MAX_LINEAR_SPEED);
       // Alternative method if you don't want to supply the conversion factor via JSON files.
-      // swerveDrive = new SwerveParser(directory).createSwerveDrive(maximumSpeed,
+      // swerveDrive = new SwerveParser_RBSI(directory).createSwerveDrive(maximumSpeed,
       // angleConversionFactor, driveConversionFactor);
     } catch (Exception e) {
       throw new RuntimeException(e);

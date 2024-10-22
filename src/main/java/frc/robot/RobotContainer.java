@@ -36,7 +36,6 @@ import frc.robot.commands.swervedrive.drivebase.AbsoluteDriveAdv;
 import frc.robot.subsystems.flywheel_example.Flywheel;
 import frc.robot.subsystems.flywheel_example.FlywheelIO;
 import frc.robot.subsystems.flywheel_example.FlywheelIOSim;
-import frc.robot.subsystems.flywheel_example.FlywheelIOTalonFX;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
@@ -80,7 +79,7 @@ public class RobotContainer {
         // Real robot, instantiate hardware IO implementations
         // YAGSL drivebase, get config from deploy directory
         m_drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
-        m_flywheel = new Flywheel(new FlywheelIOTalonFX());
+        m_flywheel = new Flywheel(new FlywheelIOSim()); // new Flywheel(new FlywheelIOTalonFX());
         m_vision =
             new Vision(
                 this::getAprilTagLayoutType,
