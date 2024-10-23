@@ -17,7 +17,7 @@
 //
 // NOTE: This module based on the YAGSL Example Project
 
-package frc.robot.subsystems.swervedrive;
+package frc.robot.subsystems.swervedrive_yagsl;
 
 import static frc.robot.Constants.DrivebaseConstants.*;
 

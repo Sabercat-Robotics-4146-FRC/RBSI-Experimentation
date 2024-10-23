@@ -11,9 +11,9 @@ NOTE for developers: it will be necessary, from time to time, to merge in any
 modifications to these files from the main YAGSL repo to maintain compliant
 functionality with the remainder of YAGSL.
 
-:::
-
-Last merged from YAGSL 21-Oct-2024, v2024.6.1.0
-
 -----------------
 21-Oct-2024, TPEB
+
+:::
+HISTORY:
+  - Merged from YAGSL 21-Oct-2024, v2024.6.1.0, TPEB

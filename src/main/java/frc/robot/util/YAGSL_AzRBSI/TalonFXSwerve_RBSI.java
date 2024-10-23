@@ -91,7 +91,7 @@ public class TalonFXSwerve_RBSI extends SwerveMotor {
   /**
    * Construct the TalonFX swerve motor given the ID.
    *
-   * @param id ID of the TalonFX on the canbus.
+   * @param id ID of the TalonFX on the RIO canbus.
    * @param isDriveMotor Whether the motor is a drive or steering motor.
    */
   public TalonFXSwerve_RBSI(int id, boolean isDriveMotor) {
@@ -129,7 +129,28 @@ public class TalonFXSwerve_RBSI extends SwerveMotor {
    */
   @Override
   public SwerveMotor setAbsoluteEncoder(SwerveAbsoluteEncoder encoder) {
-    // Do not support.
+
+    // if (encoder == null)
+    // {
+    //   absoluteEncoder = null;
+    //   configureSparkMax(() -> pid.setFeedbackDevice(this.encoder));
+    //   velocity = this.encoder::getVelocity;
+    //   position = this.encoder::getPosition;
+    // } else if (encoder.getAbsoluteEncoder() instanceof MotorFeedbackSensor)
+    // {
+    //   DriverStation.reportWarning(
+    //       "IF possible configure the encoder offset in the REV Hardware Client instead of using
+    // the" +
+    //       " absoluteEncoderOffset in the Swerve Module JSON!",
+    //       false);
+    //   absoluteEncoder = encoder;
+    //   configureSparkMax(() -> pid.setFeedbackDevice((MotorFeedbackSensor)
+    // absoluteEncoder.getAbsoluteEncoder()));
+    //   velocity = absoluteEncoder::getVelocity;
+    //   position = absoluteEncoder::getAbsolutePosition;
+
+    // }
+
     return this;
   }
 
