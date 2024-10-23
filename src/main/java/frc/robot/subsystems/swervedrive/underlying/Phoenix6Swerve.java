@@ -18,7 +18,7 @@
 // NOTE: This module based on the CTRE Phoenix6 examples
 //       https://github.com/CrossTheRoadElec/Phoenix6-Examples
 
-package frc.robot.subsystems.swervedrive_phoenix;
+package frc.robot.subsystems.swervedrive.underlying;
 
 import static edu.wpi.first.units.Units.Volts;
 
@@ -49,7 +49,7 @@ import java.util.function.Supplier;
  * Class that extends the Phoenix SwerveDrivetrain class and implements subsystem so it can be used
  * in command-based projects easily.
  */
-public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsystem {
+public class Phoenix6Swerve extends SwerveDrivetrain implements Subsystem {
   private static final double kSimLoopPeriod = 0.005; // 5 ms
   private Notifier m_simNotifier = null;
   private double m_lastSimTime;
@@ -104,7 +104,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
   /* Change this to the sysid routine you want to test */
   private final SysIdRoutine RoutineToApply = SysIdRoutineTranslation;
 
-  public CommandSwerveDrivetrain(
+  public Phoenix6Swerve(
       SwerveDrivetrainConstants driveTrainConstants,
       double OdometryUpdateFrequency,
       SwerveModuleConstants... modules) {
@@ -115,7 +115,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     }
   }
 
-  public CommandSwerveDrivetrain(
+  public Phoenix6Swerve(
       SwerveDrivetrainConstants driveTrainConstants, SwerveModuleConstants... modules) {
     super(driveTrainConstants, modules);
     configurePathPlanner();

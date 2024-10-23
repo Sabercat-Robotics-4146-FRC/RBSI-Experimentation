@@ -26,7 +26,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.PhysicalConstants;
-import frc.robot.subsystems.swervedrive_yagsl.SwerveSubsystem;
+import frc.robot.subsystems.swervedrive.underlying.YAGSLSwerve;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
@@ -36,7 +36,7 @@ import swervelib.math.SwerveMath;
 /** A more advanced Swerve Control System that has 4 buttons for which direction to face */
 public class AbsoluteDriveAdv extends Command {
 
-  private final SwerveSubsystem swerve;
+  private final YAGSLSwerve swerve;
   private final DoubleSupplier vX, vY;
   private final DoubleSupplier headingAdjust;
   private final BooleanSupplier lookAway, lookTowards, lookLeft, lookRight;
@@ -64,7 +64,7 @@ public class AbsoluteDriveAdv extends Command {
    * @param lookRight Face the robot right
    */
   public AbsoluteDriveAdv(
-      SwerveSubsystem swerve,
+      YAGSLSwerve swerve,
       DoubleSupplier vX,
       DoubleSupplier vY,
       DoubleSupplier headingAdjust,

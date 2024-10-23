@@ -17,7 +17,7 @@
 //
 // NOTE: This module based on the YAGSL Example Project
 
-package frc.robot.subsystems.swervedrive_yagsl;
+package frc.robot.subsystems.swervedrive.underlying;
 
 import static frc.robot.Constants.DrivebaseConstants.*;
 
@@ -43,7 +43,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.robot.Constants.AutonConstants;
 import frc.robot.subsystems.vision.Vision;
-import frc.robot.util.YAGSL_AzRBSI.SwerveParser_RBSI;
 import java.io.File;
 import java.util.Arrays;
 import java.util.function.DoubleSupplier;
@@ -57,11 +56,12 @@ import swervelib.SwerveDriveTest;
 import swervelib.math.SwerveMath;
 import swervelib.parser.SwerveControllerConfiguration;
 import swervelib.parser.SwerveDriveConfiguration;
+import swervelib.parser.SwerveParser;
 import swervelib.telemetry.SwerveDriveTelemetry;
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 
-/** SwerveSubsystem module */
-public class SwerveSubsystem extends SubsystemBase {
+/** YAGSLSwerve module */
+public class YAGSLSwerve extends SubsystemBase {
 
   /** Swerve drive object */
   private final SwerveDrive swerveDrive;
@@ -77,7 +77,7 @@ public class SwerveSubsystem extends SubsystemBase {
    *
    * @param directory Directory of swerve drive config files.
    */
-  public SwerveSubsystem(File directory) {
+  public YAGSLSwerve(File directory) {
 
     // Angle conversion factor is 360 / (GEAR RATIO * ENCODER RESOLUTION)
     double angleConversionFactor = SwerveMath.calculateDegreesPerSteeringRotation(TURN_GEAR_RATIO);
@@ -99,7 +99,7 @@ public class SwerveSubsystem extends SubsystemBase {
     // created.
     SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
     try {
-      swerveDrive = new SwerveParser_RBSI(directory).createSwerveDrive(MAX_LINEAR_SPEED);
+      swerveDrive = new SwerveParser(directory).createSwerveDrive(MAX_LINEAR_SPEED);
       // Alternative method if you don't want to supply the conversion factor via JSON files.
       // swerveDrive = new SwerveParser_RBSI(directory).createSwerveDrive(maximumSpeed,
       // angleConversionFactor, driveConversionFactor);
@@ -140,7 +140,7 @@ public class SwerveSubsystem extends SubsystemBase {
    * @param driveCfg SwerveDriveConfiguration for the swerve.
    * @param controllerCfg Swerve Controller.
    */
-  public SwerveSubsystem(
+  public YAGSLSwerve(
       SwerveDriveConfiguration driveCfg, SwerveControllerConfiguration controllerCfg) {
     swerveDrive = new SwerveDrive(driveCfg, controllerCfg, MAX_LINEAR_SPEED);
   }

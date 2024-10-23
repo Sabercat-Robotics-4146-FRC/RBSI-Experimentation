@@ -24,7 +24,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.swervedrive_yagsl.SwerveSubsystem;
+import frc.robot.subsystems.swervedrive.underlying.YAGSLSwerve;
 
 /**
  * Auto Balance command using a simple PID controller. Created by Team 3512 <a
@@ -32,10 +32,10 @@ import frc.robot.subsystems.swervedrive_yagsl.SwerveSubsystem;
  */
 public class AutoBalanceCommand extends Command {
 
-  private final SwerveSubsystem swerveSubsystem;
+  private final YAGSLSwerve swerveSubsystem;
   private final PIDController controller;
 
-  public AutoBalanceCommand(SwerveSubsystem swerveSubsystem) {
+  public AutoBalanceCommand(YAGSLSwerve swerveSubsystem) {
     this.swerveSubsystem = swerveSubsystem;
     controller = new PIDController(1.0, 0.0, 0.0);
     controller.setTolerance(1);

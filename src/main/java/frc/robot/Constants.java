@@ -51,6 +51,8 @@ public final class Constants {
    */
   private static RobotType robotType = RobotType.SIMBOT;
 
+  private static SwerveType swerveType = SwerveType.PHOENIX6;
+
   public static boolean disableHAL = false;
 
   /** Enumerate the robot types (add additional bots here) */
@@ -98,6 +100,17 @@ public final class Constants {
     }
   }
 
+  /** Enumerate the supported swerve drive types */
+  public static enum SwerveType {
+    YAGSL, // The generic YAGSL swerve library
+    PHOENIX6 // The all-CTRE Phoenix6 swerve library
+  }
+
+  /** Get the current swerve drive type */
+  public static SwerveType getSwerve() {
+    return swerveType;
+  }
+
   /***************************************************************************/
   /* The remainder of this file contains physical and/or software constants for the various subsystems of the robot */
 
@@ -106,7 +119,7 @@ public final class Constants {
 
   public static final boolean tuningMode = false;
 
-  /** Physical Constants for Robot Operation ************ */
+  /** Physical Constants for Robot Operation ******************************* */
   public static final class PhysicalConstants {
     public static final double kRobotMass = (148 - 20.3) * 0.453592; // 32lbs * kg per pound
     public static final Matter kChassis =

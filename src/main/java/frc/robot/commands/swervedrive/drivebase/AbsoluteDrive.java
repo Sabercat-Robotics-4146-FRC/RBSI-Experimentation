@@ -25,7 +25,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.PhysicalConstants;
-import frc.robot.subsystems.swervedrive_yagsl.SwerveSubsystem;
+import frc.robot.subsystems.swervedrive.underlying.YAGSLSwerve;
 import java.util.List;
 import java.util.function.DoubleSupplier;
 import swervelib.SwerveController;
@@ -34,7 +34,7 @@ import swervelib.math.SwerveMath;
 /** An example command that uses an example subsystem. */
 public class AbsoluteDrive extends Command {
 
-  private final SwerveSubsystem swerve;
+  private final YAGSLSwerve swerve;
   private final DoubleSupplier vX, vY;
   private final DoubleSupplier headingHorizontal, headingVertical;
   private boolean initRotation = false;
@@ -60,7 +60,7 @@ public class AbsoluteDrive extends Command {
    *     range from -1 to 1 with no deadband. Positive is away from the alliance wall.
    */
   public AbsoluteDrive(
-      SwerveSubsystem swerve,
+      YAGSLSwerve swerve,
       DoubleSupplier vX,
       DoubleSupplier vY,
       DoubleSupplier headingHorizontal,

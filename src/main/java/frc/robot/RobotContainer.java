@@ -23,7 +23,6 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -36,13 +35,12 @@ import frc.robot.commands.swervedrive.drivebase.AbsoluteDriveAdv;
 import frc.robot.subsystems.flywheel_example.Flywheel;
 import frc.robot.subsystems.flywheel_example.FlywheelIO;
 import frc.robot.subsystems.flywheel_example.FlywheelIOSim;
-import frc.robot.subsystems.swervedrive_yagsl.SwerveSubsystem;
+import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOPhoton;
 import frc.robot.util.CanDeviceId;
 import frc.robot.util.OverrideSwitches;
-import java.io.File;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class RobotContainer {
@@ -78,7 +76,7 @@ public class RobotContainer {
       case REAL:
         // Real robot, instantiate hardware IO implementations
         // YAGSL drivebase, get config from deploy directory
-        m_drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
+        m_drivebase = new SwerveSubsystem(Constants.getSwerve());
         m_flywheel = new Flywheel(new FlywheelIOSim()); // new Flywheel(new FlywheelIOTalonFX());
         m_vision =
             new Vision(
@@ -88,14 +86,14 @@ public class RobotContainer {
 
       case SIM:
         // Sim robot, instantiate physics sim IO implementations
-        m_drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
+        m_drivebase = new SwerveSubsystem(Constants.getSwerve());
         m_flywheel = new Flywheel(new FlywheelIOSim());
         m_vision = new Vision(this::getAprilTagLayoutType);
         break;
 
       default:
         // Replayed robot, disable IO implementations
-        m_drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
+        m_drivebase = new SwerveSubsystem(Constants.getSwerve());
         m_flywheel = new Flywheel(new FlywheelIO() {});
         m_vision = new Vision(this::getAprilTagLayoutType, new VisionIO() {}, new VisionIO() {});
         break;
