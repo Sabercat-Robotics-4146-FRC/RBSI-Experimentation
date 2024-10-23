@@ -19,19 +19,16 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.AprilTagConstants;
 import frc.robot.Constants.AprilTagConstants.AprilTagLayoutType;
-import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.swervedrive.drivebase.AbsoluteDriveAdv;
+import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.flywheel_example.Flywheel;
 import frc.robot.subsystems.flywheel_example.FlywheelIO;
 import frc.robot.subsystems.flywheel_example.FlywheelIOSim;
@@ -76,7 +73,7 @@ public class RobotContainer {
       case REAL:
         // Real robot, instantiate hardware IO implementations
         // YAGSL drivebase, get config from deploy directory
-        m_drivebase = new SwerveSubsystem(Constants.getSwerve());
+        m_drivebase = TunerConstants.DriveTrain;
         m_flywheel = new Flywheel(new FlywheelIOSim()); // new Flywheel(new FlywheelIOTalonFX());
         m_vision =
             new Vision(
@@ -86,14 +83,14 @@ public class RobotContainer {
 
       case SIM:
         // Sim robot, instantiate physics sim IO implementations
-        m_drivebase = new SwerveSubsystem(Constants.getSwerve());
+        m_drivebase = TunerConstants.DriveTrain;
         m_flywheel = new Flywheel(new FlywheelIOSim());
         m_vision = new Vision(this::getAprilTagLayoutType);
         break;
 
       default:
         // Replayed robot, disable IO implementations
-        m_drivebase = new SwerveSubsystem(Constants.getSwerve());
+        m_drivebase = TunerConstants.DriveTrain;
         m_flywheel = new Flywheel(new FlywheelIO() {});
         m_vision = new Vision(this::getAprilTagLayoutType, new VisionIO() {}, new VisionIO() {});
         break;
@@ -110,67 +107,12 @@ public class RobotContainer {
   }
 
   /** Use this method to define your TeleOp commands. */
-  private void defineTeleopCommands() {
-
-    // Applies deadbands and inverts controls because joysticks
-    // are back-right positive while robot
-    // controls are front-left positive
-    // left stick controls translation
-    // right stick controls the rotational velocity
-    // buttons are quick rotation positions to different ways to face
-    // WARNING: default buttons are on the same buttons as the ones defined in configureBindings
-    AbsoluteDriveAdv closedAbsoluteDriveAdv =
-        new AbsoluteDriveAdv(
-            m_drivebase,
-            () -> -MathUtil.applyDeadband(driverXbox.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
-            () -> -MathUtil.applyDeadband(driverXbox.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
-            () ->
-                -MathUtil.applyDeadband(driverXbox.getRightX(), OperatorConstants.RIGHT_X_DEADBAND),
-            driverXbox.getHID()::getYButtonPressed,
-            driverXbox.getHID()::getAButtonPressed,
-            driverXbox.getHID()::getXButtonPressed,
-            driverXbox.getHID()::getBButtonPressed);
-
-    // Applies deadbands and inverts controls because joysticks
-    // are back-right positive while robot
-    // controls are front-left positive
-    // left stick controls translation
-    // right stick controls the desired angle NOT angular rotation
-    Command driveFieldOrientedDirectAngle =
-        m_drivebase.driveCommand(
-            () -> MathUtil.applyDeadband(driverXbox.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
-            () -> MathUtil.applyDeadband(driverXbox.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
-            () -> driverXbox.getRightX(),
-            () -> driverXbox.getRightY());
-
-    // Applies deadbands and inverts controls because joysticks
-    // are back-right positive while robot
-    // controls are front-left positive
-    // left stick controls translation
-    // right stick controls the angular velocity of the robot
-    Command driveFieldOrientedAnglularVelocity =
-        m_drivebase.driveCommand(
-            () -> MathUtil.applyDeadband(driverXbox.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
-            () -> MathUtil.applyDeadband(driverXbox.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
-            () -> driverXbox.getRightX() * 0.5);
-
-    Command driveFieldOrientedDirectAngleSim =
-        m_drivebase.simDriveCommand(
-            () -> MathUtil.applyDeadband(driverXbox.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
-            () -> MathUtil.applyDeadband(driverXbox.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
-            () -> driverXbox.getRawAxis(2));
-
-    m_drivebase.setDefaultCommand(
-        !RobotBase.isSimulation()
-            ? driveFieldOrientedDirectAngle
-            : driveFieldOrientedDirectAngleSim);
-  }
+  private void defineTeleopCommands() {}
 
   /** Use this method to define your Autonomous commands for use with PathPlanner / Choreo */
   private void defineAutoCommands() {
 
-    NamedCommands.registerCommand(
-        "Zero", Commands.runOnce(() -> m_drivebase.zeroGyroWithAlliance()));
+    NamedCommands.registerCommand("Zero", Commands.runOnce(() -> m_drivebase.tareEverything()));
   }
 
   /**
@@ -185,7 +127,7 @@ public class RobotContainer {
   private void configureBindings() {
 
     // Manually Re-Zero the Gyro
-    driverXbox.y().onTrue(Commands.runOnce(() -> m_drivebase.zeroGyroWithAlliance()));
+    driverXbox.y().onTrue(Commands.runOnce(() -> m_drivebase.tareEverything()));
 
     // Example button bindings from YAGSL
     // if (DriverStation.isTest())
@@ -239,8 +181,8 @@ public class RobotContainer {
     configureBindings();
   }
 
+  /** Set the motor neutral mode to BRAKE / COAST for T/F */
   public void setMotorBrake(boolean brake) {
-
     m_drivebase.setMotorBrake(brake);
   }
 

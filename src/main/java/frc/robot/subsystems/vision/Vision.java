@@ -40,6 +40,7 @@ import frc.robot.Constants.AprilTagConstants.AprilTagLayoutType;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.vision.VisionIO.VisionIOInputs;
+import frc.robot.util.VirtualSubsystem;
 import java.awt.Desktop;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -66,7 +67,7 @@ import swervelib.telemetry.SwerveDriveTelemetry;
  * Example PhotonVision class to aid in the pursuit of accurate odometry. Taken from
  * https://gitlab.com/ironclad_code/ironclad-2024/-/blob/master/src/main/java/frc/robot/vision/Vision.java?ref_type=heads
  */
-public class Vision {
+public class Vision extends VirtualSubsystem {
 
   /** Photon Vision Simulation */
   public VisionSystemSim visionSim;
@@ -131,6 +132,9 @@ public class Vision {
       lastFrameTimes.put(i, 0.0);
     }
   }
+
+  @Override
+  public void periodic() {}
 
   /**
    * Calculates a target pose relative to an AprilTag on the field.
