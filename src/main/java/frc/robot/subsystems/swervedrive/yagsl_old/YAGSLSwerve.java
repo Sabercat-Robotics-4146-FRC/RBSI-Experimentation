@@ -17,7 +17,7 @@
 //
 // NOTE: This module based on the YAGSL Example Project
 
-package frc.robot.subsystems.swervedrive.underlying;
+package frc.robot.subsystems.swervedrive.yagsl_old;
 
 import static frc.robot.Constants.DrivebaseConstants.*;
 
@@ -177,11 +177,11 @@ public class YAGSLSwerve extends SubsystemBase {
   /** Periodic function -- update odometry and log everything */
   @Override
   public void periodic() {
-    // When vision is enabled we must manually update odometry in SwerveDrive
-    if (visionDriveTest) {
-      swerveDrive.updateOdometry();
-      vision.updatePoseEstimation(swerveDrive);
-    }
+    // // When vision is enabled we must manually update odometry in SwerveDrive
+    // if (visionDriveTest) {
+    //   swerveDrive.updateOdometry();
+    //   vision.updatePoseEstimation(swerveDrive);
+    // }
 
     /** Log Telemetry Data to AdvantageKit */
     Logger.recordOutput("SwerveDive/Telemetry/moduleCount", SwerveDriveTelemetry.moduleCount);

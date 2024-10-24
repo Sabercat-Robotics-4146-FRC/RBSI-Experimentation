@@ -40,6 +40,7 @@ import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
@@ -48,16 +49,28 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.vision.Vision;
 import java.util.function.Supplier;
+import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.Logger;
+import swervelib.telemetry.SwerveDriveTelemetry;
 
 /**
  * Class that extends the Phoenix SwerveDrivetrain class and implements subsystem so it can be used
  * in command-based projects easily.
  */
 public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
+  /** CTRE constants */
   private static final double kSimLoopPeriod = 0.005; // 5 ms
+
   private Notifier m_simNotifier = null;
   private double m_lastSimTime;
+
+  /** PhotonVision class to keep an accurate odometry */
+  private Vision vision;
+
+  /** Enable vision odometry updates while driving */
+  private final boolean visionDriveTest = false;
 
   /* Blue alliance sees forward as 0 degrees (toward red alliance wall) */
   private final Rotation2d BlueAlliancePerspectiveRotation = Rotation2d.fromDegrees(0);
@@ -197,6 +210,7 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
     m_simNotifier.startPeriodic(kSimLoopPeriod);
   }
 
+  /** Periodic function -- update odometry and log everything */
   @Override
   public void periodic() {
     /* Periodically try to apply the operator perspective */
@@ -215,7 +229,43 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
                 hasAppliedOperatorPerspective = true;
               });
     }
+
+    // When vision is enabled we must manually update odometry in SwerveDrive
+    if (visionDriveTest) {
+      vision.updatePoseEstimation(this);
+    }
+
+    /** Log Telemetry Data to AdvantageKit */
+    Logger.recordOutput("SwerveDive/Telemetry/moduleCount", SwerveDriveTelemetry.moduleCount);
+    Logger.recordOutput("SwerveDive/Telemetry/wheelLocations", SwerveDriveTelemetry.wheelLocations);
+    Logger.recordOutput("SwerveDive/Telemetry/measuredStates", SwerveDriveTelemetry.measuredStates);
+    Logger.recordOutput("SwerveDive/Telemetry/desiredStates", SwerveDriveTelemetry.desiredStates);
+    Logger.recordOutput("SwerveDive/Telemetry/robotRotation", SwerveDriveTelemetry.robotRotation);
+    Logger.recordOutput("SwerveDive/Telemetry/maxSpeed", SwerveDriveTelemetry.maxSpeed);
+    Logger.recordOutput("SwerveDive/Telemetry/rotationUnit", SwerveDriveTelemetry.rotationUnit);
+    Logger.recordOutput("SwerveDive/Telemetry/sizeLeftRight", SwerveDriveTelemetry.sizeLeftRight);
+    Logger.recordOutput("SwerveDive/Telemetry/sizeFrontBack", SwerveDriveTelemetry.sizeFrontBack);
+    Logger.recordOutput(
+        "SwerveDive/Telemetry/forwardDirection", SwerveDriveTelemetry.forwardDirection);
+    Logger.recordOutput(
+        "SwerveDive/Telemetry/maxAngularVelocity", SwerveDriveTelemetry.maxAngularVelocity);
+    Logger.recordOutput(
+        "SwerveDive/Telemetry/measuredChassisSpeeds", SwerveDriveTelemetry.measuredChassisSpeeds);
+    Logger.recordOutput(
+        "SwerveDive/Telemetry/desiredChassisSpeeds", SwerveDriveTelemetry.desiredChassisSpeeds);
+
+    /** Log Swerve Drive States to AdvantageKit */
+    getModuleStates();
+    getDesiredStates();
+    Logger.recordOutput(
+        "SwerveDive/States/RobotRotation",
+        SwerveDriveTelemetry.rotationUnit == "degrees"
+            ? Rotation2d.fromDegrees(SwerveDriveTelemetry.robotRotation)
+            : Rotation2d.fromRadians(SwerveDriveTelemetry.robotRotation));
   }
+
+  /************************************************************************* */
+  /* COMMAND SECTION -- Swerve-only Commands */
 
   /**
    * Get the path follower with events.
@@ -250,6 +300,19 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
         );
   }
 
+  /************************************************************************* */
+  /* UTILITY SECTION -- Utility methods */
+
+  /**
+   * Gets the current pose (position and rotation) of the robot, as reported by odometry.
+   *
+   * @return The robot's pose
+   */
+  @AutoLogOutput(key = "Odometry/RobotPose")
+  public Pose2d getPose() {
+    return getState().Pose;
+  }
+
   /**
    * Sets the drive motors to brake/coast mode.
    *
@@ -261,5 +324,31 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
     } else {
       this.configNeutralMode(NeutralModeValue.Coast);
     }
+  }
+
+  /** Returns the module states (turn angles and drive velocities) for all of the modules. */
+  @AutoLogOutput(key = "SwerveDive/States/Measured")
+  private SwerveModuleState[] getModuleStates() {
+    SwerveModuleState[] states = new SwerveModuleState[4];
+    for (int i = 0; i < 4; i++) {
+      states[i] =
+          new SwerveModuleState(
+              SwerveDriveTelemetry.measuredStates[(i * 2) + 1],
+              Rotation2d.fromDegrees(SwerveDriveTelemetry.measuredStates[i * 2]));
+    }
+    return states;
+  }
+
+  /** Returns the desired states (turn angles and drive velocities) for all of the modules. */
+  @AutoLogOutput(key = "SwerveDive/States/Desired")
+  private SwerveModuleState[] getDesiredStates() {
+    SwerveModuleState[] states = new SwerveModuleState[4];
+    for (int i = 0; i < 4; i++) {
+      states[i] =
+          new SwerveModuleState(
+              SwerveDriveTelemetry.desiredStates[(i * 2) + 1],
+              Rotation2d.fromDegrees(SwerveDriveTelemetry.desiredStates[i * 2]));
+    }
+    return states;
   }
 }

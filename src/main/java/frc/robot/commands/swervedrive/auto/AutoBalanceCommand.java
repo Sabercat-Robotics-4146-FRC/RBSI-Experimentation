@@ -24,7 +24,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.swervedrive.underlying.YAGSLSwerve;
+import frc.robot.subsystems.swervedrive.yagsl_old.YAGSLSwerve;
 
 /**
  * Auto Balance command using a simple PID controller. Created by Team 3512 <a

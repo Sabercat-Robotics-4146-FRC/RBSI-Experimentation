@@ -39,6 +39,7 @@ import frc.robot.Constants.AprilTagConstants;
 import frc.robot.Constants.AprilTagConstants.AprilTagLayoutType;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
+import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import frc.robot.subsystems.vision.VisionIO.VisionIOInputs;
 import frc.robot.util.VirtualSubsystem;
 import java.awt.Desktop;
@@ -162,7 +163,7 @@ public class Vision extends VirtualSubsystem {
    *
    * @param swerveDrive {@link SwerveDrive} instance.
    */
-  public void updatePoseEstimation(SwerveDrive swerveDrive) {
+  public void updatePoseEstimation(SwerveSubsystem swerveDrive) {
     if (SwerveDriveTelemetry.isSimulation) {
       visionSim.update(swerveDrive.getPose());
     }
