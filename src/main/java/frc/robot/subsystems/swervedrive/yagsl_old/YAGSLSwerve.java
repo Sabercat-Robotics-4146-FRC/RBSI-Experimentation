@@ -80,12 +80,12 @@ public class YAGSLSwerve extends SubsystemBase {
   public YAGSLSwerve(File directory) {
 
     // Angle conversion factor is 360 / (GEAR RATIO * ENCODER RESOLUTION)
-    double angleConversionFactor = SwerveMath.calculateDegreesPerSteeringRotation(TURN_GEAR_RATIO);
+    double angleConversionFactor = SwerveMath.calculateDegreesPerSteeringRotation(kTurnGearRatio);
 
     // Motor conversion factor is (PI * WHEEL DIAMETER IN METERS) / (GEAR RATIO * ENCODER
     // RESOLUTION)
     double driveConversionFactor =
-        SwerveMath.calculateMetersPerRotation(WHEEL_RADIUS * 2.0, DRIVE_GEAR_RATIO);
+        SwerveMath.calculateMetersPerRotation(kWheelRadius * 2.0, kDriveGearRatio);
 
     // Output to console and to AdvantageKit
     System.out.println("\"conversionFactors\": {");
@@ -99,7 +99,7 @@ public class YAGSLSwerve extends SubsystemBase {
     // created.
     SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
     try {
-      swerveDrive = new SwerveParser(directory).createSwerveDrive(MAX_LINEAR_SPEED);
+      swerveDrive = new SwerveParser(directory).createSwerveDrive(kMaxLinearSpeed);
       // Alternative method if you don't want to supply the conversion factor via JSON files.
       // swerveDrive = new SwerveParser_RBSI(directory).createSwerveDrive(maximumSpeed,
       // angleConversionFactor, driveConversionFactor);
@@ -142,7 +142,7 @@ public class YAGSLSwerve extends SubsystemBase {
    */
   public YAGSLSwerve(
       SwerveDriveConfiguration driveCfg, SwerveControllerConfiguration controllerCfg) {
-    swerveDrive = new SwerveDrive(driveCfg, controllerCfg, MAX_LINEAR_SPEED);
+    swerveDrive = new SwerveDrive(driveCfg, controllerCfg, kMaxLinearSpeed);
   }
 
   /** Setup the photon vision class. */
@@ -158,10 +158,10 @@ public class YAGSLSwerve extends SubsystemBase {
         this::getRobotVelocity, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
         this::setChassisSpeeds, // Driver method given ROBOT RELATIVE ChassisSpeeds
         new HolonomicPathFollowerConfig(
-            AutonConstants.TRANSLATION_PID,
-            AutonConstants.ANGLE_PID,
-            MAX_LINEAR_SPEED,
-            DRIVE_BASE_RADIUS,
+            AutonConstants.kAutoTranslatePID,
+            AutonConstants.kAutoAnglePID,
+            kMaxLinearSpeed,
+            kDriveBaseRadius,
             new ReplanningConfig()),
         () -> {
           // Boolean supplier that controls when the path will be mirrored for the red alliance
@@ -363,8 +363,7 @@ public class YAGSLSwerve extends SubsystemBase {
   public Command driveToPose(Pose2d pose) {
     // Create the constraints to use while pathfinding
     PathConstraints constraints =
-        new PathConstraints(
-            MAX_LINEAR_SPEED, MAX_LINEAR_ACCEL, MAX_ANGULAR_SPEED, MAX_ANGULAR_ACCEL);
+        new PathConstraints(kMaxLinearSpeed, kMaxLinearAccel, kMaxAngularSpeed, kMaxAngularAccel);
 
     // Since AutoBuilder is configured, we can use it to build pathfinding commands
     return AutoBuilder.pathfindToPose(

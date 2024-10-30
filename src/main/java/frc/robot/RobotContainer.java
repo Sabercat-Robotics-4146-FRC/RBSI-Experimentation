@@ -17,6 +17,8 @@
 
 package frc.robot;
 
+import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
+import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -28,6 +30,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.AprilTagConstants;
 import frc.robot.Constants.AprilTagConstants.AprilTagLayoutType;
+import frc.robot.Constants.DrivebaseConstants;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.accelerometer.Accelerometer;
 import frc.robot.subsystems.flywheel_example.Flywheel;
@@ -112,10 +115,48 @@ public class RobotContainer {
   }
 
   /** Use this method to define your TeleOp commands. */
-  private void defineTeleopCommands() {}
+  private void defineTeleopCommands() {
+
+    // Field-centric driving in open loop mode
+    final SwerveRequest.FieldCentric drive =
+        new SwerveRequest.FieldCentric()
+            .withDeadband(DrivebaseConstants.kMaxLinearSpeed * 0.1)
+            .withRotationalDeadband(DrivebaseConstants.kMaxAngularSpeed * 0.1) // Add a 10% deadband
+            .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+
+    final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
+    final SwerveRequest.RobotCentric forwardStraight =
+        new SwerveRequest.RobotCentric().withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+    final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
+
+    m_drivebase.setDefaultCommand( // Drivetrain will execute this command periodically
+        m_drivebase
+            .applyRequest(
+                () ->
+                    drive
+                        .withVelocityX(
+                            -driverXbox.getLeftY()
+                                * DrivebaseConstants.kMaxLinearSpeed) // Drive forward with
+                        // negative Y (forward)
+                        .withVelocityY(
+                            -driverXbox.getLeftX()
+                                * DrivebaseConstants
+                                    .kMaxLinearSpeed) // Drive left with negative X (left)
+                        .withRotationalRate(
+                            -driverXbox.getRightX()
+                                * DrivebaseConstants
+                                    .kMaxAngularSpeed) // Drive counterclockwise with negative X
+                // (left)
+                )
+            .ignoringDisable(true));
+  }
 
   /** Use this method to define your Autonomous commands for use with PathPlanner / Choreo */
   private void defineAutoCommands() {
+
+    Command runAuto = m_drivebase.getAutoPath("Tests");
+
+    final Telemetry logger = new Telemetry(DrivebaseConstants.kMaxLinearSpeed);
 
     NamedCommands.registerCommand("Zero", Commands.runOnce(() -> m_drivebase.tareEverything()));
   }

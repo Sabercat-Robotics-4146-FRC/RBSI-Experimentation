@@ -40,7 +40,6 @@ import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
@@ -53,7 +52,6 @@ import frc.robot.subsystems.vision.Vision;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
-import swervelib.telemetry.SwerveDriveTelemetry;
 
 /**
  * Class that extends the Phoenix SwerveDrivetrain class and implements subsystem so it can be used
@@ -131,6 +129,7 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
     if (Utils.isSimulation()) {
       startSimThread();
     }
+    Logger.recordOutput("SwerveDrive/Comment1", "This is a comment!");
   }
 
   public SwerveSubsystem(
@@ -140,6 +139,7 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
     if (Utils.isSimulation()) {
       startSimThread();
     }
+    Logger.recordOutput("SwerveDrive/Comment2", "This is a comment!");
   }
 
   private void configurePathPlanner() {
@@ -236,33 +236,38 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
     }
 
     /** Log Telemetry Data to AdvantageKit */
-    // NOTE: Phoenix6 telemetry NOT in SwerveDriveTelemetry!!!
-    Logger.recordOutput("SwerveDive/Telemetry/moduleCount", SwerveDriveTelemetry.moduleCount);
-    Logger.recordOutput("SwerveDive/Telemetry/wheelLocations", SwerveDriveTelemetry.wheelLocations);
-    Logger.recordOutput("SwerveDive/Telemetry/measuredStates", SwerveDriveTelemetry.measuredStates);
-    Logger.recordOutput("SwerveDive/Telemetry/desiredStates", SwerveDriveTelemetry.desiredStates);
-    Logger.recordOutput("SwerveDive/Telemetry/robotRotation", SwerveDriveTelemetry.robotRotation);
-    Logger.recordOutput("SwerveDive/Telemetry/maxSpeed", SwerveDriveTelemetry.maxSpeed);
-    Logger.recordOutput("SwerveDive/Telemetry/rotationUnit", SwerveDriveTelemetry.rotationUnit);
-    Logger.recordOutput("SwerveDive/Telemetry/sizeLeftRight", SwerveDriveTelemetry.sizeLeftRight);
-    Logger.recordOutput("SwerveDive/Telemetry/sizeFrontBack", SwerveDriveTelemetry.sizeFrontBack);
-    Logger.recordOutput(
-        "SwerveDive/Telemetry/forwardDirection", SwerveDriveTelemetry.forwardDirection);
-    Logger.recordOutput(
-        "SwerveDive/Telemetry/maxAngularVelocity", SwerveDriveTelemetry.maxAngularVelocity);
-    Logger.recordOutput(
-        "SwerveDive/Telemetry/measuredChassisSpeeds", SwerveDriveTelemetry.measuredChassisSpeeds);
-    Logger.recordOutput(
-        "SwerveDive/Telemetry/desiredChassisSpeeds", SwerveDriveTelemetry.desiredChassisSpeeds);
+    Logger.recordOutput("SwerveDrive/Comment", "This is a comment!");
+    // Logger.recordOutput("SwerveDrive/Telemetry/moduleCount", this.ModuleCount);
+    // Logger.recordOutput("SwerveDrive/Telemetry/wheelLocations", this.m_moduleLocations);
+    Logger.recordOutput("SwerveDrive/Telemetry/measuredStates", getState().ModuleStates);
+    // Logger.recordOutput("SwerveDive/Telemetry/desiredStates",
+    // SwerveDriveTelemetry.desiredStates);
+    // Logger.recordOutput("SwerveDive/Telemetry/robotRotation",
+    // SwerveDriveTelemetry.robotRotation);
+    // Logger.recordOutput("SwerveDive/Telemetry/maxSpeed", SwerveDriveTelemetry.maxSpeed);
+    // Logger.recordOutput("SwerveDive/Telemetry/rotationUnit", SwerveDriveTelemetry.rotationUnit);
+    // Logger.recordOutput("SwerveDive/Telemetry/sizeLeftRight",
+    // SwerveDriveTelemetry.sizeLeftRight);
+    // Logger.recordOutput("SwerveDive/Telemetry/sizeFrontBack",
+    // SwerveDriveTelemetry.sizeFrontBack);
+    // Logger.recordOutput(
+    //     "SwerveDive/Telemetry/forwardDirection", SwerveDriveTelemetry.forwardDirection);
+    // Logger.recordOutput(
+    //     "SwerveDive/Telemetry/maxAngularVelocity", SwerveDriveTelemetry.maxAngularVelocity);
+    // Logger.recordOutput(
+    //     "SwerveDive/Telemetry/measuredChassisSpeeds",
+    // SwerveDriveTelemetry.measuredChassisSpeeds);
+    // Logger.recordOutput(
+    //     "SwerveDive/Telemetry/desiredChassisSpeeds", SwerveDriveTelemetry.desiredChassisSpeeds);
 
-    /** Log Swerve Drive States to AdvantageKit */
-    getModuleStates();
-    getDesiredStates();
-    Logger.recordOutput(
-        "SwerveDive/States/RobotRotation",
-        SwerveDriveTelemetry.rotationUnit == "degrees"
-            ? Rotation2d.fromDegrees(SwerveDriveTelemetry.robotRotation)
-            : Rotation2d.fromRadians(SwerveDriveTelemetry.robotRotation));
+    // /** Log Swerve Drive States to AdvantageKit */
+    // getModuleStates();
+    // getDesiredStates();
+    // Logger.recordOutput(
+    //     "SwerveDive/States/RobotRotation",
+    //     SwerveDriveTelemetry.rotationUnit == "degrees"
+    //         ? Rotation2d.fromDegrees(SwerveDriveTelemetry.robotRotation)
+    //         : Rotation2d.fromRadians(SwerveDriveTelemetry.robotRotation));
   }
 
   /************************************************************************* */
@@ -288,8 +293,7 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
   public Command driveToPose(Pose2d pose) {
     // Create the constraints to use while pathfinding
     PathConstraints constraints =
-        new PathConstraints(
-            MAX_LINEAR_SPEED, MAX_LINEAR_ACCEL, MAX_ANGULAR_SPEED, MAX_ANGULAR_ACCEL);
+        new PathConstraints(kMaxLinearSpeed, kMaxLinearAccel, kMaxAngularSpeed, kMaxAngularAccel);
 
     // Since AutoBuilder is configured, we can use it to build pathfinding commands
     return AutoBuilder.pathfindToPose(
@@ -327,29 +331,29 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
     }
   }
 
-  /** Returns the module states (turn angles and drive velocities) for all of the modules. */
-  @AutoLogOutput(key = "SwerveDive/States/Measured")
-  private SwerveModuleState[] getModuleStates() {
-    SwerveModuleState[] states = new SwerveModuleState[4];
-    for (int i = 0; i < 4; i++) {
-      states[i] =
-          new SwerveModuleState(
-              SwerveDriveTelemetry.measuredStates[(i * 2) + 1],
-              Rotation2d.fromDegrees(SwerveDriveTelemetry.measuredStates[i * 2]));
-    }
-    return states;
-  }
+  // /** Returns the module states (turn angles and drive velocities) for all of the modules. */
+  // @AutoLogOutput(key = "SwerveDive/States/Measured")
+  // private SwerveModuleState[] getModuleStates() {
+  //   SwerveModuleState[] states = new SwerveModuleState[4];
+  //   for (int i = 0; i < 4; i++) {
+  //     states[i] =
+  //         new SwerveModuleState(
+  //             SwerveDriveTelemetry.measuredStates[(i * 2) + 1],
+  //             Rotation2d.fromDegrees(SwerveDriveTelemetry.measuredStates[i * 2]));
+  //   }
+  //   return states;
+  // }
 
-  /** Returns the desired states (turn angles and drive velocities) for all of the modules. */
-  @AutoLogOutput(key = "SwerveDive/States/Desired")
-  private SwerveModuleState[] getDesiredStates() {
-    SwerveModuleState[] states = new SwerveModuleState[4];
-    for (int i = 0; i < 4; i++) {
-      states[i] =
-          new SwerveModuleState(
-              SwerveDriveTelemetry.desiredStates[(i * 2) + 1],
-              Rotation2d.fromDegrees(SwerveDriveTelemetry.desiredStates[i * 2]));
-    }
-    return states;
-  }
+  // /** Returns the desired states (turn angles and drive velocities) for all of the modules. */
+  // @AutoLogOutput(key = "SwerveDive/States/Desired")
+  // private SwerveModuleState[] getDesiredStates() {
+  //   SwerveModuleState[] states = new SwerveModuleState[4];
+  //   for (int i = 0; i < 4; i++) {
+  //     states[i] =
+  //         new SwerveModuleState(
+  //             SwerveDriveTelemetry.desiredStates[(i * 2) + 1],
+  //             Rotation2d.fromDegrees(SwerveDriveTelemetry.desiredStates[i * 2]));
+  //   }
+  //   return states;
+  // }
 }

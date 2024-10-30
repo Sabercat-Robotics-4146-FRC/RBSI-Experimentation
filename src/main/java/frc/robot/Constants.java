@@ -28,6 +28,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.RobotBase;
+import frc.robot.generated.TunerConstants;
 import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
 import java.io.IOException;
@@ -172,36 +173,39 @@ public final class Constants {
   public static final class AutonConstants {
 
     // Translation PID constants
-    public static final PIDConstants TRANSLATION_PID = new PIDConstants(0.7, 0, 0);
+    public static final PIDConstants kAutoTranslatePID = new PIDConstants(0.7, 0, 0);
     // Rotation PID constants
-    public static final PIDConstants ANGLE_PID = new PIDConstants(0.4, 0, 0.01);
+    public static final PIDConstants kAutoAnglePID = new PIDConstants(0.4, 0, 0.01);
   }
 
   /** Drive Base Constants ************************************************* */
   public static final class DrivebaseConstants {
 
     // Physical size of the drive base
-    private static final double TRACK_WIDTH_X = Units.inchesToMeters(20.75);
-    private static final double TRACK_WIDTH_Y = Units.inchesToMeters(20.75);
-    public static final double DRIVE_BASE_RADIUS =
-        Math.hypot(TRACK_WIDTH_X / 2.0, TRACK_WIDTH_Y / 2.0);
+    private static final double kTrackWidthX = Units.inchesToMeters(20.75);
+    private static final double kTrackWidthY = Units.inchesToMeters(20.75);
+    public static final double kDriveBaseRadius =
+        Math.hypot(kTrackWidthX / 2.0, kTrackWidthY / 2.0);
 
-    // Maximum chassis speeds desired for robot motion -- metric / radians
-    public static final double MAX_LINEAR_SPEED = Units.feetToMeters(18); // ft/s
-    public static final double MAX_ANGULAR_SPEED = MAX_LINEAR_SPEED / DRIVE_BASE_RADIUS;
+    // CTRE-based maximum robot speeds (adjustable in Phoenix X Tuner Swerve Generator)
+    // kSpeedAt12VoltsMps desired top speed
+    public static final double kMaxLinearSpeed = TunerConstants.kSpeedAt12VoltsMps;
+    // 3/4 of a rotation per second max angular velocity
+    public static final double kMaxAngularSpeed = 1.5 * Math.PI;
+
     // Maximum chassis accelerations desired for robot motion  -- metric / radians
-    public static final double MAX_LINEAR_ACCEL = 4.0; // m/s/s
-    public static final double MAX_ANGULAR_ACCEL = Units.degreesToRadians(720); // deg/s/s
+    public static final double kMaxLinearAccel = 4.0; // m/s/s
+    public static final double kMaxAngularAccel = Units.degreesToRadians(720); // deg/s/s
 
     // Wheel radius
-    public static final double WHEEL_RADIUS = Units.inchesToMeters(2.0);
+    public static final double kWheelRadius = Units.inchesToMeters(2.0);
 
     // ** Gear ratios for SDS MK4i L2, adjust as necessary **
-    public static final double DRIVE_GEAR_RATIO = (50.0 / 14.0) * (17.0 / 27.0) * (45.0 / 15.0);
-    public static final double TURN_GEAR_RATIO = 150.0 / 7.0;
+    public static final double kDriveGearRatio = (50.0 / 14.0) * (17.0 / 27.0) * (45.0 / 15.0);
+    public static final double kTurnGearRatio = 150.0 / 7.0;
 
     // Hold time on motor brakes when disabled
-    public static final double WHEEL_LOCK_TIME = 10; // seconds
+    public static final double kWheelLockTime = 10; // seconds
 
     // SysID characterization constants
     public static final double kMaxV = 12.0; // Max volts
@@ -214,7 +218,7 @@ public final class Constants {
   public static final class FlywheelConstants {
 
     // Mechanism motor gear ratio
-    public static final double GEAR_RATIO = 1.5;
+    public static final double kFlywheelGearRatio = 1.5;
 
     // MODE == REAL / REPLAY
     // Feedforward constants
@@ -239,10 +243,11 @@ public final class Constants {
   public static class OperatorConstants {
 
     // Joystick Deadband
-    public static final double LEFT_X_DEADBAND = 0.1;
-    public static final double LEFT_Y_DEADBAND = 0.1;
-    public static final double RIGHT_X_DEADBAND = 0.1;
-    public static final double TURN_CONSTANT = 6;
+    public static final double kLeftXDeadband = 0.1;
+    public static final double kLeftYDeadband = 0.1;
+    public static final double kRightXDeadband = 0.1;
+    public static final double kRightYDeadband = 0.1;
+    public static final double kTurnConstant = 6;
   }
 
   /** AprilTag Field Layout ************************************************ */

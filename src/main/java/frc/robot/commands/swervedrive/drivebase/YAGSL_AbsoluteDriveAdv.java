@@ -148,7 +148,7 @@ public class YAGSL_AbsoluteDriveAdv extends Command {
     if (headingX == 0 && headingY == 0 && Math.abs(headingAdjust.getAsDouble()) > 0) {
       resetHeading = true;
       swerve.drive(
-          translation, (OperatorConstants.TURN_CONSTANT * -headingAdjust.getAsDouble()), true);
+          translation, (OperatorConstants.kTurnConstant * -headingAdjust.getAsDouble()), true);
     } else {
       swerve.drive(translation, desiredSpeeds.omegaRadiansPerSecond, true);
     }

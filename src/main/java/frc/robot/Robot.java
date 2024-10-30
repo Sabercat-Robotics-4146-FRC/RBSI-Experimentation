@@ -134,7 +134,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void disabledPeriodic() {
     // After WHEEL_LOCK_TIME has elapsed, release the drive brakes
-    if (m_disabledTimer.hasElapsed(Constants.DrivebaseConstants.WHEEL_LOCK_TIME)) {
+    if (m_disabledTimer.hasElapsed(Constants.DrivebaseConstants.kWheelLockTime)) {
       m_robotContainer.setMotorBrake(false);
       m_disabledTimer.stop();
     }

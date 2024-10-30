@@ -57,9 +57,9 @@ public class FlywheelIOSparkMax implements FlywheelIO {
 
   @Override
   public void updateInputs(FlywheelIOInputs inputs) {
-    inputs.positionRad = Units.rotationsToRadians(encoder.getPosition() / GEAR_RATIO);
+    inputs.positionRad = Units.rotationsToRadians(encoder.getPosition() / kFlywheelGearRatio);
     inputs.velocityRadPerSec =
-        Units.rotationsPerMinuteToRadiansPerSecond(encoder.getVelocity() / GEAR_RATIO);
+        Units.rotationsPerMinuteToRadiansPerSecond(encoder.getVelocity() / kFlywheelGearRatio);
     inputs.appliedVolts = leader.getAppliedOutput() * leader.getBusVoltage();
     inputs.currentAmps = new double[] {leader.getOutputCurrent(), follower.getOutputCurrent()};
   }
@@ -72,7 +72,7 @@ public class FlywheelIOSparkMax implements FlywheelIO {
   @Override
   public void setVelocity(double velocityRadPerSec, double ffVolts) {
     pid.setReference(
-        Units.radiansPerSecondToRotationsPerMinute(velocityRadPerSec) * GEAR_RATIO,
+        Units.radiansPerSecondToRotationsPerMinute(velocityRadPerSec) * kFlywheelGearRatio,
         ControlType.kVelocity,
         0,
         ffVolts,
