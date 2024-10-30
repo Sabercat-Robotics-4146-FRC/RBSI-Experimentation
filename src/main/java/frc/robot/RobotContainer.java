@@ -17,11 +17,10 @@
 
 package frc.robot;
 
-import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
-import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -37,6 +36,7 @@ import frc.robot.subsystems.flywheel_example.Flywheel;
 import frc.robot.subsystems.flywheel_example.FlywheelIO;
 import frc.robot.subsystems.flywheel_example.FlywheelIOSim;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
+import frc.robot.subsystems.swervedrive.SwerveTelemetry;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOPhoton;
@@ -47,7 +47,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 public class RobotContainer {
 
   // Define the Driver and, optionally, the Operator/Co-Driver Controllers
-  // Replace with CommandPS4Controller or CommandJoystick if needed
+  // Replace with ``CommandPS4Controller`` or ``CommandJoystick`` if needed
   final CommandXboxController driverXbox = new CommandXboxController(0);
   final CommandXboxController operatorXbox = new CommandXboxController(1);
   final OverrideSwitches overrides = new OverrideSwitches(2);
@@ -60,6 +60,9 @@ public class RobotContainer {
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
+
+  // Swerve Drive Telemetry
+  private final SwerveTelemetry logger = new SwerveTelemetry(DrivebaseConstants.kMaxLinearSpeed);
 
   /** Returns the current AprilTag layout type. */
   public AprilTagLayoutType getAprilTagLayoutType() {
@@ -106,57 +109,16 @@ public class RobotContainer {
 
     // Configure the trigger bindings
     configureBindings();
-    // Define TeleOp commands
-    defineTeleopCommands();
     // Define Auto commands
     defineAutoCommands();
     // Set up the SmartDashboard Auto Chooser
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
-  }
-
-  /** Use this method to define your TeleOp commands. */
-  private void defineTeleopCommands() {
-
-    // Field-centric driving in open loop mode
-    final SwerveRequest.FieldCentric drive =
-        new SwerveRequest.FieldCentric()
-            .withDeadband(DrivebaseConstants.kMaxLinearSpeed * 0.1)
-            .withRotationalDeadband(DrivebaseConstants.kMaxAngularSpeed * 0.1) // Add a 10% deadband
-            .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
-
-    final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
-    final SwerveRequest.RobotCentric forwardStraight =
-        new SwerveRequest.RobotCentric().withDriveRequestType(DriveRequestType.OpenLoopVoltage);
-    final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
-
-    m_drivebase.setDefaultCommand( // Drivetrain will execute this command periodically
-        m_drivebase
-            .applyRequest(
-                () ->
-                    drive
-                        .withVelocityX(
-                            -driverXbox.getLeftY()
-                                * DrivebaseConstants.kMaxLinearSpeed) // Drive forward with
-                        // negative Y (forward)
-                        .withVelocityY(
-                            -driverXbox.getLeftX()
-                                * DrivebaseConstants
-                                    .kMaxLinearSpeed) // Drive left with negative X (left)
-                        .withRotationalRate(
-                            -driverXbox.getRightX()
-                                * DrivebaseConstants
-                                    .kMaxAngularSpeed) // Drive counterclockwise with negative X
-                // (left)
-                )
-            .ignoringDisable(true));
+    // Set up the logger
+    m_drivebase.registerTelemetry(logger::telemeterize);
   }
 
   /** Use this method to define your Autonomous commands for use with PathPlanner / Choreo */
   private void defineAutoCommands() {
-
-    Command runAuto = m_drivebase.getAutoPath("Tests");
-
-    final Telemetry logger = new Telemetry(DrivebaseConstants.kMaxLinearSpeed);
 
     NamedCommands.registerCommand("Zero", Commands.runOnce(() -> m_drivebase.tareEverything()));
   }
@@ -172,42 +134,48 @@ public class RobotContainer {
    */
   private void configureBindings() {
 
-    // Manually Re-Zero the Gyro
+    // Manually Re-Zero the Gyro & Odometry
     driverXbox.y().onTrue(Commands.runOnce(() -> m_drivebase.tareEverything()));
 
-    // Example button bindings from YAGSL
-    // if (DriverStation.isTest())
-    // {
-    //   driverXbox.b().whileTrue(drivebase.sysIdDriveMotorCommand());
-    //   driverXbox.x().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
-    //   driverXbox.y().whileTrue(drivebase.driveToDistanceCommand(1.0, 0.2));
-    //   driverXbox.start().onTrue((Commands.runOnce(drivebase::zeroGyro)));
-    //   driverXbox.back().whileTrue(drivebase.centerModulesCommand());
-    //   driverXbox.leftBumper().onTrue(Commands.none());
-    //   driverXbox.rightBumper().onTrue(Commands.none());
-    //   drivebase.setDefaultCommand(
-    //       !RobotBase.isSimulation() ? driveFieldOrientedAnglularVelocity :
-    // driveFieldOrientedDirectAngleSim);
-    // } else
-    // {
-    //   driverXbox.a().onTrue((Commands.runOnce(drivebase::zeroGyro)));
-    //   driverXbox.x().onTrue(Commands.runOnce(drivebase::addFakeVisionReading));
-    //   driverXbox.b().whileTrue(
-    //       Commands.deferredProxy(() -> drivebase.driveToPose(
-    //                                  new Pose2d(new Translation2d(4, 4),
-    // Rotation2d.fromDegrees(0)))
-    //                             ));
-    //   driverXbox.y().whileTrue(drivebase.aimAtSpeaker(2));
-    //   driverXbox.start().whileTrue(Commands.none());
-    //   driverXbox.back().whileTrue(Commands.none());
-    //   driverXbox.leftBumper().whileTrue(Commands.runOnce(drivebase::lock,
-    // drivebase).repeatedly());
-    //   driverXbox.rightBumper().onTrue(Commands.none());
-    //   drivebase.setDefaultCommand(
-    //       !RobotBase.isSimulation() ? driveFieldOrientedDirectAngle :
-    // driveFieldOrientedDirectAngleSim);
-    // }
+    // Example Swerve Drive button bindings
+    // A -> BRAKE
+    driverXbox.a().whileTrue(m_drivebase.applyRequest(() -> m_drivebase.brake));
+    // B -> POINT WHEELS AT DIRECTION WITHOUT MOVING
+    driverXbox
+        .b()
+        .whileTrue(
+            m_drivebase.applyRequest(
+                () ->
+                    m_drivebase.point.withModuleDirection(
+                        new Rotation2d(-driverXbox.getLeftY(), -driverXbox.getLeftX()))));
+    // LEFT BUMPER -> reset the field-centric heading
+    driverXbox.leftBumper().onTrue(m_drivebase.runOnce(() -> m_drivebase.seedFieldRelative()));
+    // POV UP -> DRIVE FORWARD IN ROBOT-CENTRIC MODE
+    driverXbox
+        .pov(0)
+        .whileTrue(
+            m_drivebase.applyRequest(
+                () -> m_drivebase.forwardStraight.withVelocityX(0.5).withVelocityY(0)));
+    // POV DOWN -> DRIVE BACKWARD IN ROBOT-CENTRIC MODE
+    driverXbox
+        .pov(180)
+        .whileTrue(
+            m_drivebase.applyRequest(
+                () -> m_drivebase.forwardStraight.withVelocityX(-0.5).withVelocityY(0)));
 
+    // SET STANDARD DRIVING AS DEFAULT COMMAND FOR THE DRIVEBASE
+    // NOTE: Left joystick controls lateral translation, right joystick (X) controls rotation
+    m_drivebase.setDefaultCommand(
+        m_drivebase
+            .applyRequest(
+                () ->
+                    m_drivebase
+                        .drive
+                        .withVelocityX(-driverXbox.getLeftY() * DrivebaseConstants.kMaxLinearSpeed)
+                        .withVelocityY(-driverXbox.getLeftX() * DrivebaseConstants.kMaxLinearSpeed)
+                        .withRotationalRate(
+                            -driverXbox.getRightX() * DrivebaseConstants.kMaxAngularSpeed))
+            .ignoringDisable(true));
   }
 
   /**
@@ -218,7 +186,7 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
 
     // An example command will be run in autonomous
-    return m_drivebase.getAutonomousCommand("New Auto");
+    return m_drivebase.getAutoPath("Tests");
     // Use the ``autoChooser`` to define your auto path from the SmartDashboard
     // return autoChooser.get();
   }

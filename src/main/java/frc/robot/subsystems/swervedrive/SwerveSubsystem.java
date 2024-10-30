@@ -27,6 +27,7 @@ import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrain;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrainConstants;
+import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -47,6 +48,7 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Constants.DrivebaseConstants;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.vision.Vision;
 import java.util.function.Supplier;
@@ -168,6 +170,19 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
         // the case
         this); // Subsystem for requirements
   }
+
+  /* Section for defining TeleOp Commands */
+  // Field-centric driving in open loop mode
+  public final SwerveRequest.FieldCentric drive =
+      new SwerveRequest.FieldCentric()
+          .withDeadband(DrivebaseConstants.kMaxLinearSpeed * 0.1)
+          .withRotationalDeadband(DrivebaseConstants.kMaxAngularSpeed * 0.1) // Add a 10% deadband
+          .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+
+  public final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
+  public final SwerveRequest.RobotCentric forwardStraight =
+      new SwerveRequest.RobotCentric().withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+  public final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
   public Command applyRequest(Supplier<SwerveRequest> requestSupplier) {
     return run(() -> this.setControl(requestSupplier.get()));
