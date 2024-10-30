@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.AprilTagConstants;
 import frc.robot.Constants.AprilTagConstants.AprilTagLayoutType;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.accelerometer.Accelerometer;
 import frc.robot.subsystems.flywheel_example.Flywheel;
 import frc.robot.subsystems.flywheel_example.FlywheelIO;
 import frc.robot.subsystems.flywheel_example.FlywheelIOSim;
@@ -52,6 +53,7 @@ public class RobotContainer {
   private final SwerveSubsystem m_drivebase;
   private final Flywheel m_flywheel;
   private final Vision m_vision;
+  private final Accelerometer m_accel;
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -79,6 +81,7 @@ public class RobotContainer {
             new Vision(
                 this::getAprilTagLayoutType,
                 new VisionIOPhoton(this::getAprilTagLayoutType, "Photon_CAMNAME"));
+        m_accel = new Accelerometer(m_drivebase.getPigeon2());
         break;
 
       case SIM:
@@ -86,6 +89,7 @@ public class RobotContainer {
         m_drivebase = TunerConstants.DriveTrain;
         m_flywheel = new Flywheel(new FlywheelIOSim());
         m_vision = new Vision(this::getAprilTagLayoutType);
+        m_accel = new Accelerometer(m_drivebase.getPigeon2());
         break;
 
       default:
@@ -93,6 +97,7 @@ public class RobotContainer {
         m_drivebase = TunerConstants.DriveTrain;
         m_flywheel = new Flywheel(new FlywheelIO() {});
         m_vision = new Vision(this::getAprilTagLayoutType, new VisionIO() {}, new VisionIO() {});
+        m_accel = new Accelerometer(m_drivebase.getPigeon2());
         break;
     }
 

@@ -236,6 +236,7 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
     }
 
     /** Log Telemetry Data to AdvantageKit */
+    // NOTE: Phoenix6 telemetry NOT in SwerveDriveTelemetry!!!
     Logger.recordOutput("SwerveDive/Telemetry/moduleCount", SwerveDriveTelemetry.moduleCount);
     Logger.recordOutput("SwerveDive/Telemetry/wheelLocations", SwerveDriveTelemetry.wheelLocations);
     Logger.recordOutput("SwerveDive/Telemetry/measuredStates", SwerveDriveTelemetry.measuredStates);
@@ -265,7 +266,7 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
   }
 
   /************************************************************************* */
-  /* COMMAND SECTION -- Swerve-only Commands */
+  /* COMMAND SECTION -- Drivebase-only Commands */
 
   /**
    * Get the path follower with events.

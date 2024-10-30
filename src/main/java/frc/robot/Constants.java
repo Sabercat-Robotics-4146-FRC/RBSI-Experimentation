@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pathplanner.lib.util.PIDConstants;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Filesystem;
@@ -102,8 +103,8 @@ public final class Constants {
 
   /** Enumerate the supported swerve drive types */
   public static enum SwerveType {
-    YAGSL, // The generic YAGSL swerve library
-    PHOENIX6 // The all-CTRE Phoenix6 swerve library
+    PHOENIX6, // The all-CTRE Phoenix6 swerve library
+    YAGSL // The generic YAGSL swerve library (not supported at this time)
   }
 
   /** Get the current swerve drive type */
@@ -118,6 +119,26 @@ public final class Constants {
   public static final double loopPeriodSecs = 0.02;
 
   public static final boolean tuningMode = false;
+
+  /** Accelerometer Constants ********************************************** */
+  public static class AccelerometerConstants {
+    // Insert here the orientation (CCW == +) of the Rio and Pigeon2 from the robot
+    // An angle of "0." means the x-y-z markings on the device match the robot's intrinsic reference
+    //   frame.
+    // NOTE: It is assumed that both the Rio and the Pigeon are mounted such that +Z is UP
+    public static final Rotation2d kRioOrientation =
+        switch (getRobot()) {
+          case COMPBOT -> Rotation2d.fromDegrees(0.);
+          case DEVBOT -> Rotation2d.fromDegrees(0.);
+          default -> Rotation2d.fromDegrees(0.);
+        };
+    public static final Rotation2d kPigeonOrientation =
+        switch (getRobot()) {
+          case COMPBOT -> Rotation2d.fromDegrees(0.);
+          case DEVBOT -> Rotation2d.fromDegrees(0.);
+          default -> Rotation2d.fromDegrees(0.);
+        };
+  }
 
   /** Physical Constants for Robot Operation ******************************* */
   public static final class PhysicalConstants {

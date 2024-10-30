@@ -13,27 +13,72 @@
 
 package frc.robot.subsystems.accelerometer;
 
-import frc.robot.subsystems.accelerometer.AccelerometerIO.AccelerometerIOInputs;
+import static frc.robot.Constants.AccelerometerConstants.*;
+
+import com.ctre.phoenix6.hardware.Pigeon2;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.wpilibj.BuiltInAccelerometer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants;
 import frc.robot.util.VirtualSubsystem;
+import org.littletonrobotics.junction.Logger;
 
 /** Accelerometer subsystem (built upon a virtual subsystem) */
 public class Accelerometer extends VirtualSubsystem {
 
-  private final AccelerometerIO[] io;
-  private final AccelerometerIOInputs[] inputs;
+  private final BuiltInAccelerometer rioAccelerometer = new BuiltInAccelerometer();
+  private final Pigeon2 pigeonAccelerometer;
 
-  // Class method definition, including inputs
-  public Accelerometer(AccelerometerIO... io) {
-    this.io = io;
-    inputs = new AccelerometerIOInputs[io.length];
-    for (int i = 0; i < io.length; i++) {
-      inputs[i] = new AccelerometerIOInputs();
-    }
+  // Define the 3D vectors needed to hold values
+  private Translation3d rioAccVector;
+  private Translation3d pigeonAccVector;
+  private Translation3d prevRioAccel = new Translation3d();
+  private Translation3d prevPigeonAccel = new Translation3d();
+  private Translation3d rioJerkVector;
+  private Translation3d pigeonJerkVector;
+
+  // Class method definition
+  public Accelerometer(Pigeon2 pigeonAccelerometer) {
+    this.pigeonAccelerometer = pigeonAccelerometer;
   }
 
+  /** Get accelerations, compute jerks, log everything */
   public void periodic() {
-    for (int i = 0; i < io.length; i++) {
-      io[i].updateInputs(inputs[i]);
-    }
+
+    // Compute the Rio's acceleration, rotated as needed in the XY plane (yaw)
+    // RoboRio provides accelerations in `g`, from -8 to +8; convert to m/s^2
+    rioAccVector =
+        new Translation3d(rioAccelerometer.getX(), rioAccelerometer.getY(), rioAccelerometer.getZ())
+            .rotateBy(new Rotation3d(0., 0., kRioOrientation.getRadians()))
+            .times(9.81);
+
+    // Compute the Pigeon's acceleration, rotated as needed
+    // Pigeon provides accelerations in `g`, from -2 to +2; convert to m/s^2
+    pigeonAccVector =
+        new Translation3d(
+                pigeonAccelerometer.getAccelerationX().getValueAsDouble(),
+                pigeonAccelerometer.getAccelerationY().getValueAsDouble(),
+                pigeonAccelerometer.getAccelerationZ().getValueAsDouble())
+            .rotateBy(new Rotation3d(0., 0., kPigeonOrientation.getRadians()))
+            .times(9.81);
+
+    // Compute the jerks ((current - prev accel) / loop time)
+    rioJerkVector = rioAccVector.minus(prevRioAccel).div(Constants.loopPeriodSecs);
+    pigeonJerkVector = pigeonAccVector.minus(prevPigeonAccel).div(Constants.loopPeriodSecs);
+
+    // Log everything to both AdvantageKit and SmartDashboard
+    Logger.recordOutput("Acceleration/Rio/Accel", rioAccVector);
+    Logger.recordOutput("Acceleration/Rio/Jerk", rioJerkVector);
+    Logger.recordOutput("Acceleration/Pigeon/Accel", pigeonAccVector);
+    Logger.recordOutput("Acceleration/Pigeon/Jerk", pigeonJerkVector);
+    SmartDashboard.putNumber("RioXAccel", rioAccVector.getX());
+    SmartDashboard.putNumber("RioYAccel", rioAccVector.getY());
+    SmartDashboard.putNumber("PigeonXAccel", pigeonAccVector.getX());
+    SmartDashboard.putNumber("PigeonYAccel", pigeonAccVector.getY());
+
+    // Set the "previous" accelerations to the current for the next loop
+    prevRioAccel = rioAccVector;
+    prevPigeonAccel = pigeonAccVector;
   }
 }
