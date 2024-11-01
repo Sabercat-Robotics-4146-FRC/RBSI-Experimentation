@@ -68,10 +68,10 @@ public class Accelerometer extends VirtualSubsystem {
     pigeonJerkVector = pigeonAccVector.minus(prevPigeonAccel).div(Constants.loopPeriodSecs);
 
     // Log everything to both AdvantageKit and SmartDashboard
-    Logger.recordOutput("Acceleration/Rio/Accel", rioAccVector);
-    Logger.recordOutput("Acceleration/Rio/Jerk", rioJerkVector);
-    Logger.recordOutput("Acceleration/Pigeon/Accel", pigeonAccVector);
-    Logger.recordOutput("Acceleration/Pigeon/Jerk", pigeonJerkVector);
+    Logger.recordOutput("Acceleration/Rio/Accel_mss", rioAccVector);
+    Logger.recordOutput("Acceleration/Rio/Jerk_msss", rioJerkVector);
+    Logger.recordOutput("Acceleration/Pigeon/Accel_mss", pigeonAccVector);
+    Logger.recordOutput("Acceleration/Pigeon/Jerk_msss", pigeonJerkVector);
     SmartDashboard.putNumber("RioXAccel", rioAccVector.getX());
     SmartDashboard.putNumber("RioYAccel", rioAccVector.getY());
     SmartDashboard.putNumber("PigeonXAccel", pigeonAccVector.getX());
