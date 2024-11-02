@@ -46,6 +46,8 @@ public class Accelerometer extends VirtualSubsystem {
   /** Get accelerations, compute jerks, log everything */
   public void periodic() {
 
+    long start = System.nanoTime();
+
     // Compute the Rio's acceleration, rotated as needed in the XY plane (yaw)
     // RoboRio provides accelerations in `g`, from -8 to +8; convert to m/s^2
     rioAccVector =
@@ -80,5 +82,9 @@ public class Accelerometer extends VirtualSubsystem {
     // Set the "previous" accelerations to the current for the next loop
     prevRioAccel = rioAccVector;
     prevPigeonAccel = pigeonAccVector;
+
+    long finish = System.nanoTime();
+    long timeElapsed = finish - start;
+    Logger.recordOutput("LoggedRobot/AccelCodeMS", (double) timeElapsed / 1.e6);
   }
 }

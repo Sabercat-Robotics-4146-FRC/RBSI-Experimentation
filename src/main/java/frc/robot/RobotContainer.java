@@ -234,8 +234,8 @@ public class RobotContainer {
     /* SUBSYSTEM CAN DEVICE IDS */
     // This is where mechanism subsystem devices are defined
     // Example:
-    public static final CanDeviceId FLYWHEEL_LEADER = new CanDeviceId(3, "");
-    public static final CanDeviceId FLYWHEEL_FOLLOWER = new CanDeviceId(4, "");
+    public static final CanDeviceId FLYWHEEL_LEADER = new CanDeviceId(15, "");
+    public static final CanDeviceId FLYWHEEL_FOLLOWER = new CanDeviceId(16, "");
 
     /* BEAM BREAK and/or LIMIT SWITCH DIO CHANNELS */
     // This is where digital I/O feedback devices are defined
