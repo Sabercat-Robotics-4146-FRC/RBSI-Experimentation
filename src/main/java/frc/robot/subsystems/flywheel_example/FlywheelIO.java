@@ -16,6 +16,10 @@ package frc.robot.subsystems.flywheel_example;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface FlywheelIO {
+
+  // IMPORTANT: Include here all devices that are part of this mechanism!
+  public final int[] powerPorts = {};
+
   @AutoLog
   public static class FlywheelIOInputs {
     public double positionRad = 0.0;

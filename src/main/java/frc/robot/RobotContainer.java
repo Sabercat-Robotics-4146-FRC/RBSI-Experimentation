@@ -41,6 +41,7 @@ import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOPhoton;
 import frc.robot.util.OverrideSwitches;
+import frc.robot.util.PowerMonitoring;
 import frc.robot.util.RobotDeviceId;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -55,8 +56,9 @@ public class RobotContainer {
   // Declare the robot subsystems here
   private final SwerveSubsystem m_drivebase;
   private final Flywheel m_flywheel;
-  private final Vision m_vision;
   private final Accelerometer m_accel;
+  private final Vision m_vision;
+  private final PowerMonitoring m_power;
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -106,6 +108,11 @@ public class RobotContainer {
         m_accel = new Accelerometer(m_drivebase.getPigeon2());
         break;
     }
+
+    // ``PowerMonitoring`` takes all the subsystems for which you wish to have
+    //   power monitoring; DO NOT include ``m_drivebase``, as that is already
+    //   included.
+    m_power = new PowerMonitoring(m_flywheel);
 
     // Configure the trigger bindings
     configureBindings();

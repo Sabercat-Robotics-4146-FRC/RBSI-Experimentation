@@ -68,12 +68,11 @@ util/
     Various utility functions used by the Az-RBSI are included in this
     directory.  Most teams will not need to modify these routines, but
     additional utilities deemed necessary by individual teams may be placed
-    here for organizational purposes.  The EXCEPTIONS are
-    ``PowerMonitoring.java`` and ``OverrideSwitches.java``, which may be
-    modified to meet the specific designs of teams.  ``PowerMonitoring.java``
-    can be modified to add additional mechanisms to the power monitor logging,
-    and ``OverrideSwitches.java`` can be modified to match any manual override
-    switches on an operator console as described in that module.
+    here for organizational purposes.  The EXCEPTION is
+    ``OverrideSwitches.java``, which may be modified to meet the specific
+    design requirements of teams.  ``OverrideSwitches.java`` can be modified
+    to match any manual override switches on an operator console as described
+    in that module.
 
 
 --------------------

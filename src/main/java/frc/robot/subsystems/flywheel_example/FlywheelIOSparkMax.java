@@ -37,6 +37,10 @@ public class FlywheelIOSparkMax implements FlywheelIO {
       new CANSparkMax(Ports.FLYWHEEL_LEADER.getDeviceNumber(), MotorType.kBrushless);
   private final RelativeEncoder encoder = leader.getEncoder();
   private final SparkPIDController pid = leader.getPIDController();
+  // IMPORTANT: Include here all devices listed above that are part of this mechanism!
+  public final int[] powerPorts = {
+    Ports.FLYWHEEL_LEADER.getPowerPort(), Ports.FLYWHEEL_FOLLOWER.getPowerPort()
+  };
 
   public FlywheelIOSparkMax() {
     leader.restoreFactoryDefaults();

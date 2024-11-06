@@ -22,6 +22,8 @@ import org.littletonrobotics.junction.Logger;
 
 public class PowerMonitoring extends VirtualSubsystem {
 
+  private final RBSISubsystem[] subsystems;
+
   /** Define the Power Distribution Hardware */
   private PowerDistribution m_powerModule =
       new PowerDistribution(
@@ -39,18 +41,18 @@ public class PowerMonitoring extends VirtualSubsystem {
     Ports.BR_DRIVE.getPowerPort()
   };
 
-  // STEER motor power plugged
+  // STEER motor power ports
   private final int[] m_steerPowerPorts = {
     Ports.FL_ROTATION.getPowerPort(),
     Ports.FR_ROTATION.getPowerPort(),
     Ports.BL_ROTATION.getPowerPort(),
     Ports.BR_ROTATION.getPowerPort()
   };
-  // Add additional subsystem port enumerations here for combined monitoring
-  // Example:
-  private final int[] m_flywheelPowerPorts = {
-    Ports.FLYWHEEL_LEADER.getPowerPort(), Ports.FLYWHEEL_FOLLOWER.getPowerPort()
-  };
+
+  // Class method definition, including inputs of optional subsystems
+  public PowerMonitoring(RBSISubsystem... subsystems) {
+    this.subsystems = subsystems;
+  }
 
   /** Periodic Method */
   public void periodic() {
@@ -76,13 +78,6 @@ public class PowerMonitoring extends VirtualSubsystem {
     for (int port : m_steerPowerPorts) {
       steerCurrent += channelCurrents[port];
     }
-    // Add current monitoring by subsystem here
-    // Example:
-    double flywheelCurrent = 0.0;
-    for (int port : m_flywheelPowerPorts) {
-      flywheelCurrent += channelCurrents[port];
-    }
-
     // Log values to AdvantageKit and to SmartDashboard
     Logger.recordOutput("PowerMonitor/TotalCurrent", totalCurrent);
     Logger.recordOutput("PowerMonitor/DriveCurrent", driveCurrent);
@@ -90,10 +85,16 @@ public class PowerMonitoring extends VirtualSubsystem {
     SmartDashboard.putNumber("TotalCurrent", totalCurrent);
     SmartDashboard.putNumber("DriveCurrent", driveCurrent);
     SmartDashboard.putNumber("SteerCurrent", steerCurrent);
-    // Add logging for subsystems here
-    // Example:
-    Logger.recordOutput("PowerMonitor/FlywheelCurrent", flywheelCurrent);
-    SmartDashboard.putNumber("FlywheelCurrent", flywheelCurrent);
+
+    // Compute and log any passed-in subsystems
+    for (RBSISubsystem subsystem : subsystems) {
+      double subsystemCurrent = 0.0;
+      for (int port : subsystem.getPowerPorts()) {
+        subsystemCurrent += channelCurrents[port];
+      }
+      Logger.recordOutput("PowerMonitor/" + subsystem.getName() + "Current", subsystemCurrent);
+      SmartDashboard.putNumber(subsystem.getName() + "Current", subsystemCurrent);
+    }
 
     // Do something about setting priorities if drawing too much current
 

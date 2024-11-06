@@ -34,6 +34,10 @@ public class FlywheelIOTalonFX implements FlywheelIO {
       new TalonFX(Ports.FLYWHEEL_LEADER.getDeviceNumber(), Ports.FLYWHEEL_LEADER.getBus());
   private final TalonFX follower =
       new TalonFX(Ports.FLYWHEEL_FOLLOWER.getDeviceNumber(), Ports.FLYWHEEL_FOLLOWER.getBus());
+  // IMPORTANT: Include here all devices listed above that are part of this mechanism!
+  public final int[] powerPorts = {
+    Ports.FLYWHEEL_LEADER.getPowerPort(), Ports.FLYWHEEL_FOLLOWER.getPowerPort()
+  };
 
   private final StatusSignal<Double> leaderPosition = leader.getPosition();
   private final StatusSignal<Double> leaderVelocity = leader.getVelocity();
