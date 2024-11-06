@@ -30,6 +30,7 @@
   ],
   "java.test.defaultConfig": "WPIlibUnitTests",
   "editor.indentSize": 2,
+  "editor.inlayHints.enabled": "on",
   "editor.tabSize": 2,
   "files.eol": "\n"
 }

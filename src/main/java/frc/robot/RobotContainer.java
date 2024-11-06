@@ -40,8 +40,8 @@ import frc.robot.subsystems.swervedrive.SwerveTelemetry;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOPhoton;
-import frc.robot.util.CanDeviceId;
 import frc.robot.util.OverrideSwitches;
+import frc.robot.util.RobotDeviceId;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class RobotContainer {
@@ -200,7 +200,7 @@ public class RobotContainer {
     m_drivebase.setMotorBrake(brake);
   }
 
-  /** List of Channel and CAN IDs ****************************************** */
+  /** List of Device CAN and Power Distribution Circuit IDs **************** */
   public static class Ports {
 
     /* DRIVETRAIN CAN DEVICE IDS */
@@ -210,32 +210,32 @@ public class RobotContainer {
     //
     // 0 1
     // 2 3
-    public static final CanDeviceId FL_DRIVE = new CanDeviceId(1, "canivore");
-    public static final CanDeviceId FL_ROTATION = new CanDeviceId(2, "canivore");
-    public static final CanDeviceId FL_CANCODER = new CanDeviceId(3, "canivore");
+    public static final RobotDeviceId FL_DRIVE = new RobotDeviceId(1, "DriveTrain", 1);
+    public static final RobotDeviceId FL_ROTATION = new RobotDeviceId(2, "DriveTrain", 2);
+    public static final RobotDeviceId FL_CANCODER = new RobotDeviceId(3, "DriveTrain", null);
 
-    public static final CanDeviceId FR_DRIVE = new CanDeviceId(4, "canivore");
-    public static final CanDeviceId FR_ROTATION = new CanDeviceId(5, "canivore");
-    public static final CanDeviceId FR_CANCODER = new CanDeviceId(6, "canivore");
+    public static final RobotDeviceId FR_DRIVE = new RobotDeviceId(4, "DriveTrain", 3);
+    public static final RobotDeviceId FR_ROTATION = new RobotDeviceId(5, "DriveTrain", 4);
+    public static final RobotDeviceId FR_CANCODER = new RobotDeviceId(6, "DriveTrain", null);
 
-    public static final CanDeviceId BL_DRIVE = new CanDeviceId(7, "canivore");
-    public static final CanDeviceId BL_ROTATION = new CanDeviceId(8, "canivore");
-    public static final CanDeviceId BL_CANCODER = new CanDeviceId(9, "canivore");
+    public static final RobotDeviceId BL_DRIVE = new RobotDeviceId(7, "DriveTrain", 5);
+    public static final RobotDeviceId BL_ROTATION = new RobotDeviceId(8, "DriveTrain", 6);
+    public static final RobotDeviceId BL_CANCODER = new RobotDeviceId(9, "DriveTrain", null);
 
-    public static final CanDeviceId BR_DRIVE = new CanDeviceId(10, "canivore");
-    public static final CanDeviceId BR_ROTATION = new CanDeviceId(11, "canivore");
-    public static final CanDeviceId BR_CANCODER = new CanDeviceId(12, "canivore");
+    public static final RobotDeviceId BR_DRIVE = new RobotDeviceId(10, "DriveTrain", 7);
+    public static final RobotDeviceId BR_ROTATION = new RobotDeviceId(11, "DriveTrain", 8);
+    public static final RobotDeviceId BR_CANCODER = new RobotDeviceId(12, "DriveTrain", null);
 
-    public static final CanDeviceId PIGEON = new CanDeviceId(13, "canivore");
+    public static final RobotDeviceId PIGEON = new RobotDeviceId(13, "DriveTrain", null);
 
     /* POWER DISTRIBUTION CAN ID */
-    public static final CanDeviceId POWER_CAN_DEVICE_ID = new CanDeviceId(1, "");
+    public static final RobotDeviceId POWER_CAN_DEVICE_ID = new RobotDeviceId(1, null);
 
     /* SUBSYSTEM CAN DEVICE IDS */
     // This is where mechanism subsystem devices are defined
     // Example:
-    public static final CanDeviceId FLYWHEEL_LEADER = new CanDeviceId(15, "");
-    public static final CanDeviceId FLYWHEEL_FOLLOWER = new CanDeviceId(16, "");
+    public static final RobotDeviceId FLYWHEEL_LEADER = new RobotDeviceId(3, 9);
+    public static final RobotDeviceId FLYWHEEL_FOLLOWER = new RobotDeviceId(4, 10);
 
     /* BEAM BREAK and/or LIMIT SWITCH DIO CHANNELS */
     // This is where digital I/O feedback devices are defined

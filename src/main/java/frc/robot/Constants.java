@@ -28,6 +28,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.RobotBase;
+import frc.robot.RobotContainer.Ports;
 import frc.robot.generated.TunerConstants;
 import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
@@ -161,12 +162,24 @@ public final class Constants {
     public static final double kSmallPortMaxCurrent = 20.;
 
     // The Power Distribution Module ports into which the DRIVE motors are plugged
-    public static final int[] kDrivePowerPorts = {0, 2, 4, 6};
+    public static final int[] kDrivePowerPorts = {
+      Ports.FL_DRIVE.getPowerPort(),
+      Ports.FR_DRIVE.getPowerPort(),
+      Ports.BL_DRIVE.getPowerPort(),
+      Ports.BR_DRIVE.getPowerPort()
+    };
     // The Power Distribution Module ports into which the STEER motors are plugged
-    public static final int[] kSteerPowerPorts = {1, 3, 5, 7};
+    public static final int[] kSteerPowerPorts = {
+      Ports.FL_ROTATION.getPowerPort(),
+      Ports.FR_ROTATION.getPowerPort(),
+      Ports.BL_ROTATION.getPowerPort(),
+      Ports.BR_ROTATION.getPowerPort()
+    };
     // Add additional subsystem port enumerations here for combined monitoring
     // Example:
-    // public static final int[] kElevatorPowerPorts = {9, 10};
+    public static final int[] kFlywheelPowerPorts = {
+      Ports.FLYWHEEL_LEADER.getPowerPort(), Ports.FLYWHEEL_FOLLOWER.getPowerPort()
+    };
   }
 
   /** Autonomous Action Constants ****************************************** */

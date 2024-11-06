@@ -54,10 +54,10 @@ public class PowerMonitoring extends VirtualSubsystem {
     }
     // Add current monitoring by subsystem here
     // Example:
-    // double elevatorCurrent = 0.0;
-    // for (int port : PowerDistributionConstants.kElevatorPowerPorts) {
-    //   elevatorCurrent += channelCurrents[port];
-    // }
+    double flywheelCurrent = 0.0;
+    for (int port : PowerConstants.kFlywheelPowerPorts) {
+      flywheelCurrent += channelCurrents[port];
+    }
 
     // Log values to AdvantageKit and to SmartDashboard
     Logger.recordOutput("PowerMonitor/TotalCurrent", totalCurrent);
@@ -68,8 +68,8 @@ public class PowerMonitoring extends VirtualSubsystem {
     SmartDashboard.putNumber("SteerCurrent", steerCurrent);
     // Add logging for subsystems here
     // Example:
-    // Logger.recordOutput("PowerMonitor/ElevatorCurrent", elevatorCurrent);
-    // SmartDashboard.putNumber("ElevatorCurrent", elevatorCurrent);
+    Logger.recordOutput("PowerMonitor/FlywheelCurrent", flywheelCurrent);
+    SmartDashboard.putNumber("FlywheelCurrent", flywheelCurrent);
 
     // Do something about setting priorities if drawing too much current
 

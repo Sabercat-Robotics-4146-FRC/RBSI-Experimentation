@@ -15,33 +15,40 @@
 
 package frc.robot.util;
 
-/** Class for wrapping CAN devices with a name and functionality */
-public class CanDeviceId {
-  private final int m_DeviceNumber;
-  private final String m_Bus;
+/** Class for wrapping Robot / CAN devices with a name and functionality */
+public class RobotDeviceId {
+  private final int m_CANDeviceNumber;
+  private final String m_CANBus;
+  private final Integer m_PowerPort;
 
-  public CanDeviceId(int deviceNumber, String bus) {
-    m_DeviceNumber = deviceNumber;
-    m_Bus = bus;
+  public RobotDeviceId(int CANdeviceNumber, String CANbus, Integer powerPort) {
+    m_CANDeviceNumber = CANdeviceNumber;
+    m_CANBus = CANbus;
+    m_PowerPort = powerPort;
   }
 
   /** Use the default bus name (empty string) */
-  public CanDeviceId(int deviceNumber) {
-    this(deviceNumber, "");
+  public RobotDeviceId(int CANdeviceNumber, Integer powerPort) {
+    this(CANdeviceNumber, "", powerPort);
   }
 
   /** Get the CAN ID value for a named device */
   public int getDeviceNumber() {
-    return m_DeviceNumber;
+    return m_CANDeviceNumber;
   }
 
   /** Get the CAN bus name for a named device */
   public String getBus() {
-    return m_Bus;
+    return m_CANBus;
+  }
+
+  /** Get the Power Port for a named device */
+  public int getPowerPort() {
+    return m_PowerPort;
   }
 
   /** Check whether two named devices are, in fact, the same */
-  public boolean equals(CanDeviceId other) {
-    return other.m_DeviceNumber == m_DeviceNumber && other.m_Bus == m_Bus;
+  public boolean equals(RobotDeviceId other) {
+    return other.m_CANDeviceNumber == m_CANDeviceNumber && other.m_CANBus == m_CANBus;
   }
 }
