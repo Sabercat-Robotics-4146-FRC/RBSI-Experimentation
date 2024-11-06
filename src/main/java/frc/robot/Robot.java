@@ -19,7 +19,6 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.PowerConstants;
 import frc.robot.RobotContainer.Ports;
 import frc.robot.util.VirtualSubsystem;
-import java.util.List;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LogTable;
 import org.littletonrobotics.junction.LoggedRobot;
@@ -39,7 +38,6 @@ public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
   private RobotContainer m_robotContainer;
   private Timer m_disabledTimer;
-  private List<VirtualSubsystem> virtualSubsystems;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -136,10 +134,10 @@ public class Robot extends LoggedRobot {
   @Override
   public void disabledPeriodic() {
     // After WHEEL_LOCK_TIME has elapsed, release the drive brakes
-    // if (m_disabledTimer.hasElapsed(Constants.DrivebaseConstants.kWheelLockTime)) {
-    // m_robotContainer.setMotorBrake(false);
-    //   m_disabledTimer.stop();
-    // }
+    if (m_disabledTimer.hasElapsed(Constants.DrivebaseConstants.kWheelLockTime)) {
+      m_robotContainer.setMotorBrake(false);
+      m_disabledTimer.stop();
+    }
   }
 
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */

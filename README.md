@@ -6,6 +6,14 @@
 # Az-RBSI
 Arizona's Reference Build and Software Implementation for FRC Robots (read: "A-Z-ribsy")
 
+## Notes
+
+Will need to update the drive subsystem once AdvantageKit's 2025-beta is
+publicly available, as it nicely wraps CTRE's swerve library in the usual
+AK formalism (with all the logging!).
+
+https://github.com/Mechanical-Advantage/AdvantageKit/blob/main/docs/docs/example-projects/talonfx-swerve-template.md
+
 
 ## Purpose
 
