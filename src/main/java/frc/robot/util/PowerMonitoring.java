@@ -22,11 +22,35 @@ import org.littletonrobotics.junction.Logger;
 
 public class PowerMonitoring extends VirtualSubsystem {
 
+  /** Define the Power Distribution Hardware */
   private PowerDistribution m_powerModule =
       new PowerDistribution(
           Ports.POWER_CAN_DEVICE_ID.getDeviceNumber(), PowerConstants.kPowerModule);
+
   private int NUM_PDH_CHANNELS = m_powerModule.getNumChannels();
   private double[] channelCurrents = new double[NUM_PDH_CHANNELS];
+
+  /** Define which robot mechanisms are monitored */
+  // DRIVE motor power ports
+  private final int[] m_drivePowerPorts = {
+    Ports.FL_DRIVE.getPowerPort(),
+    Ports.FR_DRIVE.getPowerPort(),
+    Ports.BL_DRIVE.getPowerPort(),
+    Ports.BR_DRIVE.getPowerPort()
+  };
+
+  // STEER motor power plugged
+  private final int[] m_steerPowerPorts = {
+    Ports.FL_ROTATION.getPowerPort(),
+    Ports.FR_ROTATION.getPowerPort(),
+    Ports.BL_ROTATION.getPowerPort(),
+    Ports.BR_ROTATION.getPowerPort()
+  };
+  // Add additional subsystem port enumerations here for combined monitoring
+  // Example:
+  private final int[] m_flywheelPowerPorts = {
+    Ports.FLYWHEEL_LEADER.getPowerPort(), Ports.FLYWHEEL_FOLLOWER.getPowerPort()
+  };
 
   /** Periodic Method */
   public void periodic() {
@@ -46,16 +70,16 @@ public class PowerMonitoring extends VirtualSubsystem {
     // Compute DRIVE and STEER summed current
     double driveCurrent = 0.0;
     double steerCurrent = 0.0;
-    for (int port : PowerConstants.kDrivePowerPorts) {
+    for (int port : m_drivePowerPorts) {
       driveCurrent += channelCurrents[port];
     }
-    for (int port : PowerConstants.kSteerPowerPorts) {
+    for (int port : m_steerPowerPorts) {
       steerCurrent += channelCurrents[port];
     }
     // Add current monitoring by subsystem here
     // Example:
     double flywheelCurrent = 0.0;
-    for (int port : PowerConstants.kFlywheelPowerPorts) {
+    for (int port : m_flywheelPowerPorts) {
       flywheelCurrent += channelCurrents[port];
     }
 

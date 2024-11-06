@@ -249,14 +249,8 @@ public class RobotContainer {
     // public static final int INTAKE_SERVO = 0;
   }
 
-  /** Vision Constants and Camera Posses *********************************** */
-  public static class VisionConstants {
-    public static final double ambiguityThreshold = 0.4;
-    public static final double targetLogTimeSecs = 0.1;
-    public static final double fieldBorderMargin = 0.5;
-    public static final double zMargin = 0.75;
-    public static final double xyStdDevCoefficient = 0.005;
-    public static final double thetaStdDevCoefficient = 0.01;
+  /** Vision Camera Posses ************************************************* */
+  public static class Cameras {
 
     public static final Pose3d[] cameraPoses =
         switch (Constants.getRobot()) {

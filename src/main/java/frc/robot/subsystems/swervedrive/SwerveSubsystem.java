@@ -245,10 +245,10 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
               });
     }
 
-    // When vision is enabled we must manually update odometry in SwerveDrive
-    if (visionDriveTest) {
-      vision.updatePoseEstimation(this);
-    }
+    // // When vision is enabled we must manually update odometry in SwerveDrive
+    // if (visionDriveTest) {
+    //   vision.updatePoseEstimation(this);
+    // }
 
     /** Log Telemetry Data to AdvantageKit */
     Logger.recordOutput("SwerveDrive/Comment", "This is a comment!");

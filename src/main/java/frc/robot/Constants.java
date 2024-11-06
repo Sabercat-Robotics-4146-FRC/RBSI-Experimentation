@@ -28,7 +28,6 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.RobotBase;
-import frc.robot.RobotContainer.Ports;
 import frc.robot.generated.TunerConstants;
 import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
@@ -150,7 +149,7 @@ public final class Constants {
     public static final double kLoopTime = 0.13; // s, 20ms + 110ms sprk max velocity lag
   }
 
-  /** Power Distribution Module Constants ********************************** */
+  /** Power Distribution Constants ********************************** */
   public static final class PowerConstants {
 
     // Set this to either kRev or kCTRE for the type of Power Distribution Module
@@ -160,26 +159,6 @@ public final class Constants {
     public static final double kTotalMaxCurrent = 120.;
     public static final double kMotorPortMaxCurrent = 40.;
     public static final double kSmallPortMaxCurrent = 20.;
-
-    // The Power Distribution Module ports into which the DRIVE motors are plugged
-    public static final int[] kDrivePowerPorts = {
-      Ports.FL_DRIVE.getPowerPort(),
-      Ports.FR_DRIVE.getPowerPort(),
-      Ports.BL_DRIVE.getPowerPort(),
-      Ports.BR_DRIVE.getPowerPort()
-    };
-    // The Power Distribution Module ports into which the STEER motors are plugged
-    public static final int[] kSteerPowerPorts = {
-      Ports.FL_ROTATION.getPowerPort(),
-      Ports.FR_ROTATION.getPowerPort(),
-      Ports.BL_ROTATION.getPowerPort(),
-      Ports.BR_ROTATION.getPowerPort()
-    };
-    // Add additional subsystem port enumerations here for combined monitoring
-    // Example:
-    public static final int[] kFlywheelPowerPorts = {
-      Ports.FLYWHEEL_LEADER.getPowerPort(), Ports.FLYWHEEL_FOLLOWER.getPowerPort()
-    };
   }
 
   /** Autonomous Action Constants ****************************************** */
@@ -263,8 +242,20 @@ public final class Constants {
     public static final double kTurnConstant = 6;
   }
 
+  /** Vision Constants (Assuming PhotonVision) ***************************** */
+  public static class VisionConstants {
+
+    // AprilTag Identification Constants
+    public static final double kAmbiguityThreshold = 0.4;
+    public static final double kTargetLogTimeSecs = 0.1;
+    public static final double kFieldBorderMargin = 0.5;
+    public static final double kZMargin = 0.75;
+    public static final double kXYZStdDevCoefficient = 0.005;
+    public static final double kThetaStdDevCoefficient = 0.01;
+  }
+
   /** AprilTag Field Layout ************************************************ */
-  /* SEASON SPECIFIC! */
+  /* SEASON SPECIFIC! -- This section is for 2024 (Crescendo) */
   public static class AprilTagConstants {
 
     public static final double aprilTagWidth = Units.inchesToMeters(6.50);

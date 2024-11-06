@@ -83,6 +83,7 @@ public class Accelerometer extends VirtualSubsystem {
     prevRioAccel = rioAccVector;
     prevPigeonAccel = pigeonAccVector;
 
+    // Quick logging to see how long this periodic takes
     long finish = System.nanoTime();
     long timeElapsed = finish - start;
     Logger.recordOutput("LoggedRobot/AccelCodeMS", (double) timeElapsed / 1.e6);
