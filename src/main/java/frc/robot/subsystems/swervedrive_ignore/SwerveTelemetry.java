@@ -18,7 +18,7 @@
 // NOTE: This module based on the CTRE Phoenix6 examples
 //       https://github.com/CrossTheRoadElec/Phoenix6-Examples
 
-package frc.robot.subsystems.swervedrive;
+package frc.robot.subsystems.swervedrive_ignore;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;

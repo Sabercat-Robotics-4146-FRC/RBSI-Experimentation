@@ -18,7 +18,7 @@
 // NOTE: This module based on the CTRE Phoenix6 examples
 //       https://github.com/CrossTheRoadElec/Phoenix6-Examples
 
-package frc.robot.subsystems.swervedrive;
+package frc.robot.subsystems.swervedrive_ignore;
 
 import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.Constants.DrivebaseConstants.*;
