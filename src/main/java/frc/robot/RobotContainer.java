@@ -45,6 +45,7 @@ import frc.robot.util.PowerMonitoring;
 import frc.robot.util.RobotDeviceId;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
+/** This is the location for defining robot hardware, commands, and controller button bindings. */
 public class RobotContainer {
 
   // Define the Driver and, optionally, the Operator/Co-Driver Controllers
@@ -109,9 +110,9 @@ public class RobotContainer {
         break;
     }
 
-    // ``PowerMonitoring`` takes all the subsystems for which you wish to have
-    //   power monitoring; DO NOT include ``m_drivebase``, as that is already
-    //   included.
+    // ``PowerMonitoring`` takes all the non-drivebase subsystems for which
+    //   you wish to have power monitoring; DO NOT include ``m_drivebase``,
+    //   as that is automatically monitored.
     m_power = new PowerMonitoring(m_flywheel);
 
     // Configure the trigger bindings
@@ -256,6 +257,25 @@ public class RobotContainer {
     // public static final int INTAKE_SERVO = 0;
   }
 
+  /** Override and Console Toggle Switches ********************************* */
+  public static class Overrides {
+
+    // Assumes this controller: https://www.amazon.com/gp/product/B00UUROWWK
+    // Example from:
+    // https://www.chiefdelphi.com/t/frc-6328-mechanical-advantage-2024-build-thread/442736/72
+    public static final int DRIVER_SWITCH_0 = 1;
+    public static final int DRIVER_SWITCH_1 = 2;
+    public static final int DRIVER_SWITCH_2 = 3;
+
+    public static final int OPERATOR_SWITCH_0 = 8;
+    public static final int OPERATOR_SWITCH_1 = 9;
+    public static final int OPERATOR_SWITCH_2 = 10;
+    public static final int OPERATOR_SWITCH_3 = 11;
+    public static final int OPERATOR_SWITCH_4 = 12;
+
+    public static final int[] MULTI_TOGGLE = {4, 5};
+  }
+
   /** Vision Camera Posses ************************************************* */
   public static class Cameras {
 
@@ -263,6 +283,7 @@ public class RobotContainer {
         switch (Constants.getRobot()) {
           case COMPBOT ->
               new Pose3d[] {
+                // Camera #1
                 new Pose3d(
                     Units.inchesToMeters(-1.0),
                     Units.inchesToMeters(0),

@@ -20,6 +20,12 @@ import frc.robot.RobotContainer.Ports;
 import frc.robot.util.Alert.AlertType;
 import org.littletonrobotics.junction.Logger;
 
+/**
+ * Power monitoring virtual subsystem that periodically polls the Power Distribution Module. Each
+ * port and the sum total currents are compared with limits defined in the ``Constants.java`` file,
+ * and subsystem total currents are also computed based on the power ports listed in
+ * ``RobotContainer.java``.
+ */
 public class PowerMonitoring extends VirtualSubsystem {
 
   private final RBSISubsystem[] subsystems;
@@ -32,16 +38,13 @@ public class PowerMonitoring extends VirtualSubsystem {
   private int NUM_PDH_CHANNELS = m_powerModule.getNumChannels();
   private double[] channelCurrents = new double[NUM_PDH_CHANNELS];
 
-  /** Define which robot mechanisms are monitored */
-  // DRIVE motor power ports
+  // DRIVE and STEER motor power ports
   private final int[] m_drivePowerPorts = {
     Ports.FL_DRIVE.getPowerPort(),
     Ports.FR_DRIVE.getPowerPort(),
     Ports.BL_DRIVE.getPowerPort(),
     Ports.BR_DRIVE.getPowerPort()
   };
-
-  // STEER motor power ports
   private final int[] m_steerPowerPorts = {
     Ports.FL_ROTATION.getPowerPort(),
     Ports.FR_ROTATION.getPowerPort(),
@@ -69,7 +72,7 @@ public class PowerMonitoring extends VirtualSubsystem {
       }
     }
 
-    // Compute DRIVE and STEER summed current
+    // Compute DRIVE and STEER summed currents
     double driveCurrent = 0.0;
     double steerCurrent = 0.0;
     for (int port : m_drivePowerPorts) {

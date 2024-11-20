@@ -15,6 +15,12 @@ package frc.robot.util;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+/**
+ * This class is designed to include Az-RBSI specific methods on top of the standard WPILib
+ * command-based subsystem classes. All non-drivebase subsystems (e.g., flywheels, arms, elevators,
+ * etc.) should subclass ``RBSISubsystem`` rather than ``SubsystemBase`` in order to gain access to
+ * added functionality.
+ */
 public class RBSISubsystem extends SubsystemBase {
 
   /**

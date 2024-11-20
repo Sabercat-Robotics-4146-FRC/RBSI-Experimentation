@@ -15,7 +15,11 @@
 
 package frc.robot.util;
 
-/** Class for wrapping Robot / CAN devices with a name and functionality */
+/**
+ * Class for wrapping Robot / CAN devices with a name and functionality. Included here are both the
+ * CAN ID for devices and the port on the Power Distribution Module for power monitoring and
+ * management.
+ */
 public class RobotDeviceId {
   private final int m_CANDeviceNumber;
   private final String m_CANBus;
