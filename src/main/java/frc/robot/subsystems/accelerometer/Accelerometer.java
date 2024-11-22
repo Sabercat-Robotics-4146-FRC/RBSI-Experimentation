@@ -22,8 +22,8 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
-import frc.robot.Constants.YagslConstants;
 import frc.robot.util.VirtualSubsystem;
+import frc.robot.util.YagslConstants;
 import org.littletonrobotics.junction.Logger;
 
 /**
@@ -84,6 +84,7 @@ public class Accelerometer extends VirtualSubsystem {
   /** Get accelerations, compute jerks, log everything */
   public void periodic() {
 
+    // Log the execution time
     long start = System.nanoTime();
 
     // Compute the Rio's acceleration, rotated as needed in the XY plane (yaw)

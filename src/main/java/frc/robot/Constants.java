@@ -32,12 +32,10 @@ import edu.wpi.first.wpilibj.RobotBase;
 import frc.robot.generated.TunerConstants;
 import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import lombok.Getter;
 import swervelib.math.Matter;
-import swervelib.parser.json.SwerveDriveJson;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -118,24 +116,6 @@ public final class Constants {
     return swerveType;
   }
 
-  /** Location of YAGSL JSON files (if using) */
-  public static class YagslConstants {
-    public static final File yagslDir = new File(Filesystem.getDeployDirectory(), "swerve");
-    public static final SwerveDriveJson swerveDriveJson;
-
-    static {
-      SwerveDriveJson tempJson = null;
-      try {
-        tempJson =
-            new ObjectMapper()
-                .readValue(new File(yagslDir, "swervedrive.json"), SwerveDriveJson.class);
-      } catch (Exception e) {
-        throw new RuntimeException(e);
-      }
-      swerveDriveJson = tempJson;
-    }
-  }
-
   /** Enumerate the supported autonomous path planning types */
   public static enum AutoType {
     PATHPLANNER, // PathPlanner (https://pathplanner.dev/home.html)
@@ -184,6 +164,14 @@ public final class Constants {
     public static final double kLoopTime = 0.13; // s, 20ms + 110ms sprk max velocity lag
   }
 
+  /** Deploy Directoy Location Constants *********************************** */
+  public static final class DeployConstants {
+    public static final String apriltagDir = "apriltags";
+    public static final String choreoDir = "choreo";
+    public static final String pathplannerDir = "pathplanner";
+    public static final String yagslDir = "swerve";
+  }
+
   /** Power Distribution Constants ********************************** */
   public static final class PowerConstants {
 
@@ -225,28 +213,19 @@ public final class Constants {
   /** Drive Base Constants ************************************************* */
   public static final class DrivebaseConstants {
 
-    // Physical size of the drive base
-    private static final double kTrackWidthX = Units.inchesToMeters(20.75);
-    private static final double kTrackWidthY = Units.inchesToMeters(20.75);
-    public static final double kDriveBaseRadius =
-        Math.hypot(kTrackWidthX / 2.0, kTrackWidthY / 2.0);
-
-    // CTRE-based maximum robot speeds (adjustable in Phoenix X Tuner Swerve Generator)
-    // kSpeedAt12VoltsMps desired top speed
+    // Theoretical free speed (m/s) at 12v applied output;
+    // This needs to be tuned to your individual robot
+    // NOTE: If using SwerveType.PHOENIX6, adjust this in the Phoenix X Tuner Swerve Generator
     public static final double kMaxLinearSpeed = TunerConstants.kSpeedAt12VoltsMps;
-    // 3/4 of a rotation per second max angular velocity
+    //       Otherwise, set the maximum linear speed here
+    // public static final double kMaxLinearSpeed = 5.21;
+
+    // Set 3/4 of a rotation per second as the max angular velocity
     public static final double kMaxAngularSpeed = 1.5 * Math.PI;
 
     // Maximum chassis accelerations desired for robot motion  -- metric / radians
     public static final double kMaxLinearAccel = 4.0; // m/s/s
     public static final double kMaxAngularAccel = Units.degreesToRadians(720); // deg/s/s
-
-    // Wheel radius
-    public static final double kWheelRadius = Units.inchesToMeters(2.0);
-
-    // ** Gear ratios for SDS MK4i L2, adjust as necessary **
-    public static final double kDriveGearRatio = (50.0 / 14.0) * (17.0 / 27.0) * (45.0 / 15.0);
-    public static final double kTurnGearRatio = 150.0 / 7.0;
 
     // Hold time on motor brakes when disabled
     public static final double kWheelLockTime = 10; // seconds

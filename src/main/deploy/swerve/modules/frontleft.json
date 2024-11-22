@@ -7,7 +7,7 @@
   "drive": {
     "type": "falcon",
     "id": 1,
-    "canbus": "CANivore"
+    "canbus": "DriveTrain"
   },
   "inverted": {
     "drive": true,
@@ -16,12 +16,12 @@
   "angle": {
     "type": "falcon",
     "id": 2,
-    "canbus": "CANivore"
+    "canbus": "DriveTrain"
   },
   "encoder": {
     "type": "cancoder",
     "id": 3,
-    "canbus": "CANivore"
+    "canbus": "DriveTrain"
   },
   "absoluteEncoderInverted": false
 }
