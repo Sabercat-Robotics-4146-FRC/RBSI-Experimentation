@@ -167,9 +167,9 @@ public class YagslConstants {
   public static final String kBackRightSteerCanbus = brModule.angle.canbus;
   public static final String kBackRightEncoderCanbus = brModule.encoder.canbus;
   public static final double kBackRightEncoderOffset = brModule.absoluteEncoderOffset;
-  public static final boolean KBackRightDriveInvert = brModule.inverted.drive;
-  public static final boolean KBackRightSteerInvert = brModule.inverted.angle;
-  public static final boolean KBackRightEncoderInvert = brModule.absoluteEncoderInverted;
+  public static final boolean kBackRightDriveInvert = brModule.inverted.drive;
+  public static final boolean kBackRightSteerInvert = brModule.inverted.angle;
+  public static final boolean kBackRightEncoderInvert = brModule.absoluteEncoderInverted;
   public static final double kBackRightXPosInches = brModule.location.left;
   public static final double kBackRightYPosInches = brModule.location.front;
 

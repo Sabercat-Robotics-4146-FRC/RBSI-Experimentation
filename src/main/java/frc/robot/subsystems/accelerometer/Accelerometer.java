@@ -75,7 +75,6 @@ public class Accelerometer extends VirtualSubsystem {
       default:
         // Otherwise kick a message to the console, and set to null
         System.out.println("WARNING: Cannot initialize IMU's accelerometer for logging!");
-        ;
         this.pigeonAccelerometer = null;
         this.navXAccelerometer = null;
     }
