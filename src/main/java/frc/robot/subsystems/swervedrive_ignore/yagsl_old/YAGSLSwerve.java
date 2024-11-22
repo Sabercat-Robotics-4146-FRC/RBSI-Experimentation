@@ -1,24 +1,23 @@
-package frc.robot.subsystems.swervedrive_ignore.yagsl_old;
-// // Copyright (c) 2024 Az-FIRST
-// // http://github.com/AZ-First
-// //
-// // This program is free software; you can redistribute it and/or
-// // modify it under the terms of the GNU General Public License
-// // version 3 as published by the Free Software Foundation or
-// // available in the root directory of this project.
-// //
-// // This program is distributed in the hope that it will be useful,
-// // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// // GNU General Public License for more details.
-// //
-// // Copyright (c) FIRST and other WPILib contributors.
-// // Open Source Software; you can modify and/or share it under the terms of
-// // the WPILib BSD license file in the root directory of this project.
-// //
-// // NOTE: This module based on the YAGSL Example Project
+// Copyright (c) 2024 Az-FIRST
+// http://github.com/AZ-First
+//
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// version 3 as published by the Free Software Foundation or
+// available in the root directory of this project.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+//
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
+//
+// NOTE: This module based on the YAGSL Example Project
 
-// package frc.robot.subsystems.swervedrive.yagsl_old;
+package frc.robot.subsystems.swervedrive_ignore.yagsl_old;
 
 // import static frc.robot.Constants.DrivebaseConstants.*;
 
@@ -97,17 +96,17 @@ package frc.robot.subsystems.swervedrive_ignore.yagsl_old;
 //     Logger.recordOutput("SwerveDive/ConversionFactors/Angle", angleConversionFactor);
 //     Logger.recordOutput("SwerveDive/ConversionFactors/Drive", driveConversionFactor);
 
-//     // Configure the Telemetry before creating the SwerveDrive to avoid unnecessary objects being
-//     // created.
-//     SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
-//     try {
-//       swerveDrive = new SwerveParser(directory).createSwerveDrive(kMaxLinearSpeed);
-//       // Alternative method if you don't want to supply the conversion factor via JSON files.
-//       // swerveDrive = new SwerveParser_RBSI(directory).createSwerveDrive(maximumSpeed,
-//       // angleConversionFactor, driveConversionFactor);
-//     } catch (Exception e) {
-//       throw new RuntimeException(e);
-//     }
+    // // Configure the Telemetry before creating the SwerveDrive to avoid unnecessary objects being
+    // // created.
+    // SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
+    // try {
+    //   swerveDrive = new SwerveParser(directory).createSwerveDrive(kMaxLinearSpeed);
+    //   // Alternative method if you don't want to supply the conversion factor via JSON files.
+    //   // swerveDrive = new SwerveParser_RBSI(directory).createSwerveDrive(maximumSpeed,
+    //   // angleConversionFactor, driveConversionFactor);
+    // } catch (Exception e) {
+    //   throw new RuntimeException(e);
+    // }
 //     // Heading correction should only be used while controlling the robot via angle.
 //     swerveDrive.setHeadingCorrection(false);
 //     // Disables cosine compensation for simulations since it causes discrepancies not seen in

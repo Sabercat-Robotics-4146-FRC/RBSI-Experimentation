@@ -24,6 +24,7 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
@@ -31,10 +32,12 @@ import edu.wpi.first.wpilibj.RobotBase;
 import frc.robot.generated.TunerConstants;
 import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import lombok.Getter;
 import swervelib.math.Matter;
+import swervelib.parser.json.SwerveDriveJson;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -54,6 +57,8 @@ public final class Constants {
   private static RobotType robotType = RobotType.SIMBOT;
 
   private static SwerveType swerveType = SwerveType.PHOENIX6;
+
+  private static AutoType autoType = AutoType.PATHPLANNER;
 
   public static boolean disableHAL = false;
 
@@ -104,13 +109,42 @@ public final class Constants {
 
   /** Enumerate the supported swerve drive types */
   public static enum SwerveType {
-    PHOENIX6, // The all-CTRE Phoenix6 swerve library
-    YAGSL // The generic YAGSL swerve library (not supported at this time)
+    PHOENIX6, // The all-CTRE Phoenix6 swerve generator
+    YAGSL // The generic YAGSL swerve generator
   }
 
   /** Get the current swerve drive type */
-  public static SwerveType getSwerve() {
+  public static SwerveType getSwerveType() {
     return swerveType;
+  }
+
+  /** Location of YAGSL JSON files (if using) */
+  public static class YagslConstants {
+    public static final File yagslDir = new File(Filesystem.getDeployDirectory(), "swerve");
+    public static final SwerveDriveJson swerveDriveJson;
+
+    static {
+      SwerveDriveJson tempJson = null;
+      try {
+        tempJson =
+            new ObjectMapper()
+                .readValue(new File(yagslDir, "swervedrive.json"), SwerveDriveJson.class);
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+      swerveDriveJson = tempJson;
+    }
+  }
+
+  /** Enumerate the supported autonomous path planning types */
+  public static enum AutoType {
+    PATHPLANNER, // PathPlanner (https://pathplanner.dev/home.html)
+    CHOREO // Choreo (https://sleipnirgroup.github.io/Choreo/)
+  }
+
+  /** Get the current autonomous path planning type */
+  public static AutoType getAutoType() {
+    return autoType;
   }
 
   /***************************************************************************/
@@ -123,17 +157,18 @@ public final class Constants {
 
   /** Accelerometer Constants ********************************************** */
   public static class AccelerometerConstants {
-    // Insert here the orientation (CCW == +) of the Rio and Pigeon2 from the robot
+    // Insert here the orientation (CCW == +) of the Rio and IMU from the robot
     // An angle of "0." means the x-y-z markings on the device match the robot's intrinsic reference
     //   frame.
-    // NOTE: It is assumed that both the Rio and the Pigeon are mounted such that +Z is UP
+    // NOTE: It is assumed that both the Rio and the IMU are mounted such that +Z is UP
     public static final Rotation2d kRioOrientation =
         switch (getRobot()) {
           case COMPBOT -> Rotation2d.fromDegrees(0.);
           case DEVBOT -> Rotation2d.fromDegrees(0.);
           default -> Rotation2d.fromDegrees(0.);
         };
-    public static final Rotation2d kPigeonOrientation =
+    // IMU can be one of Pigeon2 or NavX
+    public static final Rotation2d kIMUOrientation =
         switch (getRobot()) {
           case COMPBOT -> Rotation2d.fromDegrees(0.);
           case DEVBOT -> Rotation2d.fromDegrees(0.);
@@ -168,6 +203,23 @@ public final class Constants {
     public static final PIDConstants kAutoTranslatePID = new PIDConstants(0.7, 0, 0);
     // Rotation PID constants
     public static final PIDConstants kAutoAnglePID = new PIDConstants(0.4, 0, 0.01);
+  }
+
+  /** Choreo Autonomous Action Constants *********************************** */
+  public static final class AutoConstants {
+    public static final double kMaxSpeedMetersPerSecond = 3;
+    public static final double kMaxAccelerationMetersPerSecondSquared = 3;
+    public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI;
+    public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.PI;
+
+    public static final double kPXController = 1;
+    public static final double kPYController = 1;
+    public static final double kPThetaController = 1;
+
+    // Constraint for the motion profiled robot angle controller
+    public static final TrapezoidProfile.Constraints kThetaControllerConstraints =
+        new TrapezoidProfile.Constraints(
+            kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared);
   }
 
   /** Drive Base Constants ************************************************* */

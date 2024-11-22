@@ -17,25 +17,30 @@
 
 package frc.robot;
 
+import com.choreo.lib.Choreo;
+import com.choreo.lib.ChoreoTrajectory;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.AprilTagConstants;
 import frc.robot.Constants.AprilTagConstants.AprilTagLayoutType;
+import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DrivebaseConstants;
-import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.accelerometer.Accelerometer;
+import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.flywheel_example.Flywheel;
 import frc.robot.subsystems.flywheel_example.FlywheelIO;
 import frc.robot.subsystems.flywheel_example.FlywheelIOSim;
-import frc.robot.subsystems.swervedrive_ignore.SwerveSubsystem;
 import frc.robot.subsystems.swervedrive_ignore.SwerveTelemetry;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
@@ -54,8 +59,11 @@ public class RobotContainer {
   final CommandXboxController operatorXbox = new CommandXboxController(1);
   final OverrideSwitches overrides = new OverrideSwitches(2);
 
+  Field2d m_field = new Field2d();
+  ChoreoTrajectory traj;
+
   // Declare the robot subsystems here
-  private final SwerveSubsystem m_drivebase;
+  private final Drive m_drivebase;
   private final Flywheel m_flywheel;
   private final Accelerometer m_accel;
   private final Vision m_vision;
@@ -78,35 +86,39 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    traj = Choreo.getTrajectory("Trajectory");
+
+    m_field.getObject("traj").setPoses(traj.getInitialPose(), traj.getFinalPose());
+    m_field.getObject("trajPoses").setPoses(traj.getPoses());
 
     // Instantiate Robot Subsystems based on RobotType
     switch (Constants.getMode()) {
       case REAL:
         // Real robot, instantiate hardware IO implementations
         // YAGSL drivebase, get config from deploy directory
-        m_drivebase = TunerConstants.DriveTrain;
+        m_drivebase = new Drive(Constants.getSwerveType());
         m_flywheel = new Flywheel(new FlywheelIOSim()); // new Flywheel(new FlywheelIOTalonFX());
         m_vision =
             new Vision(
                 this::getAprilTagLayoutType,
                 new VisionIOPhoton(this::getAprilTagLayoutType, "Photon_CAMNAME"));
-        m_accel = new Accelerometer(m_drivebase.getPigeon2());
+        m_accel = new Accelerometer(m_drivebase.getGyro());
         break;
 
       case SIM:
         // Sim robot, instantiate physics sim IO implementations
-        m_drivebase = TunerConstants.DriveTrain;
+        m_drivebase = new Drive(Constants.getSwerveType());
         m_flywheel = new Flywheel(new FlywheelIOSim());
         m_vision = new Vision(this::getAprilTagLayoutType);
-        m_accel = new Accelerometer(m_drivebase.getPigeon2());
+        m_accel = new Accelerometer(m_drivebase.getGyro());
         break;
 
       default:
         // Replayed robot, disable IO implementations
-        m_drivebase = TunerConstants.DriveTrain;
+        m_drivebase = new Drive(Constants.getSwerveType());
         m_flywheel = new Flywheel(new FlywheelIO() {});
         m_vision = new Vision(this::getAprilTagLayoutType, new VisionIO() {}, new VisionIO() {});
-        m_accel = new Accelerometer(m_drivebase.getPigeon2());
+        m_accel = new Accelerometer(m_drivebase.getGyro());
         break;
     }
 
@@ -194,9 +206,58 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
 
     // An example command will be run in autonomous
-    return m_drivebase.getAutoPath("Tests");
+    // return m_drivebase.getAutoPath("Tests");
     // Use the ``autoChooser`` to define your auto path from the SmartDashboard
-    // return autoChooser.get();
+    return autoChooser.get();
+  }
+
+  /**
+   * Use this to pass the autonomous command to the main {@link Robot} class.
+   *
+   * @return the command to run in autonomous
+   */
+  public Command getAutonomousCommandChoreo() {
+    var thetaController = new PIDController(AutoConstants.kPThetaController, 0, 0);
+    thetaController.enableContinuousInput(-Math.PI, Math.PI);
+
+    m_drivebase.resetOdometry(traj.getInitialPose());
+
+    Command swerveCommand =
+        Choreo.choreoSwerveCommand(
+            traj, // Choreo trajectory from above
+            m_drivebase
+                ::getPose, // A function that returns the current field-relative pose of the robot:
+            // your
+            // wheel or vision odometry
+            new PIDController(
+                Constants.AutoConstants.kPXController,
+                0.0,
+                0.0), // PIDController for field-relative X
+            // translation (input: X error in meters,
+            // output: m/s).
+            new PIDController(
+                Constants.AutoConstants.kPYController,
+                0.0,
+                0.0), // PIDController for field-relative Y
+            // translation (input: Y error in meters,
+            // output: m/s).
+            thetaController, // PID constants to correct for rotation
+            // error
+            (ChassisSpeeds speeds) ->
+                m_drivebase.drive( // needs to be robot-relative
+                    speeds.vxMetersPerSecond,
+                    speeds.vyMetersPerSecond,
+                    speeds.omegaRadiansPerSecond,
+                    false),
+            true, // Whether or not to mirror the path based on alliance (this assumes the path is
+            // created for the blue alliance)
+            m_drivebase // The subsystem(s) to require, typically your drive subsystem only
+            );
+
+    return Commands.sequence(
+        Commands.runOnce(() -> m_drivebase.resetOdometry(traj.getInitialPose())),
+        swerveCommand,
+        m_drivebase.run(() -> m_drivebase.drive(0, 0, 0, false)));
   }
 
   public void setDriveMode() {

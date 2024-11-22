@@ -25,16 +25,39 @@ import edu.wpi.first.math.util.Units;
 
 /** IO implementation for Pigeon2 */
 public class GyroIOPigeon2 implements GyroIO {
-  private final Pigeon2 pigeon = new Pigeon2(20);
-  private final StatusSignal<Double> yaw = pigeon.getYaw();
-  private final StatusSignal<Double> yawVelocity = pigeon.getAngularVelocityZWorld();
+  private final Pigeon2 pigeon;
+  private final StatusSignal<Double> yaw;
+  private final StatusSignal<Double> yawVelocity;
 
+  // Constructor, taking default values
   public GyroIOPigeon2() {
+    pigeon = new Pigeon2(20);
     pigeon.getConfigurator().apply(new Pigeon2Configuration());
     pigeon.getConfigurator().setYaw(0.0);
+    yaw = pigeon.getYaw();
+    yawVelocity = pigeon.getAngularVelocityZWorld();
     yaw.setUpdateFrequency(100.0);
     yawVelocity.setUpdateFrequency(100.0);
     pigeon.optimizeBusUtilization();
+  }
+
+  // Constructor, taking deviceID and canBus
+  public GyroIOPigeon2(int deviceID, String canBus) {
+    pigeon = new Pigeon2(deviceID, canBus);
+    pigeon.getConfigurator().apply(new Pigeon2Configuration());
+    pigeon.getConfigurator().setYaw(0.0);
+    yaw = pigeon.getYaw();
+    yawVelocity = pigeon.getAngularVelocityZWorld();
+    yaw.setUpdateFrequency(100.0);
+    yawVelocity.setUpdateFrequency(100.0);
+
+    pigeon.optimizeBusUtilization();
+  }
+
+  // Return the Pigeon2 instance
+  @SuppressWarnings("unchecked")
+  public Pigeon2 getGyro() {
+    return pigeon;
   }
 
   @Override

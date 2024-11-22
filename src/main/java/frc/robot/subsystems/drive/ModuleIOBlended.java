@@ -41,7 +41,7 @@ import edu.wpi.first.math.util.Units;
  * absolute encoders using AdvantageScope. These values are logged under
  * "/Drive/ModuleX/TurnAbsolutePositionRad"
  */
-public class ModuleIONutBlend implements ModuleIO {
+public class ModuleIOBlended implements ModuleIO {
   // CAN Devices
   private final TalonFX driveTalon;
   private final CANSparkMax turnSparkMax;
@@ -69,7 +69,7 @@ public class ModuleIONutBlend implements ModuleIO {
    * Based on the ModuleIOTalonFX module, with the SparkMax components
    * added in appropriately.
    */
-  public ModuleIONutBlend(int index) {
+  public ModuleIOBlended(int index) {
     switch (index) {
       case 0:
         driveTalon = new TalonFX(0);

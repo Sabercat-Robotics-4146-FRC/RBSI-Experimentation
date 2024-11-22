@@ -37,6 +37,8 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Constants;
+import frc.robot.generated.TunerConstants;
 import frc.robot.util.LocalADStarAK;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -66,6 +68,23 @@ public class Drive extends SubsystemBase {
   private SwerveDrivePoseEstimator poseEstimator =
       new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
 
+  // Constructor that takes ENUM type
+  public Drive(Constants.SwerveType swerveType) {
+    switch (swerveType) {
+      case PHOENIX6:
+        gyroIO = new GyroIOPigeon2(TunerConstants.kPigeonId, TunerConstants.kCANbusName);
+        modules[0] = new Module(new ModuleIOTalonFX(0), 0);
+        modules[0] = new Module(new ModuleIOTalonFX(0), 0);
+        modules[0] = new Module(new ModuleIOTalonFX(0), 0);
+        modules[0] = new Module(new ModuleIOTalonFX(0), 0);
+
+      case YAGSL:
+
+      default:
+    }
+  }
+
+  // Default constructor
   public Drive(
       GyroIO gyroIO,
       ModuleIO flModuleIO,
@@ -278,5 +297,22 @@ public class Drive extends SubsystemBase {
       new Translation2d(-TRACK_WIDTH_X / 2.0, TRACK_WIDTH_Y / 2.0),
       new Translation2d(-TRACK_WIDTH_X / 2.0, -TRACK_WIDTH_Y / 2.0)
     };
+  }
+
+  public <T> T getGyro() {
+    return gyroIO.getGyro();
+  }
+
+  public double getDriveGearRatio() {
+    switch (Constants.getSwerveType()) {
+      case PHOENIX6:
+        return TunerConstants.kDriveGearRatio;
+      case YAGSL:
+        return;
+    }
+  }
+
+  public double getTurnGearRatio() {
+    return 0.0;
   }
 }
