@@ -39,6 +39,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.Constants.DrivebaseConstants;
 import frc.robot.util.LocalADStarAK;
+import frc.robot.util.YagslConstants;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -65,13 +66,22 @@ public class Drive extends SubsystemBase {
   public Drive(Constants.SwerveType swerveType) {
     switch (swerveType) {
       case PHOENIX6:
+        // This one is easy because it's all CTRE
         gyroIO = new GyroIOPigeon2(DriveConstants.kPigeonId, DriveConstants.kCANbusName);
         modules[0] = new Module(new ModuleIOTalonFX(0), 0);
-        modules[0] = new Module(new ModuleIOTalonFX(0), 0);
-        modules[0] = new Module(new ModuleIOTalonFX(0), 0);
-        modules[0] = new Module(new ModuleIOTalonFX(0), 0);
+        modules[1] = new Module(new ModuleIOTalonFX(1), 1);
+        modules[2] = new Module(new ModuleIOTalonFX(2), 2);
+        modules[3] = new Module(new ModuleIOTalonFX(3), 3);
+        break;
 
       case YAGSL:
+        // This one requires a bit more logic...
+        if (YagslConstants.swerveDriveJson.imu.type == "pigeon2") {
+          gyroIO = new GyroIOPigeon2(DriveConstants.kPigeonId, DriveConstants.kCANbusName);
+        } else if (YagslConstants.swerveDriveJson.imu.type == "navx"
+            || YagslConstants.swerveDriveJson.imu.type == "navx_spi") {
+          gyroIO = new GyroIONavX();
+        }
 
       default:
     }

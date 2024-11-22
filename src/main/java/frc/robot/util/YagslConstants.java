@@ -110,6 +110,11 @@ public class YagslConstants {
   public static final double kSteerFrictionVoltage = 0.25;
   public static final double kDriveFrictionVoltage = 0.25;
 
+  // Current / Voltage Limits
+  public static final double kSteerCurrentLimit = physicalPropertiesJson.currentLimit.angle;
+  public static final double kDriveCurrentLimit = physicalPropertiesJson.currentLimit.drive;
+  public static final double kOptimalVoltage = physicalPropertiesJson.optimalVoltage;
+
   // The modules themselves
   static List<String> moduleList = Arrays.asList(swerveDriveJson.modules);
 
@@ -137,9 +142,9 @@ public class YagslConstants {
   public static final String kFrontRightSteerCanbus = frModule.angle.canbus;
   public static final String kFrontRightEncoderCanbus = frModule.encoder.canbus;
   public static final double kFrontRightEncoderOffset = frModule.absoluteEncoderOffset;
-  public static final boolean KFrontRightDriveInvert = frModule.inverted.drive;
-  public static final boolean KFrontRightSteerInvert = frModule.inverted.angle;
-  public static final boolean KFrontRightEncoderInvert = frModule.absoluteEncoderInverted;
+  public static final boolean kFrontRightDriveInvert = frModule.inverted.drive;
+  public static final boolean kFrontRightSteerInvert = frModule.inverted.angle;
+  public static final boolean kFrontRightEncoderInvert = frModule.absoluteEncoderInverted;
   public static final double kFrontRightXPosInches = frModule.location.left;
   public static final double kFrontRightYPosInches = frModule.location.front;
 

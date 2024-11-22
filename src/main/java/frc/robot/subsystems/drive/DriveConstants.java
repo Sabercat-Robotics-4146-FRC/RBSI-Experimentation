@@ -13,6 +13,7 @@
 
 package frc.robot.subsystems.drive;
 
+import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
 import frc.robot.generated.TunerConstants;
 import frc.robot.util.YagslConstants;
@@ -36,13 +37,16 @@ public class DriveConstants {
   public static final double kDriveInertia;
   public static final double kSteerFrictionVoltage;
   public static final double kDriveFrictionVoltage;
+  public static final double kSteerCurrentLimit;
+  public static final double kDriveCurrentLimit;
+  public static final double kOptimalVoltage;
   public static final int kFrontLeftDriveMotorId;
   public static final int kFrontLeftSteerMotorId;
   public static final int kFrontLeftEncoderId;
   public static final String kFrontLeftDriveCanbus;
   public static final String kFrontLeftSteerCanbus;
   public static final String kFrontLeftEncoderCanbus;
-  public static final double kFrontLeftEncoderOffset;
+  public static final double kFrontLeftEncoderOffset; // In Radians
   public static final boolean kFrontLeftDriveInvert;
   public static final boolean kFrontLeftSteerInvert;
   public static final boolean kFrontLeftEncoderInvert;
@@ -54,10 +58,10 @@ public class DriveConstants {
   public static final String kFrontRightDriveCanbus;
   public static final String kFrontRightSteerCanbus;
   public static final String kFrontRightEncoderCanbus;
-  public static final double kFrontRightEncoderOffset;
-  public static final boolean KFrontRightDriveInvert;
-  public static final boolean KFrontRightSteerInvert;
-  public static final boolean KFrontRightEncoderInvert;
+  public static final double kFrontRightEncoderOffset; // In Radians
+  public static final boolean kFrontRightDriveInvert;
+  public static final boolean kFrontRightSteerInvert;
+  public static final boolean kFrontRightEncoderInvert;
   public static final double kFrontRightXPosInches;
   public static final double kFrontRightYPosInches;
   public static final int kBackLeftDriveMotorId;
@@ -66,7 +70,7 @@ public class DriveConstants {
   public static final String kBackLeftDriveCanbus;
   public static final String kBackLeftSteerCanbus;
   public static final String kBackLeftEncoderCanbus;
-  public static final double kBackLeftEncoderOffset;
+  public static final double kBackLeftEncoderOffset; // In Radians
   public static final boolean kBackLeftDriveInvert;
   public static final boolean kBackLeftSteerInvert;
   public static final boolean kBackLeftEncoderInvert;
@@ -78,7 +82,7 @@ public class DriveConstants {
   public static final String kBackRightDriveCanbus;
   public static final String kBackRightSteerCanbus;
   public static final String kBackRightEncoderCanbus;
-  public static final double kBackRightEncoderOffset;
+  public static final double kBackRightEncoderOffset; // In Radians
   public static final boolean kBackRightDriveInvert;
   public static final boolean kBackRightSteerInvert;
   public static final boolean kBackRightEncoderInvert;
@@ -109,13 +113,16 @@ public class DriveConstants {
         kDriveInertia = TunerConstants.kDriveInertia;
         kSteerFrictionVoltage = TunerConstants.kSteerFrictionVoltage;
         kDriveFrictionVoltage = TunerConstants.kDriveFrictionVoltage;
+        kSteerCurrentLimit = 40.0; // Example from CTRE documentation
+        kDriveCurrentLimit = 120.0; // Example from CTRE documentation
+        kOptimalVoltage = 12.0; // Assumed Ideal
         kFrontLeftDriveMotorId = TunerConstants.kFrontLeftDriveMotorId;
         kFrontLeftSteerMotorId = TunerConstants.kFrontLeftSteerMotorId;
         kFrontLeftEncoderId = TunerConstants.kFrontLeftEncoderId;
         kFrontLeftDriveCanbus = TunerConstants.kCANbusName;
         kFrontLeftSteerCanbus = TunerConstants.kCANbusName;
         kFrontLeftEncoderCanbus = TunerConstants.kCANbusName;
-        kFrontLeftEncoderOffset = TunerConstants.kFrontLeftEncoderOffset;
+        kFrontLeftEncoderOffset = Units.rotationsToRadians(TunerConstants.kFrontLeftEncoderOffset);
         kFrontLeftDriveInvert = TunerConstants.kInvertLeftSide;
         kFrontLeftSteerInvert = TunerConstants.kFrontLeftSteerInvert;
         kFrontLeftEncoderInvert = false;
@@ -127,10 +134,11 @@ public class DriveConstants {
         kFrontRightDriveCanbus = TunerConstants.kCANbusName;
         kFrontRightSteerCanbus = TunerConstants.kCANbusName;
         kFrontRightEncoderCanbus = TunerConstants.kCANbusName;
-        kFrontRightEncoderOffset = TunerConstants.kFrontRightEncoderOffset;
-        KFrontRightDriveInvert = TunerConstants.kInvertRightSide;
-        KFrontRightSteerInvert = TunerConstants.kFrontRightSteerInvert;
-        KFrontRightEncoderInvert = false;
+        kFrontRightEncoderOffset =
+            Units.rotationsToRadians(TunerConstants.kFrontRightEncoderOffset);
+        kFrontRightDriveInvert = TunerConstants.kInvertRightSide;
+        kFrontRightSteerInvert = TunerConstants.kFrontRightSteerInvert;
+        kFrontRightEncoderInvert = false;
         kFrontRightXPosInches = TunerConstants.kFrontRightXPosInches;
         kFrontRightYPosInches = TunerConstants.kFrontRightYPosInches;
         kBackLeftDriveMotorId = TunerConstants.kBackLeftDriveMotorId;
@@ -139,7 +147,7 @@ public class DriveConstants {
         kBackLeftDriveCanbus = TunerConstants.kCANbusName;
         kBackLeftSteerCanbus = TunerConstants.kCANbusName;
         kBackLeftEncoderCanbus = TunerConstants.kCANbusName;
-        kBackLeftEncoderOffset = TunerConstants.kBackLeftEncoderOffset;
+        kBackLeftEncoderOffset = Units.rotationsToRadians(TunerConstants.kBackLeftEncoderOffset);
         kBackLeftDriveInvert = TunerConstants.kInvertLeftSide;
         kBackLeftSteerInvert = TunerConstants.kBackLeftSteerInvert;
         kBackLeftEncoderInvert = false;
@@ -151,7 +159,7 @@ public class DriveConstants {
         kBackRightDriveCanbus = TunerConstants.kCANbusName;
         kBackRightSteerCanbus = TunerConstants.kCANbusName;
         kBackRightEncoderCanbus = TunerConstants.kCANbusName;
-        kBackRightEncoderOffset = TunerConstants.kBackRightEncoderOffset;
+        kBackRightEncoderOffset = Units.rotationsToRadians(TunerConstants.kBackRightEncoderOffset);
         kBackRightDriveInvert = TunerConstants.kInvertRightSide;
         kBackRightSteerInvert = TunerConstants.kBackRightSteerInvert;
         kBackRightEncoderInvert = false;
@@ -180,13 +188,16 @@ public class DriveConstants {
         kDriveInertia = YagslConstants.kDriveInertia;
         kSteerFrictionVoltage = YagslConstants.kSteerFrictionVoltage;
         kDriveFrictionVoltage = YagslConstants.kDriveFrictionVoltage;
+        kSteerCurrentLimit = YagslConstants.kSteerCurrentLimit;
+        kDriveCurrentLimit = YagslConstants.kDriveCurrentLimit;
+        kOptimalVoltage = YagslConstants.kOptimalVoltage;
         kFrontLeftDriveMotorId = YagslConstants.kFrontLeftDriveMotorId;
         kFrontLeftSteerMotorId = YagslConstants.kFrontLeftSteerMotorId;
         kFrontLeftEncoderId = YagslConstants.kFrontLeftEncoderId;
         kFrontLeftDriveCanbus = YagslConstants.kFrontLeftDriveCanbus;
         kFrontLeftSteerCanbus = YagslConstants.kFrontLeftSteerCanbus;
         kFrontLeftEncoderCanbus = YagslConstants.kFrontLeftEncoderCanbus;
-        kFrontLeftEncoderOffset = YagslConstants.kFrontLeftEncoderOffset;
+        kFrontLeftEncoderOffset = Units.degreesToRadians(YagslConstants.kFrontLeftEncoderOffset);
         kFrontLeftDriveInvert = YagslConstants.kFrontLeftDriveInvert;
         kFrontLeftSteerInvert = YagslConstants.kFrontLeftSteerInvert;
         kFrontLeftEncoderInvert = YagslConstants.kFrontLeftEncoderInvert;
@@ -198,10 +209,10 @@ public class DriveConstants {
         kFrontRightDriveCanbus = YagslConstants.kFrontRightDriveCanbus;
         kFrontRightSteerCanbus = YagslConstants.kFrontRightSteerCanbus;
         kFrontRightEncoderCanbus = YagslConstants.kFrontRightEncoderCanbus;
-        kFrontRightEncoderOffset = YagslConstants.kFrontRightEncoderOffset;
-        KFrontRightDriveInvert = YagslConstants.KFrontRightDriveInvert;
-        KFrontRightSteerInvert = YagslConstants.KFrontRightSteerInvert;
-        KFrontRightEncoderInvert = YagslConstants.KFrontRightEncoderInvert;
+        kFrontRightEncoderOffset = Units.degreesToRadians(YagslConstants.kFrontRightEncoderOffset);
+        kFrontRightDriveInvert = YagslConstants.kFrontRightDriveInvert;
+        kFrontRightSteerInvert = YagslConstants.kFrontRightSteerInvert;
+        kFrontRightEncoderInvert = YagslConstants.kFrontRightEncoderInvert;
         kFrontRightXPosInches = YagslConstants.kFrontRightXPosInches;
         kFrontRightYPosInches = YagslConstants.kFrontRightYPosInches;
         kBackLeftDriveMotorId = YagslConstants.kBackLeftDriveMotorId;
@@ -210,7 +221,7 @@ public class DriveConstants {
         kBackLeftDriveCanbus = YagslConstants.kBackLeftDriveCanbus;
         kBackLeftSteerCanbus = YagslConstants.kBackLeftSteerCanbus;
         kBackLeftEncoderCanbus = YagslConstants.kBackLeftEncoderCanbus;
-        kBackLeftEncoderOffset = YagslConstants.kBackLeftEncoderOffset;
+        kBackLeftEncoderOffset = Units.degreesToRadians(YagslConstants.kBackLeftEncoderOffset);
         kBackLeftDriveInvert = YagslConstants.kBackLeftDriveInvert;
         kBackLeftSteerInvert = YagslConstants.kBackLeftSteerInvert;
         kBackLeftEncoderInvert = YagslConstants.kBackLeftEncoderInvert;
@@ -222,7 +233,7 @@ public class DriveConstants {
         kBackRightDriveCanbus = YagslConstants.kBackRightDriveCanbus;
         kBackRightSteerCanbus = YagslConstants.kBackRightSteerCanbus;
         kBackRightEncoderCanbus = YagslConstants.kBackRightEncoderCanbus;
-        kBackRightEncoderOffset = YagslConstants.kBackRightEncoderOffset;
+        kBackRightEncoderOffset = Units.degreesToRadians(YagslConstants.kBackRightEncoderOffset);
         kBackRightDriveInvert = YagslConstants.kBackRightDriveInvert;
         kBackRightSteerInvert = YagslConstants.kBackRightSteerInvert;
         kBackRightEncoderInvert = YagslConstants.kBackRightEncoderInvert;
@@ -251,6 +262,9 @@ public class DriveConstants {
         kDriveInertia = 0.0;
         kSteerFrictionVoltage = 0.0;
         kDriveFrictionVoltage = 0.0;
+        kSteerCurrentLimit = 0.0;
+        kDriveCurrentLimit = 0.0;
+        kOptimalVoltage = 0.0;
         kFrontLeftDriveMotorId = 0;
         kFrontLeftSteerMotorId = 0;
         kFrontLeftEncoderId = 0;
@@ -270,9 +284,9 @@ public class DriveConstants {
         kFrontRightSteerCanbus = "";
         kFrontRightEncoderCanbus = "";
         kFrontRightEncoderOffset = 0.0;
-        KFrontRightDriveInvert = false;
-        KFrontRightSteerInvert = false;
-        KFrontRightEncoderInvert = false;
+        kFrontRightDriveInvert = false;
+        kFrontRightSteerInvert = false;
+        kFrontRightEncoderInvert = false;
         kFrontRightXPosInches = 0.0;
         kFrontRightYPosInches = 0.0;
         kBackLeftDriveMotorId = 0;

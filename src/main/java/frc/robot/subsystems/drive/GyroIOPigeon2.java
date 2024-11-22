@@ -15,6 +15,8 @@
 
 package frc.robot.subsystems.drive;
 
+import static frc.robot.subsystems.drive.DriveConstants.*;
+
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.StatusSignal;
@@ -29,21 +31,9 @@ public class GyroIOPigeon2 implements GyroIO {
   private final StatusSignal<Double> yaw;
   private final StatusSignal<Double> yawVelocity;
 
-  // Constructor, taking default values
+  // Constructor
   public GyroIOPigeon2() {
-    pigeon = new Pigeon2(20);
-    pigeon.getConfigurator().apply(new Pigeon2Configuration());
-    pigeon.getConfigurator().setYaw(0.0);
-    yaw = pigeon.getYaw();
-    yawVelocity = pigeon.getAngularVelocityZWorld();
-    yaw.setUpdateFrequency(100.0);
-    yawVelocity.setUpdateFrequency(100.0);
-    pigeon.optimizeBusUtilization();
-  }
-
-  // Constructor, taking deviceID and canBus
-  public GyroIOPigeon2(int deviceID, String canBus) {
-    pigeon = new Pigeon2(deviceID, canBus);
+    pigeon = new Pigeon2(kBackLeftEncoderId, kBackLeftEncoderCanbus);
     pigeon.getConfigurator().apply(new Pigeon2Configuration());
     pigeon.getConfigurator().setYaw(0.0);
     yaw = pigeon.getYaw();

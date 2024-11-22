@@ -15,6 +15,8 @@
 
 package frc.robot.subsystems.drive;
 
+import static frc.robot.subsystems.drive.DriveConstants.*;
+
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
@@ -56,52 +58,64 @@ public class ModuleIOTalonFX implements ModuleIO {
   private final StatusSignal<Double> turnAppliedVolts;
   private final StatusSignal<Double> turnCurrent;
 
-  // Gear ratios
-  private final double DRIVE_GEAR_RATIO = (50.0 / 14.0) * (17.0 / 27.0) * (45.0 / 15.0);
-  private final double TURN_GEAR_RATIO = 150.0 / 7.0;
-
-  private final boolean isTurnMotorInverted = true;
+  private final boolean isTurnMotorInverted;
   private final Rotation2d absoluteEncoderOffset;
 
   public ModuleIOTalonFX(int index) {
     switch (index) {
       case 0:
-        driveTalon = new TalonFX(0);
-        turnTalon = new TalonFX(1);
-        cancoder = new CANcoder(2);
-        absoluteEncoderOffset = new Rotation2d(0.0); // MUST BE CALIBRATED
+        // Front Left
+        driveTalon = new TalonFX(kFrontLeftDriveMotorId, kFrontLeftDriveCanbus);
+        turnTalon = new TalonFX(kFrontLeftSteerMotorId, kFrontLeftSteerCanbus);
+        cancoder = new CANcoder(kFrontLeftEncoderId, kFrontLeftEncoderCanbus);
+        absoluteEncoderOffset = new Rotation2d(kFrontLeftEncoderOffset);
+        isTurnMotorInverted = kFrontLeftSteerInvert;
         break;
+
       case 1:
-        driveTalon = new TalonFX(3);
-        turnTalon = new TalonFX(4);
-        cancoder = new CANcoder(5);
-        absoluteEncoderOffset = new Rotation2d(0.0); // MUST BE CALIBRATED
+        // Front Right
+        driveTalon = new TalonFX(kFrontRightDriveMotorId, kFrontRightDriveCanbus);
+        turnTalon = new TalonFX(kFrontRightSteerMotorId, kFrontRightSteerCanbus);
+        cancoder = new CANcoder(kFrontRightEncoderId, kFrontRightEncoderCanbus);
+        absoluteEncoderOffset = new Rotation2d(kFrontRightEncoderOffset);
+        isTurnMotorInverted = DriveConstants.kFrontRightSteerInvert;
         break;
+
       case 2:
-        driveTalon = new TalonFX(6);
-        turnTalon = new TalonFX(7);
-        cancoder = new CANcoder(8);
-        absoluteEncoderOffset = new Rotation2d(0.0); // MUST BE CALIBRATED
+        // Back Left
+        driveTalon = new TalonFX(kBackLeftDriveMotorId, kBackLeftDriveCanbus);
+        turnTalon = new TalonFX(kBackLeftSteerMotorId, kBackLeftSteerCanbus);
+        cancoder = new CANcoder(kBackLeftEncoderId, kBackLeftEncoderCanbus);
+        absoluteEncoderOffset = new Rotation2d(kBackLeftEncoderOffset);
+        isTurnMotorInverted = DriveConstants.kBackLeftSteerInvert;
         break;
+
       case 3:
-        driveTalon = new TalonFX(9);
-        turnTalon = new TalonFX(10);
-        cancoder = new CANcoder(11);
-        absoluteEncoderOffset = new Rotation2d(0.0); // MUST BE CALIBRATED
+        // Back Right
+        driveTalon = new TalonFX(kBackRightDriveMotorId, kBackRightDriveCanbus);
+        turnTalon = new TalonFX(kBackRightSteerMotorId, kBackRightSteerCanbus);
+        cancoder = new CANcoder(kBackRightEncoderId, kBackRightEncoderCanbus);
+        absoluteEncoderOffset = new Rotation2d(kBackRightEncoderOffset);
+        isTurnMotorInverted = DriveConstants.kBackRightSteerInvert;
         break;
+
       default:
         throw new RuntimeException("Invalid module index");
     }
 
+    // Example values from
+    // https://v6.docs.ctr-electronics.com/en/stable/docs/hardware-reference/talonfx/improving-performance-with-current-limits.html
     var driveConfig = new TalonFXConfiguration();
-    driveConfig.CurrentLimits.SupplyCurrentLimit = 40.0;
-    driveConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+    driveConfig.CurrentLimits.StatorCurrentLimit = kDriveCurrentLimit;
+    driveConfig.CurrentLimits.StatorCurrentLimitEnable = true;
+    driveConfig.CurrentLimits.SupplyCurrentLimit = kDriveCurrentLimit * 0.6;
+    driveConfig.CurrentLimits.StatorCurrentLimitEnable = true;
     driveTalon.getConfigurator().apply(driveConfig);
     setDriveBrakeMode(true);
 
     var turnConfig = new TalonFXConfiguration();
-    turnConfig.CurrentLimits.SupplyCurrentLimit = 30.0;
-    turnConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+    turnConfig.CurrentLimits.StatorCurrentLimit = kSteerCurrentLimit;
+    turnConfig.CurrentLimits.StatorCurrentLimitEnable = true;
     turnTalon.getConfigurator().apply(turnConfig);
     setTurnBrakeMode(true);
 
@@ -147,9 +161,9 @@ public class ModuleIOTalonFX implements ModuleIO {
         turnCurrent);
 
     inputs.drivePositionRad =
-        Units.rotationsToRadians(drivePosition.getValueAsDouble()) / DRIVE_GEAR_RATIO;
+        Units.rotationsToRadians(drivePosition.getValueAsDouble()) / kDriveGearRatio;
     inputs.driveVelocityRadPerSec =
-        Units.rotationsToRadians(driveVelocity.getValueAsDouble()) / DRIVE_GEAR_RATIO;
+        Units.rotationsToRadians(driveVelocity.getValueAsDouble()) / kDriveGearRatio;
     inputs.driveAppliedVolts = driveAppliedVolts.getValueAsDouble();
     inputs.driveCurrentAmps = new double[] {driveCurrent.getValueAsDouble()};
 
@@ -157,9 +171,9 @@ public class ModuleIOTalonFX implements ModuleIO {
         Rotation2d.fromRotations(turnAbsolutePosition.getValueAsDouble())
             .minus(absoluteEncoderOffset);
     inputs.turnPosition =
-        Rotation2d.fromRotations(turnPosition.getValueAsDouble() / TURN_GEAR_RATIO);
+        Rotation2d.fromRotations(turnPosition.getValueAsDouble() / kSteerGearRatio);
     inputs.turnVelocityRadPerSec =
-        Units.rotationsToRadians(turnVelocity.getValueAsDouble()) / TURN_GEAR_RATIO;
+        Units.rotationsToRadians(turnVelocity.getValueAsDouble()) / kSteerGearRatio;
     inputs.turnAppliedVolts = turnAppliedVolts.getValueAsDouble();
     inputs.turnCurrentAmps = new double[] {turnCurrent.getValueAsDouble()};
   }

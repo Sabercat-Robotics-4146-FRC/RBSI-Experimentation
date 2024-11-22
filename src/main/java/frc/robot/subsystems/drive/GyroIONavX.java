@@ -30,12 +30,6 @@ public class GyroIONavX implements GyroIO {
     navx.reset();
   }
 
-  // Constructor, taking deviceID and canBus (which are ignored, since it is connected via SPI)
-  public GyroIONavX(int deviceID, String canBus) {
-    navx = new AHRS(SPI.Port.kMXP, (byte) 100.0);
-    navx.reset();
-  }
-
   // Return the Pigeon2 instance
   @SuppressWarnings("unchecked")
   public AHRS getGyro() {
