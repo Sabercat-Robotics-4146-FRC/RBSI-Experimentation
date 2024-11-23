@@ -96,7 +96,7 @@ public class RobotContainer {
       case REAL:
         // Real robot, instantiate hardware IO implementations
         // YAGSL drivebase, get config from deploy directory
-        m_drivebase = new Drive(Constants.getSwerveType());
+        m_drivebase = new Drive();
         m_flywheel = new Flywheel(new FlywheelIOSim()); // new Flywheel(new FlywheelIOTalonFX());
         m_vision =
             new Vision(
@@ -107,7 +107,7 @@ public class RobotContainer {
 
       case SIM:
         // Sim robot, instantiate physics sim IO implementations
-        m_drivebase = new Drive(Constants.getSwerveType());
+        m_drivebase = new Drive();
         m_flywheel = new Flywheel(new FlywheelIOSim());
         m_vision = new Vision(this::getAprilTagLayoutType);
         m_accel = new Accelerometer(m_drivebase.getGyro());
@@ -115,7 +115,7 @@ public class RobotContainer {
 
       default:
         // Replayed robot, disable IO implementations
-        m_drivebase = new Drive(Constants.getSwerveType());
+        m_drivebase = new Drive();
         m_flywheel = new Flywheel(new FlywheelIO() {});
         m_vision = new Vision(this::getAprilTagLayoutType, new VisionIO() {}, new VisionIO() {});
         m_accel = new Accelerometer(m_drivebase.getGyro());

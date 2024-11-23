@@ -16,6 +16,7 @@
 package frc.robot.subsystems.drive;
 
 import static edu.wpi.first.units.Units.*;
+import static frc.robot.subsystems.drive.DriveConstants.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.pathfinding.Pathfinding;
@@ -31,6 +32,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -62,43 +64,101 @@ public class Drive extends SubsystemBase {
   private SwerveDrivePoseEstimator poseEstimator =
       new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
 
-  // Constructor that takes ENUM type
-  public Drive(Constants.SwerveType swerveType) {
-    switch (swerveType) {
+  // Constructor
+  public Drive() {
+    switch (Constants.getSwerveType()) {
       case PHOENIX6:
-        // This one is easy because it's all CTRE
-        gyroIO = new GyroIOPigeon2(DriveConstants.kPigeonId, DriveConstants.kCANbusName);
-        modules[0] = new Module(new ModuleIOTalonFX(0), 0);
-        modules[1] = new Module(new ModuleIOTalonFX(1), 1);
-        modules[2] = new Module(new ModuleIOTalonFX(2), 2);
-        modules[3] = new Module(new ModuleIOTalonFX(3), 3);
+        // This one is easy because it's all CTRE all the time
+        gyroIO = new GyroIOPigeon2();
+        for (int i = 0; i < 4; i++) {
+          modules[i] = new Module(new ModuleIOTalonFX(i), i);
+        }
         break;
 
       case YAGSL:
-        // This one requires a bit more logic...
-        if (YagslConstants.swerveDriveJson.imu.type == "pigeon2") {
-          gyroIO = new GyroIOPigeon2(DriveConstants.kPigeonId, DriveConstants.kCANbusName);
-        } else if (YagslConstants.swerveDriveJson.imu.type == "navx"
-            || YagslConstants.swerveDriveJson.imu.type == "navx_spi") {
-          gyroIO = new GyroIONavX();
+        // First, choose the Gyro
+        switch (YagslConstants.swerveDriveJson.imu.type) {
+          case "pigeon2":
+            gyroIO = new GyroIOPigeon2();
+            break;
+          case "navx":
+          case "navx_spi":
+            gyroIO = new GyroIONavX();
+            break;
+          default:
+            throw new RuntimeException("Invalid IMU type");
+        }
+        // Then choose the module(s)
+        // NOTE: This assumes all 4 modules have the same arrangement!
+        Byte b_drive; // [x,x,-,-,-,-,-,-]
+        Byte b_steer; // [-,-,x,x,-,-,-,-]
+        Byte b_encoder; // [-,-,-,-,x,x,-,-]
+        switch (kFrontLeftDriveType) {
+          case "falcon":
+          case "kraken":
+          case "talonfx":
+            // CTRE Drive Motor
+            b_drive = 0b00;
+            break;
+          case "sparkmax":
+          case "sparkflex":
+            // REV Drive Motor
+            b_drive = 0b01;
+            break;
+          default:
+            throw new RuntimeException("Invalid drive motor type");
+        }
+        switch (kFrontLeftSteerType) {
+          case "falcon":
+          case "kraken":
+          case "talonfx":
+            // CTRE Drive Motor
+            b_steer = 0b00;
+            break;
+          case "sparkmax":
+          case "sparkflex":
+            // REV Drive Motor
+            b_steer = 0b01;
+            break;
+          default:
+            throw new RuntimeException("Invalid steer motor type");
+        }
+        switch (kFrontLeftEncoderType) {
+          case "cancoder":
+            // CTRE CANcoder
+            b_encoder = 0b00;
+            break;
+          case "analog":
+            // Analog Encoder
+            b_encoder = 0b01;
+            break;
+          default:
+            throw new RuntimeException("Invalid swerve encoder type");
+        }
+        Byte modType = (byte) (0b00000000 | b_drive << 6 | b_steer << 4 | b_encoder << 2);
+
+        for (int i = 0; i < 4; i++) {
+          switch (modType) {
+            case 0b00000000: // ALL-CTRE
+              modules[i] = new Module(new ModuleIOTalonFX(i), i);
+              break;
+            case 0b00010000: // Blended Talon Drive / NEO Steer
+              modules[i] = new Module(new ModuleIOBlended(i), i);
+              break;
+            case 0b01010000: // NEO motors + CANcoder
+              modules[i] = new Module(new ModuleIOSparkCANcoder(i), i);
+              break;
+            case 0b01010100: // NEO motors + analog encoder
+              modules[i] = new Module(new ModuleIOSparkMax(i), i);
+              break;
+            default:
+              throw new RuntimeException("Invalid swerve module combination");
+          }
         }
 
       default:
+        throw new RuntimeException("Invalid Swerve Drive Type");
     }
-  }
-
-  // Default constructor
-  public Drive(
-      GyroIO gyroIO,
-      ModuleIO flModuleIO,
-      ModuleIO frModuleIO,
-      ModuleIO blModuleIO,
-      ModuleIO brModuleIO) {
-    this.gyroIO = gyroIO;
-    modules[0] = new Module(flModuleIO, 0);
-    modules[1] = new Module(frModuleIO, 1);
-    modules[2] = new Module(blModuleIO, 2);
-    modules[3] = new Module(brModuleIO, 3);
 
     // Configure AutoBuilder for PathPlanner
     AutoBuilder.configureHolonomic(
@@ -107,7 +167,9 @@ public class Drive extends SubsystemBase {
         () -> kinematics.toChassisSpeeds(getModuleStates()),
         this::runVelocity,
         new HolonomicPathFollowerConfig(
-            DrivebaseConstants.kMaxLinearSpeed, DRIVE_BASE_RADIUS, new ReplanningConfig()),
+            DrivebaseConstants.kMaxLinearSpeed,
+            Units.inchesToMeters(kDriveBaseRadius),
+            new ReplanningConfig()),
         () ->
             DriverStation.getAlliance().isPresent()
                 && DriverStation.getAlliance().get() == Alliance.Red,

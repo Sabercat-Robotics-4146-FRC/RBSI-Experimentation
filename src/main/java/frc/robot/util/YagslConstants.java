@@ -126,6 +126,9 @@ public class YagslConstants {
   public static final String kFrontLeftDriveCanbus = flModule.drive.canbus;
   public static final String kFrontLeftSteerCanbus = flModule.angle.canbus;
   public static final String kFrontLeftEncoderCanbus = flModule.encoder.canbus;
+  public static final String kFrontLeftDriveType = flModule.drive.type;
+  public static final String kFrontLeftSteerType = flModule.angle.type;
+  public static final String kFrontLeftEncoderType = flModule.encoder.type;
   public static final double kFrontLeftEncoderOffset = flModule.absoluteEncoderOffset;
   public static final boolean kFrontLeftDriveInvert = flModule.inverted.drive;
   public static final boolean kFrontLeftSteerInvert = flModule.inverted.angle;
@@ -141,6 +144,9 @@ public class YagslConstants {
   public static final String kFrontRightDriveCanbus = frModule.drive.canbus;
   public static final String kFrontRightSteerCanbus = frModule.angle.canbus;
   public static final String kFrontRightEncoderCanbus = frModule.encoder.canbus;
+  public static final String kFrontRightDriveType = frModule.drive.type;
+  public static final String kFrontRightSteerType = frModule.angle.type;
+  public static final String kFrontRightEncoderType = frModule.encoder.type;
   public static final double kFrontRightEncoderOffset = frModule.absoluteEncoderOffset;
   public static final boolean kFrontRightDriveInvert = frModule.inverted.drive;
   public static final boolean kFrontRightSteerInvert = frModule.inverted.angle;
@@ -156,6 +162,9 @@ public class YagslConstants {
   public static final String kBackLeftDriveCanbus = blModule.drive.canbus;
   public static final String kBackLeftSteerCanbus = blModule.angle.canbus;
   public static final String kBackLeftEncoderCanbus = blModule.encoder.canbus;
+  public static final String kBackLeftDriveType = blModule.drive.type;
+  public static final String kBackLeftSteerType = blModule.angle.type;
+  public static final String kBackLeftEncoderType = blModule.encoder.type;
   public static final double kBackLeftEncoderOffset = blModule.absoluteEncoderOffset;
   public static final boolean kBackLeftDriveInvert = blModule.inverted.drive;
   public static final boolean kBackLeftSteerInvert = blModule.inverted.angle;
@@ -171,6 +180,9 @@ public class YagslConstants {
   public static final String kBackRightDriveCanbus = brModule.drive.canbus;
   public static final String kBackRightSteerCanbus = brModule.angle.canbus;
   public static final String kBackRightEncoderCanbus = brModule.encoder.canbus;
+  public static final String kBackRightDriveType = brModule.drive.type;
+  public static final String kBackRightSteerType = brModule.angle.type;
+  public static final String kBackRightEncoderType = brModule.encoder.type;
   public static final double kBackRightEncoderOffset = brModule.absoluteEncoderOffset;
   public static final boolean kBackRightDriveInvert = brModule.inverted.drive;
   public static final boolean kBackRightSteerInvert = brModule.inverted.angle;

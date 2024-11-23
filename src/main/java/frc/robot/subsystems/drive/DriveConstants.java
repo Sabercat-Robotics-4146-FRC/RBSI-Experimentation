@@ -46,6 +46,9 @@ public class DriveConstants {
   public static final String kFrontLeftDriveCanbus;
   public static final String kFrontLeftSteerCanbus;
   public static final String kFrontLeftEncoderCanbus;
+  public static final String kFrontLeftDriveType;
+  public static final String kFrontLeftSteerType;
+  public static final String kFrontLeftEncoderType;
   public static final double kFrontLeftEncoderOffset; // In Radians
   public static final boolean kFrontLeftDriveInvert;
   public static final boolean kFrontLeftSteerInvert;
@@ -58,6 +61,9 @@ public class DriveConstants {
   public static final String kFrontRightDriveCanbus;
   public static final String kFrontRightSteerCanbus;
   public static final String kFrontRightEncoderCanbus;
+  public static final String kFrontRightDriveType;
+  public static final String kFrontRightSteerType;
+  public static final String kFrontRightEncoderType;
   public static final double kFrontRightEncoderOffset; // In Radians
   public static final boolean kFrontRightDriveInvert;
   public static final boolean kFrontRightSteerInvert;
@@ -70,6 +76,9 @@ public class DriveConstants {
   public static final String kBackLeftDriveCanbus;
   public static final String kBackLeftSteerCanbus;
   public static final String kBackLeftEncoderCanbus;
+  public static final String kBackLeftDriveType;
+  public static final String kBackLeftSteerType;
+  public static final String kBackLeftEncoderType;
   public static final double kBackLeftEncoderOffset; // In Radians
   public static final boolean kBackLeftDriveInvert;
   public static final boolean kBackLeftSteerInvert;
@@ -82,6 +91,9 @@ public class DriveConstants {
   public static final String kBackRightDriveCanbus;
   public static final String kBackRightSteerCanbus;
   public static final String kBackRightEncoderCanbus;
+  public static final String kBackRightDriveType;
+  public static final String kBackRightSteerType;
+  public static final String kBackRightEncoderType;
   public static final double kBackRightEncoderOffset; // In Radians
   public static final boolean kBackRightDriveInvert;
   public static final boolean kBackRightSteerInvert;
@@ -122,6 +134,9 @@ public class DriveConstants {
         kFrontLeftDriveCanbus = TunerConstants.kCANbusName;
         kFrontLeftSteerCanbus = TunerConstants.kCANbusName;
         kFrontLeftEncoderCanbus = TunerConstants.kCANbusName;
+        kFrontLeftDriveType = "kraken";
+        kFrontLeftSteerType = "kraken";
+        kFrontLeftEncoderType = "cancoder";
         kFrontLeftEncoderOffset = Units.rotationsToRadians(TunerConstants.kFrontLeftEncoderOffset);
         kFrontLeftDriveInvert = TunerConstants.kInvertLeftSide;
         kFrontLeftSteerInvert = TunerConstants.kFrontLeftSteerInvert;
@@ -134,6 +149,9 @@ public class DriveConstants {
         kFrontRightDriveCanbus = TunerConstants.kCANbusName;
         kFrontRightSteerCanbus = TunerConstants.kCANbusName;
         kFrontRightEncoderCanbus = TunerConstants.kCANbusName;
+        kFrontRightDriveType = "kraken";
+        kFrontRightSteerType = "kraken";
+        kFrontRightEncoderType = "cancoder";
         kFrontRightEncoderOffset =
             Units.rotationsToRadians(TunerConstants.kFrontRightEncoderOffset);
         kFrontRightDriveInvert = TunerConstants.kInvertRightSide;
@@ -147,6 +165,9 @@ public class DriveConstants {
         kBackLeftDriveCanbus = TunerConstants.kCANbusName;
         kBackLeftSteerCanbus = TunerConstants.kCANbusName;
         kBackLeftEncoderCanbus = TunerConstants.kCANbusName;
+        kBackLeftDriveType = "kraken";
+        kBackLeftSteerType = "kraken";
+        kBackLeftEncoderType = "cancoder";
         kBackLeftEncoderOffset = Units.rotationsToRadians(TunerConstants.kBackLeftEncoderOffset);
         kBackLeftDriveInvert = TunerConstants.kInvertLeftSide;
         kBackLeftSteerInvert = TunerConstants.kBackLeftSteerInvert;
@@ -159,6 +180,9 @@ public class DriveConstants {
         kBackRightDriveCanbus = TunerConstants.kCANbusName;
         kBackRightSteerCanbus = TunerConstants.kCANbusName;
         kBackRightEncoderCanbus = TunerConstants.kCANbusName;
+        kBackRightDriveType = "kraken";
+        kBackRightSteerType = "kraken";
+        kBackRightEncoderType = "cancoder";
         kBackRightEncoderOffset = Units.rotationsToRadians(TunerConstants.kBackRightEncoderOffset);
         kBackRightDriveInvert = TunerConstants.kInvertRightSide;
         kBackRightSteerInvert = TunerConstants.kBackRightSteerInvert;
@@ -197,6 +221,9 @@ public class DriveConstants {
         kFrontLeftDriveCanbus = YagslConstants.kFrontLeftDriveCanbus;
         kFrontLeftSteerCanbus = YagslConstants.kFrontLeftSteerCanbus;
         kFrontLeftEncoderCanbus = YagslConstants.kFrontLeftEncoderCanbus;
+        kFrontLeftDriveType = YagslConstants.kFrontLeftDriveType.toLowerCase();
+        kFrontLeftSteerType = YagslConstants.kFrontLeftSteerType.toLowerCase();
+        kFrontLeftEncoderType = YagslConstants.kFrontLeftEncoderType.toLowerCase();
         kFrontLeftEncoderOffset = Units.degreesToRadians(YagslConstants.kFrontLeftEncoderOffset);
         kFrontLeftDriveInvert = YagslConstants.kFrontLeftDriveInvert;
         kFrontLeftSteerInvert = YagslConstants.kFrontLeftSteerInvert;
@@ -209,6 +236,9 @@ public class DriveConstants {
         kFrontRightDriveCanbus = YagslConstants.kFrontRightDriveCanbus;
         kFrontRightSteerCanbus = YagslConstants.kFrontRightSteerCanbus;
         kFrontRightEncoderCanbus = YagslConstants.kFrontRightEncoderCanbus;
+        kFrontRightDriveType = YagslConstants.kFrontRightDriveType.toLowerCase();
+        kFrontRightSteerType = YagslConstants.kFrontRightSteerType.toLowerCase();
+        kFrontRightEncoderType = YagslConstants.kFrontRightEncoderType.toLowerCase();
         kFrontRightEncoderOffset = Units.degreesToRadians(YagslConstants.kFrontRightEncoderOffset);
         kFrontRightDriveInvert = YagslConstants.kFrontRightDriveInvert;
         kFrontRightSteerInvert = YagslConstants.kFrontRightSteerInvert;
@@ -221,6 +251,9 @@ public class DriveConstants {
         kBackLeftDriveCanbus = YagslConstants.kBackLeftDriveCanbus;
         kBackLeftSteerCanbus = YagslConstants.kBackLeftSteerCanbus;
         kBackLeftEncoderCanbus = YagslConstants.kBackLeftEncoderCanbus;
+        kBackLeftDriveType = YagslConstants.kBackLeftDriveType.toLowerCase();
+        kBackLeftSteerType = YagslConstants.kBackLeftSteerType.toLowerCase();
+        kBackLeftEncoderType = YagslConstants.kBackLeftEncoderType.toLowerCase();
         kBackLeftEncoderOffset = Units.degreesToRadians(YagslConstants.kBackLeftEncoderOffset);
         kBackLeftDriveInvert = YagslConstants.kBackLeftDriveInvert;
         kBackLeftSteerInvert = YagslConstants.kBackLeftSteerInvert;
@@ -233,6 +266,9 @@ public class DriveConstants {
         kBackRightDriveCanbus = YagslConstants.kBackRightDriveCanbus;
         kBackRightSteerCanbus = YagslConstants.kBackRightSteerCanbus;
         kBackRightEncoderCanbus = YagslConstants.kBackRightEncoderCanbus;
+        kBackRightDriveType = YagslConstants.kBackRightDriveType.toLowerCase();
+        kBackRightSteerType = YagslConstants.kBackRightSteerType.toLowerCase();
+        kBackRightEncoderType = YagslConstants.kBackRightEncoderType.toLowerCase();
         kBackRightEncoderOffset = Units.degreesToRadians(YagslConstants.kBackRightEncoderOffset);
         kBackRightDriveInvert = YagslConstants.kBackRightDriveInvert;
         kBackRightSteerInvert = YagslConstants.kBackRightSteerInvert;
@@ -271,6 +307,9 @@ public class DriveConstants {
         kFrontLeftDriveCanbus = "";
         kFrontLeftSteerCanbus = "";
         kFrontLeftEncoderCanbus = "";
+        kFrontLeftDriveType = "";
+        kFrontLeftSteerType = "";
+        kFrontLeftEncoderType = "";
         kFrontLeftEncoderOffset = 0.0;
         kFrontLeftDriveInvert = false;
         kFrontLeftSteerInvert = false;
@@ -283,6 +322,9 @@ public class DriveConstants {
         kFrontRightDriveCanbus = "";
         kFrontRightSteerCanbus = "";
         kFrontRightEncoderCanbus = "";
+        kFrontRightDriveType = "";
+        kFrontRightSteerType = "";
+        kFrontRightEncoderType = "";
         kFrontRightEncoderOffset = 0.0;
         kFrontRightDriveInvert = false;
         kFrontRightSteerInvert = false;
@@ -295,6 +337,9 @@ public class DriveConstants {
         kBackLeftDriveCanbus = "";
         kBackLeftSteerCanbus = "";
         kBackLeftEncoderCanbus = "";
+        kBackLeftDriveType = "";
+        kBackLeftSteerType = "";
+        kBackLeftEncoderType = "";
         kBackLeftEncoderOffset = 0.0;
         kBackLeftDriveInvert = false;
         kBackLeftSteerInvert = false;
@@ -307,6 +352,9 @@ public class DriveConstants {
         kBackRightDriveCanbus = "";
         kBackRightSteerCanbus = "";
         kBackRightEncoderCanbus = "";
+        kBackRightDriveType = "";
+        kBackRightSteerType = "";
+        kBackRightEncoderType = "";
         kBackRightEncoderOffset = 0.0;
         kBackRightDriveInvert = false;
         kBackRightSteerInvert = false;
@@ -325,4 +373,8 @@ public class DriveConstants {
         kSteerIZ = 0.0;
     }
   }
+
+  // Computed quantities
+  public static final double kDriveBaseRadius =
+      Math.hypot(kFrontLeftXPosInches, kFrontLeftYPosInches);
 }
