@@ -18,6 +18,8 @@ package frc.robot.subsystems.drive;
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.SPI;
 
 /** IO implementation for Pigeon2 */
@@ -28,6 +30,12 @@ public class GyroIONavX implements GyroIO {
   public GyroIONavX() {
     navx = new AHRS(SPI.Port.kMXP, (byte) 100.0);
     navx.reset();
+    // Set Angle Adjustment based on alliance
+    if (DriverStation.getAlliance().get() == Alliance.Blue) {
+      navx.setAngleAdjustment(0.0);
+    } else {
+      navx.setAngleAdjustment(180.0);
+    }
   }
 
   // Return the Pigeon2 instance
@@ -41,5 +49,25 @@ public class GyroIONavX implements GyroIO {
     inputs.connected = navx.isConnected();
     inputs.yawPosition = Rotation2d.fromDegrees(navx.getYaw());
     inputs.yawVelocityRadPerSec = Units.degreesToRadians(navx.getRate());
+  }
+
+  /**
+   * Zero the NavX
+   *
+   * <p>This method should always rezero the pigeon in ALWAYS-BLUE-ORIGIN orientation. Testing,
+   * however, shows that it's not doing what I think it should be doing. There is likely
+   * interference with something else in the odometry
+   */
+  @Override
+  public void zero() {
+    // With the Pigeon facing forward, forward depends on the alliance selected.
+    // Set Angle Adjustment based on alliance
+    if (DriverStation.getAlliance().get() == Alliance.Blue) {
+      navx.setAngleAdjustment(0.0);
+    } else {
+      navx.setAngleAdjustment(180.0);
+    }
+    System.out.println("Setting YAW to " + navx.getAngleAdjustment());
+    navx.zeroYaw();
   }
 }

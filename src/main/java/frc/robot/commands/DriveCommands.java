@@ -25,41 +25,27 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.drive.Drive;
 import java.util.function.DoubleSupplier;
 
 public class DriveCommands {
-  private static final double DEADBAND = 0.1;
 
   private DriveCommands() {}
 
   /**
    * Field relative drive command using two joysticks (controlling linear and angular velocities).
    */
-  public static Command joystickDrive(
+  public static Command fieldRelativeDrive(
       Drive drive,
       DoubleSupplier xSupplier,
       DoubleSupplier ySupplier,
       DoubleSupplier omegaSupplier) {
     return Commands.run(
         () -> {
-          // Apply deadband
-          double linearMagnitude =
-              MathUtil.applyDeadband(
-                  Math.hypot(xSupplier.getAsDouble(), ySupplier.getAsDouble()), DEADBAND);
-          Rotation2d linearDirection =
-              new Rotation2d(xSupplier.getAsDouble(), ySupplier.getAsDouble());
-          double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND);
-
-          // Square values
-          linearMagnitude = linearMagnitude * linearMagnitude;
-          omega = Math.copySign(omega * omega, omega);
-
-          // Calcaulate new linear velocity
-          Translation2d linearVelocity =
-              new Pose2d(new Translation2d(), linearDirection)
-                  .transformBy(new Transform2d(linearMagnitude, 0.0, new Rotation2d()))
-                  .getTranslation();
+          // Get the Linear Velocity & Omega from inputs
+          Translation2d linearVelocity = getLinearVelocity(xSupplier, ySupplier);
+          double omega = getOmega(omegaSupplier);
 
           // Convert to field relative speeds & send command
           boolean isFlipped =
@@ -75,5 +61,68 @@ public class DriveCommands {
                       : drive.getRotation()));
         },
         drive);
+  }
+
+  /**
+   * Robot relative drive command using two joysticks (controlling linear and angular velocities).
+   */
+  public static Command robotRelativeDrive(
+      Drive drive,
+      DoubleSupplier xSupplier,
+      DoubleSupplier ySupplier,
+      DoubleSupplier omegaSupplier) {
+    return Commands.run(
+        () -> {
+
+          // Get the Linear Velocity & Omega from inputs
+          Translation2d linearVelocity = getLinearVelocity(xSupplier, ySupplier);
+          double omega = getOmega(omegaSupplier);
+
+          // Convert to robot relative speeds & send command
+          boolean isFlipped =
+              DriverStation.getAlliance().isPresent()
+                  && DriverStation.getAlliance().get() == Alliance.Red;
+          drive.runVelocity(
+              ChassisSpeeds.fromRobotRelativeSpeeds(
+                  linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
+                  linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
+                  omega * drive.getMaxAngularSpeedRadPerSec(),
+                  isFlipped
+                      ? drive.getRotation().plus(new Rotation2d(Math.PI))
+                      : drive.getRotation()));
+        },
+        drive);
+  }
+
+  /**
+   * Compute the new linear velocity from inputs, including applying deadbands and squaring for
+   * smoothness
+   */
+  private static Translation2d getLinearVelocity(
+      DoubleSupplier xSupplier, DoubleSupplier ySupplier) {
+
+    // Apply deadband
+    double linearMagnitude =
+        MathUtil.applyDeadband(
+            Math.hypot(xSupplier.getAsDouble(), ySupplier.getAsDouble()),
+            OperatorConstants.kLeftDeadband);
+    Rotation2d linearDirection = new Rotation2d(xSupplier.getAsDouble(), ySupplier.getAsDouble());
+
+    // Square values
+    linearMagnitude = linearMagnitude * linearMagnitude;
+
+    return new Pose2d(new Translation2d(), linearDirection)
+        .transformBy(new Transform2d(linearMagnitude, 0.0, new Rotation2d()))
+        .getTranslation();
+  }
+
+  /**
+   * Compute the new angular velocity from inputs, including applying deadbands and squaring for
+   * smoothness
+   */
+  private static double getOmega(DoubleSupplier omegaSupplier) {
+    double omega =
+        MathUtil.applyDeadband(omegaSupplier.getAsDouble(), OperatorConstants.kRightDeadband);
+    return Math.copySign(omega * omega, omega);
   }
 }

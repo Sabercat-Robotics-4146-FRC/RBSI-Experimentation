@@ -61,7 +61,7 @@ public class Drive extends SubsystemBase {
         new SwerveModulePosition(),
         new SwerveModulePosition()
       };
-  private SwerveDrivePoseEstimator poseEstimator =
+  private SwerveDrivePoseEstimator m_PoseEstimator =
       new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
 
   // Constructor
@@ -88,55 +88,8 @@ public class Drive extends SubsystemBase {
           default:
             throw new RuntimeException("Invalid IMU type");
         }
-        // Then choose the module(s)
-        // NOTE: This assumes all 4 modules have the same arrangement!
-        Byte b_drive; // [x,x,-,-,-,-,-,-]
-        Byte b_steer; // [-,-,x,x,-,-,-,-]
-        Byte b_encoder; // [-,-,-,-,x,x,-,-]
-        switch (kFrontLeftDriveType) {
-          case "falcon":
-          case "kraken":
-          case "talonfx":
-            // CTRE Drive Motor
-            b_drive = 0b00;
-            break;
-          case "sparkmax":
-          case "sparkflex":
-            // REV Drive Motor
-            b_drive = 0b01;
-            break;
-          default:
-            throw new RuntimeException("Invalid drive motor type");
-        }
-        switch (kFrontLeftSteerType) {
-          case "falcon":
-          case "kraken":
-          case "talonfx":
-            // CTRE Drive Motor
-            b_steer = 0b00;
-            break;
-          case "sparkmax":
-          case "sparkflex":
-            // REV Drive Motor
-            b_steer = 0b01;
-            break;
-          default:
-            throw new RuntimeException("Invalid steer motor type");
-        }
-        switch (kFrontLeftEncoderType) {
-          case "cancoder":
-            // CTRE CANcoder
-            b_encoder = 0b00;
-            break;
-          case "analog":
-            // Analog Encoder
-            b_encoder = 0b01;
-            break;
-          default:
-            throw new RuntimeException("Invalid swerve encoder type");
-        }
-        Byte modType = (byte) (0b00000000 | b_drive << 6 | b_steer << 4 | b_encoder << 2);
-
+        // Then parse the module(s)
+        Byte modType = parseModuleType();
         for (int i = 0; i < 4; i++) {
           switch (modType) {
             case 0b00000000: // ALL-CTRE
@@ -245,7 +198,20 @@ public class Drive extends SubsystemBase {
     }
 
     // Apply odometry update
-    poseEstimator.update(rawGyroRotation, modulePositions);
+    m_PoseEstimator.update(rawGyroRotation, modulePositions);
+  }
+
+  /**
+   * Sets the swerve drive motors to brake/coast mode.
+   *
+   * @param brake True to set motors to brake mode, false for coast.
+   */
+  public void setMotorBrake(boolean brake) {
+    {
+      for (Module swerveModule : modules) {
+        swerveModule.setBrakeMode(brake);
+      }
+    }
   }
 
   /**
@@ -269,6 +235,11 @@ public class Drive extends SubsystemBase {
     // Log setpoint states
     Logger.recordOutput("SwerveStates/Setpoints", setpointStates);
     Logger.recordOutput("SwerveStates/SetpointsOptimized", optimizedSetpointStates);
+  }
+
+  /** Re-zero the gyro at the present heading */
+  public void zero() {
+    gyroIO.zero();
   }
 
   /** Stops the drive. */
@@ -321,7 +292,7 @@ public class Drive extends SubsystemBase {
   /** Returns the current odometry pose. */
   @AutoLogOutput(key = "Odometry/Robot")
   public Pose2d getPose() {
-    return poseEstimator.getEstimatedPosition();
+    return m_PoseEstimator.getEstimatedPosition();
   }
 
   /** Returns the current odometry rotation. */
@@ -331,7 +302,7 @@ public class Drive extends SubsystemBase {
 
   /** Resets the current odometry pose. */
   public void setPose(Pose2d pose) {
-    poseEstimator.resetPosition(rawGyroRotation, getModulePositions(), pose);
+    m_PoseEstimator.resetPosition(rawGyroRotation, getModulePositions(), pose);
   }
 
   /**
@@ -341,7 +312,7 @@ public class Drive extends SubsystemBase {
    * @param timestamp The timestamp of the vision measurement in seconds.
    */
   public void addVisionMeasurement(Pose2d visionPose, double timestamp) {
-    poseEstimator.addVisionMeasurement(visionPose, timestamp);
+    m_PoseEstimator.addVisionMeasurement(visionPose, timestamp);
   }
 
   /** Returns the maximum linear speed in meters per sec. */
@@ -366,5 +337,60 @@ public class Drive extends SubsystemBase {
 
   public <T> T getGyro() {
     return gyroIO.getGyro();
+  }
+
+  /**
+   * Parse the module type given the type information for the FL module
+   *
+   * @return Byte The module type as bits in a byte.
+   */
+  private Byte parseModuleType() {
+    // NOTE: This assumes all 4 modules have the same arrangement!
+    Byte b_drive; // [x,x,-,-,-,-,-,-]
+    Byte b_steer; // [-,-,x,x,-,-,-,-]
+    Byte b_encoder; // [-,-,-,-,x,x,-,-]
+    switch (kFrontLeftDriveType) {
+      case "falcon":
+      case "kraken":
+      case "talonfx":
+        // CTRE Drive Motor
+        b_drive = 0b00;
+        break;
+      case "sparkmax":
+      case "sparkflex":
+        // REV Drive Motor
+        b_drive = 0b01;
+        break;
+      default:
+        throw new RuntimeException("Invalid drive motor type");
+    }
+    switch (kFrontLeftSteerType) {
+      case "falcon":
+      case "kraken":
+      case "talonfx":
+        // CTRE Drive Motor
+        b_steer = 0b00;
+        break;
+      case "sparkmax":
+      case "sparkflex":
+        // REV Drive Motor
+        b_steer = 0b01;
+        break;
+      default:
+        throw new RuntimeException("Invalid steer motor type");
+    }
+    switch (kFrontLeftEncoderType) {
+      case "cancoder":
+        // CTRE CANcoder
+        b_encoder = 0b00;
+        break;
+      case "analog":
+        // Analog Encoder
+        b_encoder = 0b01;
+        break;
+      default:
+        throw new RuntimeException("Invalid swerve encoder type");
+    }
+    return (byte) (0b00000000 | b_drive << 6 | b_steer << 4 | b_encoder << 2);
   }
 }

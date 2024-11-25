@@ -266,10 +266,8 @@ public final class Constants {
   public static class OperatorConstants {
 
     // Joystick Deadband
-    public static final double kLeftXDeadband = 0.1;
-    public static final double kLeftYDeadband = 0.1;
-    public static final double kRightXDeadband = 0.1;
-    public static final double kRightYDeadband = 0.1;
+    public static final double kLeftDeadband = 0.1;
+    public static final double kRightDeadband = 0.1;
     public static final double kTurnConstant = 6;
   }
 

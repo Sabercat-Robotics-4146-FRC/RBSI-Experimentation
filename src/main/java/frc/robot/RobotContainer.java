@@ -27,24 +27,30 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.AprilTagConstants;
 import frc.robot.Constants.AprilTagConstants.AprilTagLayoutType;
 import frc.robot.Constants.AutoConstants;
-import frc.robot.Constants.DrivebaseConstants;
+import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.accelerometer.Accelerometer;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.flywheel_example.Flywheel;
 import frc.robot.subsystems.flywheel_example.FlywheelIO;
 import frc.robot.subsystems.flywheel_example.FlywheelIOSim;
-import frc.robot.subsystems.swervedrive_ignore.SwerveTelemetry;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOPhoton;
+import frc.robot.util.Alert;
+import frc.robot.util.Alert.AlertType;
+import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.OverrideSwitches;
 import frc.robot.util.PowerMonitoring;
 import frc.robot.util.RobotDeviceId;
@@ -71,9 +77,12 @@ public class RobotContainer {
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
+  // EXAMPLE TUNABLE FLYWHEEL SPEED INPUT FROM DASHBOARD
+  private final LoggedTunableNumber flywheelSpeedInput =
+      new LoggedTunableNumber("Flywheel Speed", 1500.0);
 
-  // Swerve Drive Telemetry
-  private final SwerveTelemetry logger = new SwerveTelemetry(DrivebaseConstants.kMaxLinearSpeed);
+  // Alerts
+  private final Alert aprilTagLayoutAlert = new Alert("", AlertType.INFO);
 
   /** Returns the current AprilTag layout type. */
   public AprilTagLayoutType getAprilTagLayoutType() {
@@ -131,71 +140,95 @@ public class RobotContainer {
     configureBindings();
     // Define Auto commands
     defineAutoCommands();
+    // Define SysIs Routines
+    definesysIdRoutines();
     // Set up the SmartDashboard Auto Chooser
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
-    // Set up the logger
-    m_drivebase.registerTelemetry(logger::telemeterize);
   }
 
   /** Use this method to define your Autonomous commands for use with PathPlanner / Choreo */
   private void defineAutoCommands() {
 
-    NamedCommands.registerCommand("Zero", Commands.runOnce(() -> m_drivebase.tareEverything()));
+    NamedCommands.registerCommand("Zero", Commands.runOnce(() -> m_drivebase.zero()));
+  }
+
+  /** Set up the SysID routines from AdvantageKit */
+  private void definesysIdRoutines() {
+    // Drivebase characterization
+    autoChooser.addOption(
+        "Drive SysId (Quasistatic Forward)",
+        m_drivebase.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+    autoChooser.addOption(
+        "Drive SysId (Quasistatic Reverse)",
+        m_drivebase.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+    autoChooser.addOption(
+        "Drive SysId (Dynamic Forward)", m_drivebase.sysIdDynamic(SysIdRoutine.Direction.kForward));
+    autoChooser.addOption(
+        "Drive SysId (Dynamic Reverse)", m_drivebase.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+
+    // Example Flywheel SysId Characterization
+    autoChooser.addOption(
+        "Flywheel SysId (Quasistatic Forward)",
+        m_flywheel.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+    autoChooser.addOption(
+        "Flywheel SysId (Quasistatic Reverse)",
+        m_flywheel.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+    autoChooser.addOption(
+        "Flywheel SysId (Dynamic Forward)",
+        m_flywheel.sysIdDynamic(SysIdRoutine.Direction.kForward));
+    autoChooser.addOption(
+        "Flywheel SysId (Dynamic Reverse)",
+        m_flywheel.sysIdDynamic(SysIdRoutine.Direction.kReverse));
   }
 
   /**
-   * Use this method to define your trigger->command mappings. Triggers can be created via the
-   * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary
-   * predicate, or via the named factories in {@link
-   * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for {@link
-   * CommandXboxController Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
-   * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
-   * joysticks}.
+   * Use this method to define your button->command mappings. Buttons can be created by
+   * instantiating a {@link GenericHID} or one of its subclasses ({@link
+   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
+   * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureBindings() {
-
-    // Manually Re-Zero the Gyro & Odometry
-    driverXbox.y().onTrue(Commands.runOnce(() -> m_drivebase.tareEverything()));
-
-    // Example Swerve Drive button bindings
-    // A -> BRAKE
-    driverXbox.a().whileTrue(m_drivebase.applyRequest(() -> m_drivebase.brake));
-    // B -> POINT WHEELS AT DIRECTION WITHOUT MOVING
-    driverXbox
-        .b()
-        .whileTrue(
-            m_drivebase.applyRequest(
-                () ->
-                    m_drivebase.point.withModuleDirection(
-                        new Rotation2d(-driverXbox.getLeftY(), -driverXbox.getLeftX()))));
-    // LEFT BUMPER -> reset the field-centric heading
-    driverXbox.leftBumper().onTrue(m_drivebase.runOnce(() -> m_drivebase.seedFieldRelative()));
-    // POV UP -> DRIVE FORWARD IN ROBOT-CENTRIC MODE
-    driverXbox
-        .pov(0)
-        .whileTrue(
-            m_drivebase.applyRequest(
-                () -> m_drivebase.forwardStraight.withVelocityX(0.5).withVelocityY(0)));
-    // POV DOWN -> DRIVE BACKWARD IN ROBOT-CENTRIC MODE
-    driverXbox
-        .pov(180)
-        .whileTrue(
-            m_drivebase.applyRequest(
-                () -> m_drivebase.forwardStraight.withVelocityX(-0.5).withVelocityY(0)));
 
     // SET STANDARD DRIVING AS DEFAULT COMMAND FOR THE DRIVEBASE
     // NOTE: Left joystick controls lateral translation, right joystick (X) controls rotation
     m_drivebase.setDefaultCommand(
-        m_drivebase
-            .applyRequest(
+        DriveCommands.fieldRelativeDrive(
+            m_drivebase,
+            () -> -driverXbox.getRightY(),
+            () -> -driverXbox.getRightX(),
+            () -> -driverXbox.getLeftX()));
+
+    // Example Commands
+    // Press B button while driving --> ROBOT-CENTRIC
+    driverXbox
+        .b()
+        .onTrue(
+            Commands.runOnce(
                 () ->
-                    m_drivebase
-                        .drive
-                        .withVelocityX(-driverXbox.getLeftY() * DrivebaseConstants.kMaxLinearSpeed)
-                        .withVelocityY(-driverXbox.getLeftX() * DrivebaseConstants.kMaxLinearSpeed)
-                        .withRotationalRate(
-                            -driverXbox.getRightX() * DrivebaseConstants.kMaxAngularSpeed))
-            .ignoringDisable(true));
+                    DriveCommands.robotRelativeDrive(
+                        m_drivebase,
+                        () -> -driverXbox.getRightY(),
+                        () -> -driverXbox.getRightX(),
+                        () -> -driverXbox.getLeftX()),
+                m_drivebase));
+
+    // Press A button -> BRAKE
+    driverXbox.a().whileTrue(Commands.runOnce(() -> m_drivebase.setMotorBrake(true), m_drivebase));
+
+    // Press X button --> Stop with wheels in X-Lock position
+    driverXbox.x().onTrue(Commands.runOnce(m_drivebase::stopWithX, m_drivebase));
+
+    // Press Y button --> Manually Re-Zero the Gyro
+    driverXbox.y().onTrue(Commands.runOnce(() -> m_drivebase.zero()));
+
+    // Press RIGHT BUMPER --> Run the example flywheel
+    driverXbox
+        .rightBumper()
+        .whileTrue(
+            Commands.startEnd(
+                () -> m_flywheel.runVelocity(flywheelSpeedInput.get()),
+                m_flywheel::stop,
+                m_flywheel));
   }
 
   /**
@@ -220,44 +253,44 @@ public class RobotContainer {
     var thetaController = new PIDController(AutoConstants.kPThetaController, 0, 0);
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
-    m_drivebase.resetOdometry(traj.getInitialPose());
+    m_drivebase.setPose(traj.getInitialPose());
+
+    boolean isFlipped =
+        DriverStation.getAlliance().isPresent()
+            && DriverStation.getAlliance().get() == Alliance.Red;
 
     Command swerveCommand =
         Choreo.choreoSwerveCommand(
-            traj, // Choreo trajectory from above
-            m_drivebase
-                ::getPose, // A function that returns the current field-relative pose of the robot:
-            // your
-            // wheel or vision odometry
-            new PIDController(
-                Constants.AutoConstants.kPXController,
-                0.0,
-                0.0), // PIDController for field-relative X
-            // translation (input: X error in meters,
-            // output: m/s).
-            new PIDController(
-                Constants.AutoConstants.kPYController,
-                0.0,
-                0.0), // PIDController for field-relative Y
-            // translation (input: Y error in meters,
-            // output: m/s).
-            thetaController, // PID constants to correct for rotation
-            // error
+            // Choreo trajectory from above
+            traj,
+            // A function that returns the current field-relative pose of the robot: your wheel or
+            // vision odometry
+            m_drivebase::getPose,
+            // PIDController for field-relative X translation (input: X error meters, output: m/s).
+            new PIDController(Constants.AutoConstants.kPXController, 0.0, 0.0),
+            // PIDController for field-relative Y translation (input: Y error meters, output: m/s).
+            new PIDController(Constants.AutoConstants.kPYController, 0.0, 0.0),
+            // PID constants to correct for rotation error
+            thetaController,
             (ChassisSpeeds speeds) ->
-                m_drivebase.drive( // needs to be robot-relative
-                    speeds.vxMetersPerSecond,
-                    speeds.vyMetersPerSecond,
-                    speeds.omegaRadiansPerSecond,
-                    false),
-            true, // Whether or not to mirror the path based on alliance (this assumes the path is
-            // created for the blue alliance)
-            m_drivebase // The subsystem(s) to require, typically your drive subsystem only
-            );
+                m_drivebase.runVelocity(
+                    ChassisSpeeds.fromRobotRelativeSpeeds(
+                        speeds.vxMetersPerSecond,
+                        speeds.vyMetersPerSecond,
+                        speeds.omegaRadiansPerSecond,
+                        isFlipped
+                            ? m_drivebase.getRotation().plus(new Rotation2d(Math.PI))
+                            : m_drivebase.getRotation())),
+            // Whether or not to mirror the path based on alliance (this assumes the path is created
+            // for the blue alliance)
+            () -> true,
+            // The subsystem(s) to require, typically your drive subsystem only
+            m_drivebase);
 
     return Commands.sequence(
-        Commands.runOnce(() -> m_drivebase.resetOdometry(traj.getInitialPose())),
+        Commands.runOnce(() -> m_drivebase.setPose(traj.getInitialPose())),
         swerveCommand,
-        m_drivebase.run(() -> m_drivebase.drive(0, 0, 0, false)));
+        m_drivebase.run(() -> m_drivebase.stop()));
   }
 
   public void setDriveMode() {
@@ -267,6 +300,17 @@ public class RobotContainer {
   /** Set the motor neutral mode to BRAKE / COAST for T/F */
   public void setMotorBrake(boolean brake) {
     m_drivebase.setMotorBrake(brake);
+  }
+
+  /** Updates the alerts. */
+  public void updateAlerts() {
+    // AprilTag layout alert
+    boolean aprilTagAlertActive = getAprilTagLayoutType() != AprilTagLayoutType.OFFICIAL;
+    aprilTagLayoutAlert.set(aprilTagAlertActive);
+    if (aprilTagAlertActive) {
+      aprilTagLayoutAlert.setText(
+          "Non-official AprilTag layout in use (" + getAprilTagLayoutType().toString() + ").");
+    }
   }
 
   /** List of Device CAN and Power Distribution Circuit IDs **************** */
