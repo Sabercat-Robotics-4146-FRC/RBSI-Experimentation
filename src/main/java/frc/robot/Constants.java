@@ -52,10 +52,9 @@ public final class Constants {
    * Define the various multiple robots that use this same code (e.g., COMPBOT, DEVBOT, SIMBOT,
    * etc.) and the operating modes of the code (REAL, SIM, or REPLAY)
    */
-  private static RobotType robotType = RobotType.SIMBOT;
+  private static RobotType robotType = RobotType.COMPBOT;
 
   private static SwerveType swerveType = SwerveType.PHOENIX6;
-
   private static AutoType autoType = AutoType.PATHPLANNER;
 
   public static boolean disableHAL = false;

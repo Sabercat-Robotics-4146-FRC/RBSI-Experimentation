@@ -18,7 +18,7 @@ package frc.robot.subsystems.drive;
 import edu.wpi.first.math.geometry.Rotation2d;
 import org.littletonrobotics.junction.AutoLog;
 
-public interface GyroIO {
+public interface GyroIO<T> {
   @AutoLog
   public static class GyroIOInputs {
     public boolean connected = false;
@@ -30,5 +30,5 @@ public interface GyroIO {
 
   public default void zero() {}
 
-  public abstract <T> T getGyro();
+  public abstract T getGyro();
 }

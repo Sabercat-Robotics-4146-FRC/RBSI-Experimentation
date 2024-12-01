@@ -65,8 +65,9 @@ public class RobotContainer {
   final CommandXboxController operatorXbox = new CommandXboxController(1);
   final OverrideSwitches overrides = new OverrideSwitches(2);
 
+  // Autonomous Things
   Field2d m_field = new Field2d();
-  ChoreoTrajectory traj;
+  ChoreoTrajectory m_traj;
 
   // Declare the robot subsystems here
   private final Drive m_drivebase;
@@ -95,10 +96,6 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    traj = Choreo.getTrajectory("Trajectory");
-
-    m_field.getObject("traj").setPoses(traj.getInitialPose(), traj.getFinalPose());
-    m_field.getObject("trajPoses").setPoses(traj.getPoses());
 
     // Instantiate Robot Subsystems based on RobotType
     switch (Constants.getMode()) {
@@ -136,14 +133,15 @@ public class RobotContainer {
     //   as that is automatically monitored.
     m_power = new PowerMonitoring(m_flywheel);
 
+    // Set up the SmartDashboard Auto Chooser
+    autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+
     // Configure the trigger bindings
     configureBindings();
     // Define Auto commands
     defineAutoCommands();
     // Define SysIs Routines
     definesysIdRoutines();
-    // Set up the SmartDashboard Auto Chooser
-    autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
   }
 
   /** Use this method to define your Autonomous commands for use with PathPlanner / Choreo */
@@ -250,10 +248,16 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommandChoreo() {
+
+    m_traj = Choreo.getTrajectory("Trajectory");
+
+    m_field.getObject("traj").setPoses(m_traj.getInitialPose(), m_traj.getFinalPose());
+    m_field.getObject("trajPoses").setPoses(m_traj.getPoses());
+
     var thetaController = new PIDController(AutoConstants.kPThetaController, 0, 0);
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
-    m_drivebase.setPose(traj.getInitialPose());
+    m_drivebase.setPose(m_traj.getInitialPose());
 
     boolean isFlipped =
         DriverStation.getAlliance().isPresent()
@@ -262,7 +266,7 @@ public class RobotContainer {
     Command swerveCommand =
         Choreo.choreoSwerveCommand(
             // Choreo trajectory from above
-            traj,
+            m_traj,
             // A function that returns the current field-relative pose of the robot: your wheel or
             // vision odometry
             m_drivebase::getPose,
@@ -288,7 +292,7 @@ public class RobotContainer {
             m_drivebase);
 
     return Commands.sequence(
-        Commands.runOnce(() -> m_drivebase.setPose(traj.getInitialPose())),
+        Commands.runOnce(() -> m_drivebase.setPose(m_traj.getInitialPose())),
         swerveCommand,
         m_drivebase.run(() -> m_drivebase.stop()));
   }

@@ -144,8 +144,17 @@ public class Robot extends LoggedRobot {
   @Override
   public void autonomousInit() {
     m_robotContainer.setMotorBrake(true);
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
-
+    switch (Constants.getAutoType()) {
+      case PATHPLANNER:
+        m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+        break;
+      case CHOREO:
+        m_autonomousCommand = m_robotContainer.getAutonomousCommandChoreo();
+        break;
+      default:
+        throw new RuntimeException(
+            "Incorrect AUTO type selected in Constants: " + Constants.getAutoType());
+    }
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();

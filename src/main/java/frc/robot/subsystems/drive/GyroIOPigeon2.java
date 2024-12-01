@@ -28,7 +28,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 /** IO implementation for Pigeon2 */
-public class GyroIOPigeon2 implements GyroIO {
+public class GyroIOPigeon2 implements GyroIO<Pigeon2> {
   private final Pigeon2 pigeon;
   private final StatusSignal<Double> yaw;
   private final StatusSignal<Double> yawVelocity;
@@ -47,7 +47,7 @@ public class GyroIOPigeon2 implements GyroIO {
   }
 
   // Return the Pigeon2 instance
-  @SuppressWarnings("unchecked")
+  @Override
   public Pigeon2 getGyro() {
     return pigeon;
   }

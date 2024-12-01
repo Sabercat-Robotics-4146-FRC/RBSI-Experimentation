@@ -113,31 +113,38 @@ public class Drive extends SubsystemBase {
         throw new RuntimeException("Invalid Swerve Drive Type");
     }
 
-    // Configure AutoBuilder for PathPlanner
-    AutoBuilder.configureHolonomic(
-        this::getPose,
-        this::setPose,
-        () -> kinematics.toChassisSpeeds(getModuleStates()),
-        this::runVelocity,
-        new HolonomicPathFollowerConfig(
-            DrivebaseConstants.kMaxLinearSpeed,
-            Units.inchesToMeters(kDriveBaseRadius),
-            new ReplanningConfig()),
-        () ->
-            DriverStation.getAlliance().isPresent()
-                && DriverStation.getAlliance().get() == Alliance.Red,
-        this);
-    Pathfinding.setPathfinder(new LocalADStarAK());
-    PathPlannerLogging.setLogActivePathCallback(
-        (activePath) -> {
-          Logger.recordOutput(
-              "Odometry/Trajectory", activePath.toArray(new Pose2d[activePath.size()]));
-        });
-    PathPlannerLogging.setLogTargetPoseCallback(
-        (targetPose) -> {
-          Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
-        });
-
+    // Configure Autonomous Path Building based on `AutoType`
+    switch (Constants.getAutoType()) {
+      case PATHPLANNER:
+        // Configure AutoBuilder for PathPlanner
+        AutoBuilder.configureHolonomic(
+            this::getPose,
+            this::setPose,
+            () -> kinematics.toChassisSpeeds(getModuleStates()),
+            this::runVelocity,
+            new HolonomicPathFollowerConfig(
+                DrivebaseConstants.kMaxLinearSpeed,
+                Units.inchesToMeters(kDriveBaseRadius),
+                new ReplanningConfig()),
+            () ->
+                DriverStation.getAlliance().isPresent()
+                    && DriverStation.getAlliance().get() == Alliance.Red,
+            this);
+        Pathfinding.setPathfinder(new LocalADStarAK());
+        PathPlannerLogging.setLogActivePathCallback(
+            (activePath) -> {
+              Logger.recordOutput(
+                  "Odometry/Trajectory", activePath.toArray(new Pose2d[activePath.size()]));
+            });
+        PathPlannerLogging.setLogTargetPoseCallback(
+            (targetPose) -> {
+              Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
+            });
+        break;
+      case CHOREO:
+        break;
+      default:
+    }
     // Configure SysId
     sysId =
         new SysIdRoutine(
@@ -335,7 +342,7 @@ public class Drive extends SubsystemBase {
     };
   }
 
-  public <T> T getGyro() {
+  public Object getGyro() {
     return gyroIO.getGyro();
   }
 

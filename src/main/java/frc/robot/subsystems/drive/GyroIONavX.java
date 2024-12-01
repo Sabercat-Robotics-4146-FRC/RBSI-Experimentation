@@ -23,7 +23,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.SPI;
 
 /** IO implementation for Pigeon2 */
-public class GyroIONavX implements GyroIO {
+public class GyroIONavX implements GyroIO<AHRS> {
   private final AHRS navx;
 
   // Constructor, taking default values
@@ -39,7 +39,7 @@ public class GyroIONavX implements GyroIO {
   }
 
   // Return the Pigeon2 instance
-  @SuppressWarnings("unchecked")
+  @Override
   public AHRS getGyro() {
     return navx;
   }
