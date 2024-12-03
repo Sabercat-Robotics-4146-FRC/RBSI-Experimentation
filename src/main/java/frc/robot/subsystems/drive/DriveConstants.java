@@ -123,8 +123,8 @@ public class DriveConstants {
         kPigeonId = TunerConstants.kPigeonId;
         kSteerInertia = TunerConstants.kSteerInertia;
         kDriveInertia = TunerConstants.kDriveInertia;
-        kSteerFrictionVoltage = TunerConstants.kSteerFrictionVoltage;
-        kDriveFrictionVoltage = TunerConstants.kDriveFrictionVoltage;
+        kSteerFrictionVoltage = 0.0;
+        kDriveFrictionVoltage = 0.1;
         kSteerCurrentLimit = 40.0; // Example from CTRE documentation
         kDriveCurrentLimit = 120.0; // Example from CTRE documentation
         kOptimalVoltage = 12.0; // Assumed Ideal
@@ -137,7 +137,8 @@ public class DriveConstants {
         kFrontLeftDriveType = "kraken";
         kFrontLeftSteerType = "kraken";
         kFrontLeftEncoderType = "cancoder";
-        kFrontLeftEncoderOffset = Units.rotationsToRadians(TunerConstants.kFrontLeftEncoderOffset);
+        kFrontLeftEncoderOffset =
+            -Units.rotationsToRadians(TunerConstants.kFrontLeftEncoderOffset) + Math.PI;
         kFrontLeftDriveInvert = TunerConstants.kInvertLeftSide;
         kFrontLeftSteerInvert = TunerConstants.kFrontLeftSteerInvert;
         kFrontLeftEncoderInvert = false;
@@ -153,7 +154,7 @@ public class DriveConstants {
         kFrontRightSteerType = "kraken";
         kFrontRightEncoderType = "cancoder";
         kFrontRightEncoderOffset =
-            Units.rotationsToRadians(TunerConstants.kFrontRightEncoderOffset);
+            -Units.rotationsToRadians(TunerConstants.kFrontRightEncoderOffset);
         kFrontRightDriveInvert = TunerConstants.kInvertRightSide;
         kFrontRightSteerInvert = TunerConstants.kFrontRightSteerInvert;
         kFrontRightEncoderInvert = false;
@@ -168,7 +169,8 @@ public class DriveConstants {
         kBackLeftDriveType = "kraken";
         kBackLeftSteerType = "kraken";
         kBackLeftEncoderType = "cancoder";
-        kBackLeftEncoderOffset = Units.rotationsToRadians(TunerConstants.kBackLeftEncoderOffset);
+        kBackLeftEncoderOffset =
+            -Units.rotationsToRadians(TunerConstants.kBackLeftEncoderOffset) + Math.PI;
         kBackLeftDriveInvert = TunerConstants.kInvertLeftSide;
         kBackLeftSteerInvert = TunerConstants.kBackLeftSteerInvert;
         kBackLeftEncoderInvert = false;
@@ -183,21 +185,23 @@ public class DriveConstants {
         kBackRightDriveType = "kraken";
         kBackRightSteerType = "kraken";
         kBackRightEncoderType = "cancoder";
-        kBackRightEncoderOffset = Units.rotationsToRadians(TunerConstants.kBackRightEncoderOffset);
+        kBackRightEncoderOffset = -Units.rotationsToRadians(TunerConstants.kBackRightEncoderOffset);
         kBackRightDriveInvert = TunerConstants.kInvertRightSide;
         kBackRightSteerInvert = TunerConstants.kBackRightSteerInvert;
         kBackRightEncoderInvert = false;
         kBackRightXPosInches = TunerConstants.kBackRightXPosInches;
         kBackRightYPosInches = TunerConstants.kBackRightYPosInches;
-        kDriveP = TunerConstants.driveGains.kP;
-        kDriveI = TunerConstants.driveGains.kI;
-        kDriveD = TunerConstants.driveGains.kD;
-        kDriveF = TunerConstants.driveGains.kV;
+        // NOTE: The PIDF values from TunerConstants.java make WPILib/AK implemention go crazy
+        //       These values are from the AK example sketches
+        kDriveP = 0.05;
+        kDriveI = 0.0;
+        kDriveD = 0.0;
+        kDriveF = 0.13;
         kDriveIZ = 0.0;
-        kSteerP = TunerConstants.steerGains.kP;
-        kSteerI = TunerConstants.steerGains.kI;
-        kSteerD = TunerConstants.steerGains.kD;
-        kSteerF = TunerConstants.steerGains.kV;
+        kSteerP = 7.0;
+        kSteerI = 0.0;
+        kSteerD = 0.0;
+        kSteerF = 0.0;
         kSteerIZ = 0.0;
         break;
 

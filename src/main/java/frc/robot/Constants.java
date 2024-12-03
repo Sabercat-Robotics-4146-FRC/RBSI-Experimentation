@@ -54,8 +54,10 @@ public final class Constants {
    */
   private static RobotType robotType = RobotType.COMPBOT;
 
+  // Define swerve, auto, and vision types being used
   private static SwerveType swerveType = SwerveType.PHOENIX6;
   private static AutoType autoType = AutoType.PATHPLANNER;
+  private static VisionType visionType = VisionType.NONE;
 
   public static boolean disableHAL = false;
 
@@ -124,6 +126,17 @@ public final class Constants {
   /** Get the current autonomous path planning type */
   public static AutoType getAutoType() {
     return autoType;
+  }
+
+  /** Enumerate the supported vision types */
+  public static enum VisionType {
+    PHOTON, // PhotonVision (https://docs.photonvision.org/en/latest/)
+    NONE // No cameras
+  }
+
+  /** Get the current autonomous path planning type */
+  public static VisionType getVisionType() {
+    return visionType;
   }
 
   /***************************************************************************/

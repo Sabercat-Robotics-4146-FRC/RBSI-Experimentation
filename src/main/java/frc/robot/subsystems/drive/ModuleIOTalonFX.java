@@ -78,7 +78,7 @@ public class ModuleIOTalonFX implements ModuleIO {
         turnTalon = new TalonFX(kFrontRightSteerMotorId, kFrontRightSteerCanbus);
         cancoder = new CANcoder(kFrontRightEncoderId, kFrontRightEncoderCanbus);
         absoluteEncoderOffset = new Rotation2d(kFrontRightEncoderOffset);
-        isTurnMotorInverted = DriveConstants.kFrontRightSteerInvert;
+        isTurnMotorInverted = kFrontRightSteerInvert;
         break;
 
       case 2:
@@ -87,7 +87,7 @@ public class ModuleIOTalonFX implements ModuleIO {
         turnTalon = new TalonFX(kBackLeftSteerMotorId, kBackLeftSteerCanbus);
         cancoder = new CANcoder(kBackLeftEncoderId, kBackLeftEncoderCanbus);
         absoluteEncoderOffset = new Rotation2d(kBackLeftEncoderOffset);
-        isTurnMotorInverted = DriveConstants.kBackLeftSteerInvert;
+        isTurnMotorInverted = kBackLeftSteerInvert;
         break;
 
       case 3:
@@ -96,7 +96,7 @@ public class ModuleIOTalonFX implements ModuleIO {
         turnTalon = new TalonFX(kBackRightSteerMotorId, kBackRightSteerCanbus);
         cancoder = new CANcoder(kBackRightEncoderId, kBackRightEncoderCanbus);
         absoluteEncoderOffset = new Rotation2d(kBackRightEncoderOffset);
-        isTurnMotorInverted = DriveConstants.kBackRightSteerInvert;
+        isTurnMotorInverted = kBackRightSteerInvert;
         break;
 
       default:

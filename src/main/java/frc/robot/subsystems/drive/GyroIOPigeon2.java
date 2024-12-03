@@ -35,7 +35,7 @@ public class GyroIOPigeon2 implements GyroIO<Pigeon2> {
 
   // Constructor
   public GyroIOPigeon2() {
-    pigeon = new Pigeon2(kBackLeftEncoderId, kBackLeftEncoderCanbus);
+    pigeon = new Pigeon2(kPigeonId, kCANbusName);
     pigeon.getConfigurator().apply(new Pigeon2Configuration());
     pigeon.getConfigurator().setYaw(0.0);
     yaw = pigeon.getYaw();

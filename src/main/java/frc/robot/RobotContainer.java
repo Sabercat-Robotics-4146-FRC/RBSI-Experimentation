@@ -39,6 +39,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.AprilTagConstants;
 import frc.robot.Constants.AprilTagConstants.AprilTagLayoutType;
 import frc.robot.Constants.AutoConstants;
+import frc.robot.Constants.PowerConstants;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.accelerometer.Accelerometer;
 import frc.robot.subsystems.drive.Drive;
@@ -105,9 +106,14 @@ public class RobotContainer {
         m_drivebase = new Drive();
         m_flywheel = new Flywheel(new FlywheelIOSim()); // new Flywheel(new FlywheelIOTalonFX());
         m_vision =
-            new Vision(
-                this::getAprilTagLayoutType,
-                new VisionIOPhoton(this::getAprilTagLayoutType, "Photon_CAMNAME"));
+            switch (Constants.getVisionType()) {
+              case PHOTON ->
+                  new Vision(
+                      this::getAprilTagLayoutType,
+                      new VisionIOPhoton(this::getAprilTagLayoutType, "Photon_CAMNAME"));
+              case NONE -> new Vision(this::getAprilTagLayoutType);
+              default -> null;
+            };
         m_accel = new Accelerometer(m_drivebase.getGyro());
         break;
 
@@ -131,7 +137,7 @@ public class RobotContainer {
     // ``PowerMonitoring`` takes all the non-drivebase subsystems for which
     //   you wish to have power monitoring; DO NOT include ``m_drivebase``,
     //   as that is automatically monitored.
-    m_power = new PowerMonitoring(m_flywheel);
+    m_power = null; // new PowerMonitoring(m_flywheel);
 
     // Set up the SmartDashboard Auto Chooser
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
@@ -192,9 +198,9 @@ public class RobotContainer {
     m_drivebase.setDefaultCommand(
         DriveCommands.fieldRelativeDrive(
             m_drivebase,
-            () -> -driverXbox.getRightY(),
-            () -> -driverXbox.getRightX(),
-            () -> -driverXbox.getLeftX()));
+            () -> -driverXbox.getLeftY(),
+            () -> -driverXbox.getLeftX(),
+            () -> driverXbox.getRightX()));
 
     // Example Commands
     // Press B button while driving --> ROBOT-CENTRIC
@@ -205,9 +211,9 @@ public class RobotContainer {
                 () ->
                     DriveCommands.robotRelativeDrive(
                         m_drivebase,
-                        () -> -driverXbox.getRightY(),
-                        () -> -driverXbox.getRightX(),
-                        () -> -driverXbox.getLeftX()),
+                        () -> -driverXbox.getLeftY(),
+                        () -> -driverXbox.getLeftX(),
+                        () -> driverXbox.getRightX()),
                 m_drivebase));
 
     // Press A button -> BRAKE
@@ -327,32 +333,37 @@ public class RobotContainer {
     //
     // 0 1
     // 2 3
-    public static final RobotDeviceId FL_DRIVE = new RobotDeviceId(1, "DriveTrain", 1);
-    public static final RobotDeviceId FL_ROTATION = new RobotDeviceId(2, "DriveTrain", 2);
+    public static final RobotDeviceId FL_DRIVE = new RobotDeviceId(1, "DriveTrain", 18);
+    public static final RobotDeviceId FL_ROTATION = new RobotDeviceId(2, "DriveTrain", 19);
     public static final RobotDeviceId FL_CANCODER = new RobotDeviceId(3, "DriveTrain", null);
 
-    public static final RobotDeviceId FR_DRIVE = new RobotDeviceId(4, "DriveTrain", 3);
-    public static final RobotDeviceId FR_ROTATION = new RobotDeviceId(5, "DriveTrain", 4);
+    public static final RobotDeviceId FR_DRIVE = new RobotDeviceId(4, "DriveTrain", 17);
+    public static final RobotDeviceId FR_ROTATION = new RobotDeviceId(5, "DriveTrain", 16);
     public static final RobotDeviceId FR_CANCODER = new RobotDeviceId(6, "DriveTrain", null);
 
-    public static final RobotDeviceId BL_DRIVE = new RobotDeviceId(7, "DriveTrain", 5);
-    public static final RobotDeviceId BL_ROTATION = new RobotDeviceId(8, "DriveTrain", 6);
+    public static final RobotDeviceId BL_DRIVE = new RobotDeviceId(7, "DriveTrain", 1);
+    public static final RobotDeviceId BL_ROTATION = new RobotDeviceId(8, "DriveTrain", 0);
     public static final RobotDeviceId BL_CANCODER = new RobotDeviceId(9, "DriveTrain", null);
 
-    public static final RobotDeviceId BR_DRIVE = new RobotDeviceId(10, "DriveTrain", 7);
-    public static final RobotDeviceId BR_ROTATION = new RobotDeviceId(11, "DriveTrain", 8);
+    public static final RobotDeviceId BR_DRIVE = new RobotDeviceId(10, "DriveTrain", 2);
+    public static final RobotDeviceId BR_ROTATION = new RobotDeviceId(11, "DriveTrain", 3);
     public static final RobotDeviceId BR_CANCODER = new RobotDeviceId(12, "DriveTrain", null);
 
     public static final RobotDeviceId PIGEON = new RobotDeviceId(13, "DriveTrain", null);
 
-    /* POWER DISTRIBUTION CAN ID */
-    public static final RobotDeviceId POWER_CAN_DEVICE_ID = new RobotDeviceId(1, null);
+    /* POWER DISTRIBUTION CAN ID (set by device type in PowerConstants) */
+    public static final RobotDeviceId POWER_CAN_DEVICE_ID =
+        switch (PowerConstants.kPowerModule) {
+          case kRev -> new RobotDeviceId(1, null);
+          case kCTRE -> new RobotDeviceId(0, null);
+          default -> null;
+        };
 
     /* SUBSYSTEM CAN DEVICE IDS */
     // This is where mechanism subsystem devices are defined
     // Example:
-    public static final RobotDeviceId FLYWHEEL_LEADER = new RobotDeviceId(3, 9);
-    public static final RobotDeviceId FLYWHEEL_FOLLOWER = new RobotDeviceId(4, 10);
+    public static final RobotDeviceId FLYWHEEL_LEADER = new RobotDeviceId(3, 8);
+    public static final RobotDeviceId FLYWHEEL_FOLLOWER = new RobotDeviceId(4, 9);
 
     /* BEAM BREAK and/or LIMIT SWITCH DIO CHANNELS */
     // This is where digital I/O feedback devices are defined
