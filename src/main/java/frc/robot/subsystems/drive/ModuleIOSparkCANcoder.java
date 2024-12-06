@@ -21,10 +21,10 @@ import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.hardware.CANcoder;
-import com.revrobotics.CANSparkBase.IdleMode;
-import com.revrobotics.CANSparkLowLevel.MotorType;
-import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.spark.SparkBase;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 
@@ -38,8 +38,8 @@ import edu.wpi.first.math.util.Units;
  * "/Drive/ModuleX/TurnAbsolutePositionRad"
  */
 public class ModuleIOSparkCANcoder implements ModuleIO {
-  private final CANSparkMax driveSparkMax;
-  private final CANSparkMax turnSparkMax;
+  private final SparkBase driveSparkMax;
+  private final SparkBase turnSparkMax;
 
   private final RelativeEncoder driveEncoder;
   private final RelativeEncoder turnRelativeEncoder;
@@ -53,8 +53,8 @@ public class ModuleIOSparkCANcoder implements ModuleIO {
     switch (index) {
       case 0:
         // Front Left
-        driveSparkMax = new CANSparkMax(kFrontLeftDriveMotorId, MotorType.kBrushless);
-        turnSparkMax = new CANSparkMax(kFrontLeftSteerMotorId, MotorType.kBrushless);
+        driveSparkMax = new SparkBase(kFrontLeftDriveMotorId, MotorType.kBrushless);
+        turnSparkMax = new SparkBase(kFrontLeftSteerMotorId, MotorType.kBrushless);
         cancoder = new CANcoder(kFrontLeftEncoderId, kFrontLeftEncoderCanbus);
         absoluteEncoderOffset = new Rotation2d(kFrontLeftEncoderOffset);
         isTurnMotorInverted = kFrontLeftSteerInvert;
@@ -62,8 +62,8 @@ public class ModuleIOSparkCANcoder implements ModuleIO {
 
       case 1:
         // Front Right
-        driveSparkMax = new CANSparkMax(kFrontRightDriveMotorId, MotorType.kBrushless);
-        turnSparkMax = new CANSparkMax(kFrontRightSteerMotorId, MotorType.kBrushless);
+        driveSparkMax = new SparkBase(kFrontRightDriveMotorId, MotorType.kBrushless);
+        turnSparkMax = new SparkBase(kFrontRightSteerMotorId, MotorType.kBrushless);
         cancoder = new CANcoder(kFrontRightEncoderId, kFrontRightEncoderCanbus);
         absoluteEncoderOffset = new Rotation2d(kFrontRightEncoderOffset);
         isTurnMotorInverted = kFrontRightSteerInvert;
@@ -71,8 +71,8 @@ public class ModuleIOSparkCANcoder implements ModuleIO {
 
       case 2:
         // Back Left
-        driveSparkMax = new CANSparkMax(kBackLeftDriveMotorId, MotorType.kBrushless);
-        turnSparkMax = new CANSparkMax(kBackLeftSteerMotorId, MotorType.kBrushless);
+        driveSparkMax = new SparkBase(kBackLeftDriveMotorId, MotorType.kBrushless);
+        turnSparkMax = new SparkBase(kBackLeftSteerMotorId, MotorType.kBrushless);
         cancoder = new CANcoder(kBackLeftEncoderId, kBackLeftEncoderCanbus);
         absoluteEncoderOffset = new Rotation2d(kBackLeftEncoderOffset);
         isTurnMotorInverted = kBackLeftSteerInvert;
@@ -80,8 +80,8 @@ public class ModuleIOSparkCANcoder implements ModuleIO {
 
       case 3:
         // Back Right
-        driveSparkMax = new CANSparkMax(kBackRightDriveMotorId, MotorType.kBrushless);
-        turnSparkMax = new CANSparkMax(kBackRightSteerMotorId, MotorType.kBrushless);
+        driveSparkMax = new SparkBase(kBackRightDriveMotorId, MotorType.kBrushless);
+        turnSparkMax = new SparkBase(kBackRightSteerMotorId, MotorType.kBrushless);
         cancoder = new CANcoder(kBackRightEncoderId, kBackRightEncoderCanbus);
         absoluteEncoderOffset = new Rotation2d(kBackRightEncoderOffset);
         isTurnMotorInverted = kBackRightSteerInvert;

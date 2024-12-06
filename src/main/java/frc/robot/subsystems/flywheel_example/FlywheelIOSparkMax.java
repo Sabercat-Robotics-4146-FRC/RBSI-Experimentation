@@ -15,12 +15,12 @@ package frc.robot.subsystems.flywheel_example;
 
 import static frc.robot.Constants.FlywheelConstants.*;
 
-import com.revrobotics.CANSparkBase.ControlType;
-import com.revrobotics.CANSparkLowLevel.MotorType;
-import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkPIDController;
-import com.revrobotics.SparkPIDController.ArbFFUnits;
+import com.revrobotics.spark.SparkBase;
+import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkClosedLoopController.ArbFFUnits;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
 import edu.wpi.first.math.util.Units;
 import frc.robot.RobotContainer.Ports;
 
@@ -31,12 +31,12 @@ import frc.robot.RobotContainer.Ports;
 public class FlywheelIOSparkMax implements FlywheelIO {
 
   // Define the leader / follower motors from the Ports section of RobotContainer
-  private final CANSparkMax leader =
-      new CANSparkMax(Ports.FLYWHEEL_LEADER.getDeviceNumber(), MotorType.kBrushless);
-  private final CANSparkMax follower =
-      new CANSparkMax(Ports.FLYWHEEL_LEADER.getDeviceNumber(), MotorType.kBrushless);
+  private final SparkBase leader =
+      new SparkBase(Ports.FLYWHEEL_LEADER.getDeviceNumber(), MotorType.kBrushless);
+  private final SparkBase follower =
+      new SparkBase(Ports.FLYWHEEL_LEADER.getDeviceNumber(), MotorType.kBrushless);
   private final RelativeEncoder encoder = leader.getEncoder();
-  private final SparkPIDController pid = leader.getPIDController();
+  private final SparkClosedLoopController pid = leader.getPIDController();
   // IMPORTANT: Include here all devices listed above that are part of this mechanism!
   public final int[] powerPorts = {
     Ports.FLYWHEEL_LEADER.getPowerPort(), Ports.FLYWHEEL_FOLLOWER.getPowerPort()

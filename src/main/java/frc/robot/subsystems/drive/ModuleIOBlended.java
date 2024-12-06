@@ -27,10 +27,10 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.revrobotics.CANSparkBase.IdleMode;
-import com.revrobotics.CANSparkLowLevel.MotorType;
-import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.spark.SparkBase;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 
@@ -46,7 +46,7 @@ import edu.wpi.first.math.util.Units;
 public class ModuleIOBlended implements ModuleIO {
   // CAN Devices
   private final TalonFX driveTalon;
-  private final CANSparkMax turnSparkMax;
+  private final SparkBase turnSparkMax;
   private final CANcoder cancoder;
 
   // Drive telemetry information
@@ -72,7 +72,7 @@ public class ModuleIOBlended implements ModuleIO {
       case 0:
         // Front Left
         driveTalon = new TalonFX(kFrontLeftDriveMotorId, kFrontLeftDriveCanbus);
-        turnSparkMax = new CANSparkMax(kFrontLeftSteerMotorId, MotorType.kBrushless);
+        turnSparkMax = new SparkBase(kFrontLeftSteerMotorId, MotorType.kBrushless);
         cancoder = new CANcoder(kFrontLeftEncoderId, kFrontLeftEncoderCanbus);
         absoluteEncoderOffset = new Rotation2d(kFrontLeftEncoderOffset);
         isTurnMotorInverted = kFrontLeftSteerInvert;
@@ -81,7 +81,7 @@ public class ModuleIOBlended implements ModuleIO {
       case 1:
         // Front Right
         driveTalon = new TalonFX(kFrontRightDriveMotorId, kFrontRightDriveCanbus);
-        turnSparkMax = new CANSparkMax(kFrontRightSteerMotorId, MotorType.kBrushless);
+        turnSparkMax = new SparkBase(kFrontRightSteerMotorId, MotorType.kBrushless);
         cancoder = new CANcoder(kFrontRightEncoderId, kFrontRightEncoderCanbus);
         absoluteEncoderOffset = new Rotation2d(kFrontRightEncoderOffset);
         isTurnMotorInverted = kFrontRightSteerInvert;
@@ -90,7 +90,7 @@ public class ModuleIOBlended implements ModuleIO {
       case 2:
         // Back Left
         driveTalon = new TalonFX(kBackLeftDriveMotorId, kBackLeftDriveCanbus);
-        turnSparkMax = new CANSparkMax(kBackLeftSteerMotorId, MotorType.kBrushless);
+        turnSparkMax = new SparkBase(kBackLeftSteerMotorId, MotorType.kBrushless);
         cancoder = new CANcoder(kBackLeftEncoderId, kBackLeftEncoderCanbus);
         absoluteEncoderOffset = new Rotation2d(kBackLeftEncoderOffset);
         isTurnMotorInverted = kBackLeftSteerInvert;
@@ -99,7 +99,7 @@ public class ModuleIOBlended implements ModuleIO {
       case 3:
         // Back Right
         driveTalon = new TalonFX(kBackRightDriveMotorId, kBackRightDriveCanbus);
-        turnSparkMax = new CANSparkMax(kBackRightSteerMotorId, MotorType.kBrushless);
+        turnSparkMax = new SparkBase(kBackRightSteerMotorId, MotorType.kBrushless);
         cancoder = new CANcoder(kBackRightEncoderId, kBackRightEncoderCanbus);
         absoluteEncoderOffset = new Rotation2d(kBackRightEncoderOffset);
         isTurnMotorInverted = kBackRightSteerInvert;
