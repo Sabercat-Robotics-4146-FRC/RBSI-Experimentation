@@ -32,6 +32,12 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -120,9 +126,6 @@ public class RobotContainer {
       case SIM:
         // Sim robot, instantiate physics sim IO implementations
         m_drivebase = new Drive();
-        m_flywheel = new Flywheel(new FlywheelIOSim());
-        m_vision = new Vision(this::getAprilTagLayoutType);
-        m_accel = new Accelerometer(m_drivebase.getGyro());
         break;
 
       default:
@@ -159,6 +162,10 @@ public class RobotContainer {
   /** Set up the SysID routines from AdvantageKit */
   private void definesysIdRoutines() {
     // Drivebase characterization
+    autoChooser.addOption(
+        "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(m_drivebase));
+    autoChooser.addOption(
+        "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(m_drivebase));
     autoChooser.addOption(
         "Drive SysId (Quasistatic Forward)",
         m_drivebase.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
