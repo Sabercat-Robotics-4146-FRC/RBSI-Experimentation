@@ -1,5 +1,7 @@
 // Copyright (c) 2024 Az-FIRST
 // http://github.com/AZ-First
+// Copyright 2021-2024 FRC 6328
+// http://github.com/Mechanical-Advantage
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -16,6 +18,8 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot;
+
+import static frc.robot.subsystems.vision.VisionConstants.*;
 
 import choreo.Choreo;
 import choreo.trajectory.Trajectory;
@@ -48,7 +52,9 @@ import frc.robot.subsystems.flywheel_example.FlywheelIO;
 import frc.robot.subsystems.flywheel_example.FlywheelIOSim;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
-import frc.robot.subsystems.vision.VisionIOPhoton;
+import frc.robot.subsystems.vision.VisionIOLimelight;
+import frc.robot.subsystems.vision.VisionIOPhotonVision;
+import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
 import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
 import frc.robot.util.LoggedTunableNumber;
@@ -109,9 +115,17 @@ public class RobotContainer {
             switch (Constants.getVisionType()) {
               case PHOTON ->
                   new Vision(
-                      this::getAprilTagLayoutType,
-                      new VisionIOPhoton(this::getAprilTagLayoutType, "Photon_CAMNAME"));
-              case NONE -> new Vision(this::getAprilTagLayoutType);
+                      m_drivebase::addVisionMeasurement,
+                      new VisionIOPhotonVision(camera0Name, robotToCamera0),
+                      new VisionIOPhotonVision(camera1Name, robotToCamera1));
+              case LIMELIGHT ->
+                  new Vision(
+                      m_drivebase::addVisionMeasurement,
+                      new VisionIOLimelight(camera0Name, m_drivebase::getRotation),
+                      new VisionIOLimelight(camera1Name, m_drivebase::getRotation));
+              case NONE ->
+                  new Vision(
+                      m_drivebase::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
               default -> null;
             };
         m_accel = new Accelerometer(m_drivebase.getGyro());
@@ -120,13 +134,19 @@ public class RobotContainer {
       case SIM:
         // Sim robot, instantiate physics sim IO implementations
         m_drivebase = new Drive();
+        m_vision =
+            new Vision(
+                m_drivebase::addVisionMeasurement,
+                new VisionIOPhotonVisionSim(camera0Name, robotToCamera0, m_drivebase::getPose),
+                new VisionIOPhotonVisionSim(camera1Name, robotToCamera1, m_drivebase::getPose));
         break;
 
       default:
         // Replayed robot, disable IO implementations
         m_drivebase = new Drive();
         m_flywheel = new Flywheel(new FlywheelIO() {});
-        m_vision = new Vision(this::getAprilTagLayoutType, new VisionIO() {}, new VisionIO() {});
+        m_vision =
+            new Vision(m_drivebase::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
         m_accel = new Accelerometer(m_drivebase.getGyro());
         break;
     }

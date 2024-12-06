@@ -131,6 +131,7 @@ public final class Constants {
   /** Enumerate the supported vision types */
   public static enum VisionType {
     PHOTON, // PhotonVision (https://docs.photonvision.org/en/latest/)
+    LIMELIGHT, // Limelight (...)
     NONE // No cameras
   }
 
