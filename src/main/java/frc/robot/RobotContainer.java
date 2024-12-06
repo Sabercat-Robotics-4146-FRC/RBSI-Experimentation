@@ -17,8 +17,8 @@
 
 package frc.robot;
 
-import com.choreo.lib.Choreo;
-import com.choreo.lib.ChoreoTrajectory;
+import choreo.Choreo;
+import choreo.trajectory.Trajectory;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.controller.PIDController;
@@ -32,12 +32,6 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-
-import com.pathplanner.lib.auto.AutoBuilder;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -74,7 +68,7 @@ public class RobotContainer {
 
   // Autonomous Things
   Field2d m_field = new Field2d();
-  ChoreoTrajectory m_traj;
+  Trajectory m_traj;
 
   // Declare the robot subsystems here
   private final Drive m_drivebase;
@@ -163,7 +157,8 @@ public class RobotContainer {
   private void definesysIdRoutines() {
     // Drivebase characterization
     autoChooser.addOption(
-        "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(m_drivebase));
+        "Drive Wheel Radius Characterization",
+        DriveCommands.wheelRadiusCharacterization(m_drivebase));
     autoChooser.addOption(
         "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(m_drivebase));
     autoChooser.addOption(

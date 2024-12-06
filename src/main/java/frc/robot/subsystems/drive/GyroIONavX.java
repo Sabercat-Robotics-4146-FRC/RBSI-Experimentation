@@ -21,12 +21,11 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.wpilibj.SPI;
 import java.util.Queue;
 
 /** IO implementation for Pigeon2 */
 public class GyroIONavX implements GyroIO<AHRS> {
-  private final AHRS navx= new AHRS(SPI.Port.kMXP, (byte) Drive.ODOMETRY_FREQUENCY);
+  private final AHRS navx = new AHRS(SPI.Port.kMXP, (byte) Drive.ODOMETRY_FREQUENCY);
   private final Queue<Double> yawPositionQueue;
   private final Queue<Double> yawTimestampQueue;
 
@@ -42,7 +41,6 @@ public class GyroIONavX implements GyroIO<AHRS> {
     }
     yawTimestampQueue = PhoenixOdometryThread.getInstance().makeTimestampQueue();
     yawPositionQueue = PhoenixOdometryThread.getInstance().registerSignal(navX::getYaw);
-
   }
 
   // Return the Pigeon2 instance
@@ -53,18 +51,18 @@ public class GyroIONavX implements GyroIO<AHRS> {
 
   @Override
   public void updateInputs(GyroIOInputs inputs) {
-inputs.connected = navX.isConnected();
-inputs.yawPosition = Rotation2d.fromDegrees(-navX.getYaw());
-inputs.yawVelocityRadPerSec = Units.degreesToRadians(-navX.getRawGyroZ());
+    inputs.connected = navX.isConnected();
+    inputs.yawPosition = Rotation2d.fromDegrees(-navX.getYaw());
+    inputs.yawVelocityRadPerSec = Units.degreesToRadians(-navX.getRawGyroZ());
 
-inputs.odometryYawTimestamps =
-    yawTimestampQueue.stream().mapToDouble((Double value) -> value).toArray();
-inputs.odometryYawPositions =
-    yawPositionQueue.stream()
-        .map((Double value) -> Rotation2d.fromDegrees(-value))
-        .toArray(Rotation2d[]::new);
-yawTimestampQueue.clear();
-yawPositionQueue.clear();
+    inputs.odometryYawTimestamps =
+        yawTimestampQueue.stream().mapToDouble((Double value) -> value).toArray();
+    inputs.odometryYawPositions =
+        yawPositionQueue.stream()
+            .map((Double value) -> Rotation2d.fromDegrees(-value))
+            .toArray(Rotation2d[]::new);
+    yawTimestampQueue.clear();
+    yawPositionQueue.clear();
   }
 
   /**

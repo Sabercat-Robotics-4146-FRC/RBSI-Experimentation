@@ -145,7 +145,6 @@ public class DriveCommands {
     return Math.copySign(omega * omega, omega);
   }
 
-
   private static Translation2d getLinearVelocityFromJoysticks(double x, double y) {
     // Apply deadband
     double linearMagnitude = MathUtil.applyDeadband(Math.hypot(x, y), DEADBAND);
