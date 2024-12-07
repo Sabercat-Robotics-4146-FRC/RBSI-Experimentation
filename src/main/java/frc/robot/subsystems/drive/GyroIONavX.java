@@ -40,7 +40,7 @@ public class GyroIONavX implements GyroIO<AHRS> {
       navx.setAngleAdjustment(180.0);
     }
     yawTimestampQueue = PhoenixOdometryThread.getInstance().makeTimestampQueue();
-    yawPositionQueue = PhoenixOdometryThread.getInstance().registerSignal(navX::getYaw);
+    yawPositionQueue = PhoenixOdometryThread.getInstance().registerSignal(navx::getYaw);
   }
 
   // Return the Pigeon2 instance
@@ -51,9 +51,9 @@ public class GyroIONavX implements GyroIO<AHRS> {
 
   @Override
   public void updateInputs(GyroIOInputs inputs) {
-    inputs.connected = navX.isConnected();
-    inputs.yawPosition = Rotation2d.fromDegrees(-navX.getAngle());
-    inputs.yawVelocityRadPerSec = Units.degreesToRadians(-navX.getRawGyroZ());
+    inputs.connected = navx.isConnected();
+    inputs.yawPosition = Rotation2d.fromDegrees(-navx.getAngle());
+    inputs.yawVelocityRadPerSec = Units.degreesToRadians(-navx.getRawGyroZ());
 
     inputs.odometryYawTimestamps =
         yawTimestampQueue.stream().mapToDouble((Double value) -> value).toArray();

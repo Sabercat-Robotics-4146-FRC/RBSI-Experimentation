@@ -17,7 +17,6 @@ package frc.robot.subsystems.drive;
 
 import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.RobotConfig;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
@@ -122,82 +121,83 @@ public class DriveConstants {
   static {
     switch (Constants.getSwerveType()) {
       case PHOENIX6:
-        kCoupleRatio = TunerConstants.kCoupleRatio;
-        kDriveGearRatio = TunerConstants.kDriveGearRatio;
-        kSteerGearRatio = TunerConstants.kSteerGearRatio;
-        kWheelRadiusInches = TunerConstants.kWheelRadiusInches;
-        kCANbusName = TunerConstants.kCANbusName;
-        kPigeonId = TunerConstants.kPigeonId;
-        kSteerInertia = TunerConstants.kSteerInertia;
-        kDriveInertia = TunerConstants.kDriveInertia;
+        kCoupleRatio = TunerConstants.FrontLeft.CouplingGearRatio;
+        kDriveGearRatio = TunerConstants.FrontLeft.DriveMotorGearRatio;
+        kSteerGearRatio = TunerConstants.FrontLeft.SteerMotorGearRatio;
+        kWheelRadiusInches = TunerConstants.FrontLeft.WheelRadius;
+        kCANbusName = TunerConstants.DrivetrainConstants.CANBusName;
+        kPigeonId = TunerConstants.DrivetrainConstants.Pigeon2Id;
+        kSteerInertia = TunerConstants.FrontLeft.SteerInertia;
+        kDriveInertia = TunerConstants.FrontLeft.DriveInertia;
         kSteerFrictionVoltage = 0.0;
         kDriveFrictionVoltage = 0.1;
         kSteerCurrentLimit = 40.0; // Example from CTRE documentation
         kDriveCurrentLimit = 120.0; // Example from CTRE documentation
         kOptimalVoltage = 12.0; // Assumed Ideal
-        kFrontLeftDriveMotorId = TunerConstants.kFrontLeftDriveMotorId;
-        kFrontLeftSteerMotorId = TunerConstants.kFrontLeftSteerMotorId;
-        kFrontLeftEncoderId = TunerConstants.kFrontLeftEncoderId;
-        kFrontLeftDriveCanbus = TunerConstants.kCANbusName;
-        kFrontLeftSteerCanbus = TunerConstants.kCANbusName;
-        kFrontLeftEncoderCanbus = TunerConstants.kCANbusName;
+        kFrontLeftDriveMotorId = TunerConstants.FrontLeft.DriveMotorId;
+        kFrontLeftSteerMotorId = TunerConstants.FrontLeft.SteerMotorId;
+        kFrontLeftEncoderId = TunerConstants.FrontLeft.CANcoderId;
+        kFrontLeftDriveCanbus = TunerConstants.DrivetrainConstants.CANBusName;
+        kFrontLeftSteerCanbus = TunerConstants.DrivetrainConstants.CANBusName;
+        kFrontLeftEncoderCanbus = TunerConstants.DrivetrainConstants.CANBusName;
         kFrontLeftDriveType = "kraken";
         kFrontLeftSteerType = "kraken";
         kFrontLeftEncoderType = "cancoder";
         kFrontLeftEncoderOffset =
-            -Units.rotationsToRadians(TunerConstants.kFrontLeftEncoderOffset) + Math.PI;
-        kFrontLeftDriveInvert = TunerConstants.kInvertLeftSide;
-        kFrontLeftSteerInvert = TunerConstants.kFrontLeftSteerInvert;
+            -Units.rotationsToRadians(TunerConstants.FrontLeft.CANcoderOffset) + Math.PI;
+        kFrontLeftDriveInvert = TunerConstants.FrontLeft.DriveMotorInverted;
+        kFrontLeftSteerInvert = TunerConstants.FrontLeft.SteerMotorInverted;
         kFrontLeftEncoderInvert = false;
-        kFrontLeftXPosInches = TunerConstants.kFrontLeftXPosInches;
-        kFrontLeftYPosInches = TunerConstants.kFrontLeftYPosInches;
-        kFrontRightDriveMotorId = TunerConstants.kFrontRightDriveMotorId;
-        kFrontRightSteerMotorId = TunerConstants.kFrontRightSteerMotorId;
-        kFrontRightEncoderId = TunerConstants.kFrontRightEncoderId;
-        kFrontRightDriveCanbus = TunerConstants.kCANbusName;
-        kFrontRightSteerCanbus = TunerConstants.kCANbusName;
-        kFrontRightEncoderCanbus = TunerConstants.kCANbusName;
+        kFrontLeftXPosInches = TunerConstants.FrontLeft.LocationX;
+        kFrontLeftYPosInches = TunerConstants.FrontLeft.LocationY;
+        kFrontRightDriveMotorId = TunerConstants.FrontRight.DriveMotorId;
+        kFrontRightSteerMotorId = TunerConstants.FrontRight.SteerMotorId;
+        kFrontRightEncoderId = TunerConstants.FrontRight.CANcoderId;
+        kFrontRightDriveCanbus = TunerConstants.DrivetrainConstants.CANBusName;
+        kFrontRightSteerCanbus = TunerConstants.DrivetrainConstants.CANBusName;
+        kFrontRightEncoderCanbus = TunerConstants.DrivetrainConstants.CANBusName;
         kFrontRightDriveType = "kraken";
         kFrontRightSteerType = "kraken";
         kFrontRightEncoderType = "cancoder";
         kFrontRightEncoderOffset =
-            -Units.rotationsToRadians(TunerConstants.kFrontRightEncoderOffset);
-        kFrontRightDriveInvert = TunerConstants.kInvertRightSide;
-        kFrontRightSteerInvert = TunerConstants.kFrontRightSteerInvert;
+            -Units.rotationsToRadians(TunerConstants.FrontRight.CANcoderOffset);
+        kFrontRightDriveInvert = TunerConstants.FrontRight.DriveMotorInverted;
+        kFrontRightSteerInvert = TunerConstants.FrontRight.SteerMotorInverted;
         kFrontRightEncoderInvert = false;
-        kFrontRightXPosInches = TunerConstants.kFrontRightXPosInches;
-        kFrontRightYPosInches = TunerConstants.kFrontRightYPosInches;
-        kBackLeftDriveMotorId = TunerConstants.kBackLeftDriveMotorId;
-        kBackLeftSteerMotorId = TunerConstants.kBackLeftSteerMotorId;
-        kBackLeftEncoderId = TunerConstants.kBackLeftEncoderId;
-        kBackLeftDriveCanbus = TunerConstants.kCANbusName;
-        kBackLeftSteerCanbus = TunerConstants.kCANbusName;
-        kBackLeftEncoderCanbus = TunerConstants.kCANbusName;
+        kFrontRightXPosInches = TunerConstants.FrontRight.LocationX;
+        kFrontRightYPosInches = TunerConstants.FrontRight.LocationY;
+        kBackLeftDriveMotorId = TunerConstants.BackLeft.DriveMotorId;
+        kBackLeftSteerMotorId = TunerConstants.BackLeft.SteerMotorId;
+        kBackLeftEncoderId = TunerConstants.BackLeft.CANcoderId;
+        kBackLeftDriveCanbus = TunerConstants.DrivetrainConstants.CANBusName;
+        kBackLeftSteerCanbus = TunerConstants.DrivetrainConstants.CANBusName;
+        kBackLeftEncoderCanbus = TunerConstants.DrivetrainConstants.CANBusName;
         kBackLeftDriveType = "kraken";
         kBackLeftSteerType = "kraken";
         kBackLeftEncoderType = "cancoder";
         kBackLeftEncoderOffset =
-            -Units.rotationsToRadians(TunerConstants.kBackLeftEncoderOffset) + Math.PI;
-        kBackLeftDriveInvert = TunerConstants.kInvertLeftSide;
-        kBackLeftSteerInvert = TunerConstants.kBackLeftSteerInvert;
+            -Units.rotationsToRadians(TunerConstants.BackLeft.CANcoderOffset) + Math.PI;
+        kBackLeftDriveInvert = TunerConstants.BackLeft.DriveMotorInverted;
+        kBackLeftSteerInvert = TunerConstants.BackLeft.SteerMotorInverted;
         kBackLeftEncoderInvert = false;
-        kBackLeftXPosInches = TunerConstants.kBackLeftXPosInches;
-        kBackLeftYPosInches = TunerConstants.kBackLeftYPosInches;
-        kBackRightDriveMotorId = TunerConstants.kBackRightDriveMotorId;
-        kBackRightSteerMotorId = TunerConstants.kBackRightSteerMotorId;
-        kBackRightEncoderId = TunerConstants.kBackRightEncoderId;
-        kBackRightDriveCanbus = TunerConstants.kCANbusName;
-        kBackRightSteerCanbus = TunerConstants.kCANbusName;
-        kBackRightEncoderCanbus = TunerConstants.kCANbusName;
+        kBackLeftXPosInches = TunerConstants.BackLeft.LocationX;
+        kBackLeftYPosInches = TunerConstants.BackLeft.LocationY;
+        kBackRightDriveMotorId = TunerConstants.BackRight.DriveMotorId;
+        kBackRightSteerMotorId = TunerConstants.BackRight.SteerMotorId;
+        kBackRightEncoderId = TunerConstants.BackRight.CANcoderId;
+        kBackRightDriveCanbus = TunerConstants.DrivetrainConstants.CANBusName;
+        kBackRightSteerCanbus = TunerConstants.DrivetrainConstants.CANBusName;
+        kBackRightEncoderCanbus = TunerConstants.DrivetrainConstants.CANBusName;
         kBackRightDriveType = "kraken";
         kBackRightSteerType = "kraken";
         kBackRightEncoderType = "cancoder";
-        kBackRightEncoderOffset = -Units.rotationsToRadians(TunerConstants.kBackRightEncoderOffset);
-        kBackRightDriveInvert = TunerConstants.kInvertRightSide;
-        kBackRightSteerInvert = TunerConstants.kBackRightSteerInvert;
+        kBackRightEncoderOffset =
+            -Units.rotationsToRadians(TunerConstants.BackRight.CANcoderOffset);
+        kBackRightDriveInvert = TunerConstants.BackRight.DriveMotorInverted;
+        kBackRightSteerInvert = TunerConstants.BackRight.SteerMotorInverted;
         kBackRightEncoderInvert = false;
-        kBackRightXPosInches = TunerConstants.kBackRightXPosInches;
-        kBackRightYPosInches = TunerConstants.kBackRightYPosInches;
+        kBackRightXPosInches = TunerConstants.BackRight.LocationX;
+        kBackRightYPosInches = TunerConstants.BackRight.LocationY;
         // NOTE: The PIDF values from TunerConstants.java make WPILib/AK implemention go crazy
         //       These values are from the AK example sketches
         kDriveP = 0.05;
@@ -304,9 +304,11 @@ public class DriveConstants {
   }
 
   // Computed quantities
-  public static final double kDriveBaseRadius =
+  public static final double kDriveBaseRadiusInches =
       Math.hypot(kFrontLeftXPosInches, kFrontLeftYPosInches);
+  public static final double kWheelRadiusMeters = Units.inchesToMeters(kWheelRadiusInches);
 
+  // Stuff to deal with from AK25's Spark Swerve Template
   public static final double maxSpeedMetersPerSec = 4.8;
   public static final double odometryFrequency = 100.0; // Hz
   public static final double trackWidth = Units.inchesToMeters(26.5);
@@ -319,25 +321,6 @@ public class DriveConstants {
         new Translation2d(-trackWidth / 2.0, wheelBase / 2.0),
         new Translation2d(-trackWidth / 2.0, -wheelBase / 2.0)
       };
-
-  // Zeroed rotation values for each module, see setup instructions
-  public static final Rotation2d frontLeftZeroRotation = new Rotation2d(0.0);
-  public static final Rotation2d frontRightZeroRotation = new Rotation2d(0.0);
-  public static final Rotation2d backLeftZeroRotation = new Rotation2d(0.0);
-  public static final Rotation2d backRightZeroRotation = new Rotation2d(0.0);
-
-  // Device CAN IDs
-  public static final int pigeonCanId = 9;
-
-  public static final int frontLeftDriveCanId = 1;
-  public static final int backLeftDriveCanId = 3;
-  public static final int frontRightDriveCanId = 5;
-  public static final int backRightDriveCanId = 7;
-
-  public static final int frontLeftTurnCanId = 2;
-  public static final int backLeftTurnCanId = 4;
-  public static final int frontRightTurnCanId = 6;
-  public static final int backRightTurnCanId = 8;
 
   // Drive motor configuration
   public static final int driveMotorCurrentLimit = 50;

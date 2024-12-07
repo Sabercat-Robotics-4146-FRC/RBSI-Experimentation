@@ -15,7 +15,6 @@
 
 package frc.robot.subsystems.drive;
 
-import static frc.robot.subsystems.drive.DriveConstants.*;
 import static frc.robot.util.PhoenixUtil.*;
 
 import com.ctre.phoenix6.BaseStatusSignal;
@@ -95,11 +94,22 @@ public class ModuleIOTalonFX implements ModuleIO {
   private final Debouncer turnConnectedDebounce = new Debouncer(0.5);
   private final Debouncer turnEncoderConnectedDebounce = new Debouncer(0.5);
 
-  public ModuleIOTalonFX(SwerveModuleConstants constants) {
-    this.constants = constants;
-    driveTalon = new TalonFX(constants.DriveMotorId, TunerConstants.DrivetrainConstants.CANBusName);
-    turnTalon = new TalonFX(constants.SteerMotorId, TunerConstants.DrivetrainConstants.CANBusName);
-    cancoder = new CANcoder(constants.CANcoderId, TunerConstants.DrivetrainConstants.CANBusName);
+  /*
+   * TalonFX I/O
+   */
+  public ModuleIOTalonFX(int module) {
+    constants =
+        switch (module) {
+          case 0 -> TunerConstants.FrontLeft;
+          case 1 -> TunerConstants.FrontRight;
+          case 2 -> TunerConstants.BackLeft;
+          case 3 -> TunerConstants.BackRight;
+          default -> throw new IllegalArgumentException("Invalid module index");
+        };
+
+    driveTalon = new TalonFX(constants.DriveMotorId, DriveConstants.kCANbusName);
+    turnTalon = new TalonFX(constants.SteerMotorId, DriveConstants.kCANbusName);
+    cancoder = new CANcoder(constants.CANcoderId, DriveConstants.kCANbusName);
 
     // Configure drive motor
     var driveConfig = constants.DriveMotorInitialConfigs;

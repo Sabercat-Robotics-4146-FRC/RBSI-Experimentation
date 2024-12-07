@@ -26,6 +26,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -229,7 +230,7 @@ public final class Constants {
     // Theoretical free speed (m/s) at 12v applied output;
     // This needs to be tuned to your individual robot
     // NOTE: If using SwerveType.PHOENIX6, adjust this in the Phoenix X Tuner Swerve Generator
-    public static final double kMaxLinearSpeed = TunerConstants.kSpeedAt12VoltsMps;
+    public static final LinearVelocity kMaxLinearSpeed = TunerConstants.kSpeedAt12Volts;
     //       Otherwise, set the maximum linear speed here
     // public static final double kMaxLinearSpeed = 5.21;
 
@@ -304,7 +305,7 @@ public final class Constants {
     public static final AprilTagLayoutType defaultAprilTagType = AprilTagLayoutType.OFFICIAL;
 
     public static final AprilTagFieldLayout aprilTagFieldLayout =
-        AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
+        AprilTagFields.kDefaultField.loadAprilTagLayoutField();
 
     @Getter
     public enum AprilTagLayoutType {

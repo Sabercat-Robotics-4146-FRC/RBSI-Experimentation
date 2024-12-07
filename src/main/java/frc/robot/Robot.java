@@ -21,7 +21,6 @@ import frc.robot.Constants.PowerConstants;
 import frc.robot.RobotContainer.Ports;
 import frc.robot.util.VirtualSubsystem;
 import org.littletonrobotics.junction.LogFileUtil;
-import org.littletonrobotics.junction.LogTable;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.inputs.LoggedPowerDistribution;
@@ -94,9 +93,8 @@ public class Robot extends LoggedRobot {
     // See http://bit.ly/3YIzFZ6 for more information on timestamps in AdvantageKit.
     // Logger.disableDeterministicTimestamps()
 
-    // Start AdvantageKit logger; disable protobuf warnings
+    // Start AdvantageKit logger
     Logger.start();
-    LogTable.disableProtobufWarning();
 
     // Instantiate our RobotContainer. This will perform all our button bindings,
     // and put our autonomous chooser on the dashboard.

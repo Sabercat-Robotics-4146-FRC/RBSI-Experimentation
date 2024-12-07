@@ -14,49 +14,73 @@
 package frc.robot.subsystems.flywheel_example;
 
 import static frc.robot.Constants.FlywheelConstants.*;
+import static frc.robot.util.SparkUtil.*;
 
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkClosedLoopController.ArbFFUnits;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SparkFlexConfig;
 import edu.wpi.first.math.util.Units;
 import frc.robot.RobotContainer.Ports;
+import frc.robot.subsystems.drive.DriveConstants;
 
 /**
  * NOTE: To use the Spark Flex / NEO Vortex, replace all instances of "CANSparkMax" with
  * "CANSparkFlex".
  */
-public class FlywheelIOSparkMax implements FlywheelIO {
+public class FlywheelIOSpark implements FlywheelIO {
 
   // Define the leader / follower motors from the Ports section of RobotContainer
   private final SparkBase leader =
-      new SparkBase(Ports.FLYWHEEL_LEADER.getDeviceNumber(), MotorType.kBrushless);
+      new SparkMax(Ports.FLYWHEEL_LEADER.getDeviceNumber(), MotorType.kBrushless);
   private final SparkBase follower =
-      new SparkBase(Ports.FLYWHEEL_LEADER.getDeviceNumber(), MotorType.kBrushless);
+      new SparkMax(Ports.FLYWHEEL_LEADER.getDeviceNumber(), MotorType.kBrushless);
   private final RelativeEncoder encoder = leader.getEncoder();
-  private final SparkClosedLoopController pid = leader.getPIDController();
+  private final SparkClosedLoopController pid = leader.getClosedLoopController();
   // IMPORTANT: Include here all devices listed above that are part of this mechanism!
   public final int[] powerPorts = {
     Ports.FLYWHEEL_LEADER.getPowerPort(), Ports.FLYWHEEL_FOLLOWER.getPowerPort()
   };
 
-  public FlywheelIOSparkMax() {
-    leader.restoreFactoryDefaults();
-    follower.restoreFactoryDefaults();
+  public FlywheelIOSpark() {
 
-    leader.setCANTimeout(250);
-    follower.setCANTimeout(250);
-
-    leader.setInverted(false);
-    follower.follow(leader, false);
-
-    leader.enableVoltageCompensation(12.0);
-    leader.setSmartCurrentLimit(30);
-
-    leader.burnFlash();
-    follower.burnFlash();
+    // Configure leader motor
+    var leaderConfig = new SparkFlexConfig();
+    leaderConfig
+        .idleMode(IdleMode.kBrake)
+        .smartCurrentLimit(DriveConstants.driveMotorCurrentLimit)
+        .voltageCompensation(12.0);
+    leaderConfig.encoder.uvwMeasurementPeriod(10).uvwAverageDepth(2);
+    leaderConfig
+        .closedLoop
+        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+        .pidf(
+            0.0, 0.0,
+            0.0, 0.0);
+    leaderConfig
+        .signals
+        .primaryEncoderPositionAlwaysOn(true)
+        .primaryEncoderPositionPeriodMs((int) (1000.0 / DriveConstants.odometryFrequency))
+        .primaryEncoderVelocityAlwaysOn(true)
+        .primaryEncoderVelocityPeriodMs(20)
+        .appliedOutputPeriodMs(20)
+        .busVoltagePeriodMs(20)
+        .outputCurrentPeriodMs(20);
+    tryUntilOk(
+        leader,
+        5,
+        () ->
+            leader.configure(
+                leaderConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters));
+    tryUntilOk(leader, 5, () -> leaderEncoder.setPosition(0.0));
   }
 
   @Override

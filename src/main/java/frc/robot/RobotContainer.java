@@ -22,7 +22,6 @@ package frc.robot;
 import static frc.robot.subsystems.vision.VisionConstants.*;
 
 import choreo.Choreo;
-import choreo.trajectory.Trajectory;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.controller.PIDController;
@@ -74,7 +73,6 @@ public class RobotContainer {
 
   // Autonomous Things
   Field2d m_field = new Field2d();
-  Trajectory m_traj;
 
   // Declare the robot subsystems here
   private final Drive m_drivebase;
@@ -277,7 +275,7 @@ public class RobotContainer {
    */
   public Command getAutonomousCommandChoreo() {
 
-    m_traj = Choreo.getTrajectory("Trajectory");
+    var m_traj = Choreo.loadTrajectory("Trajectory");
 
     m_field.getObject("traj").setPoses(m_traj.getInitialPose(), m_traj.getFinalPose());
     m_field.getObject("trajPoses").setPoses(m_traj.getPoses());

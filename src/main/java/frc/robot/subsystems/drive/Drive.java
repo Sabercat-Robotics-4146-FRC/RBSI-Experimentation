@@ -151,7 +151,7 @@ public class Drive extends SubsystemBase {
               modules[i] = new Module(new ModuleIOSparkCANcoder(i), i);
               break;
             case 0b01010100: // NEO motors + analog encoder
-              modules[i] = new Module(new ModuleIOSparkMax(i), i);
+              modules[i] = new Module(new ModuleIOSpark(i), i);
               break;
             default:
               throw new RuntimeException("Invalid swerve module combination");
@@ -261,11 +261,24 @@ public class Drive extends SubsystemBase {
       }
 
       // Apply update
-      poseEstimator.updateWithTime(sampleTimestamps[i], rawGyroRotation, modulePositions);
+      m_PoseEstimator.updateWithTime(sampleTimestamps[i], rawGyroRotation, modulePositions);
     }
 
     // Update gyro alert
-    gyroDisconnectedAlert.set(!gyroInputs.connected && Constants.currentMode != Mode.SIM);
+    gyroDisconnectedAlert.set(!gyroInputs.connected && Constants.getMode() != Mode.SIM);
+  }
+
+  /**
+   * Sets the swerve drive motors to brake/coast mode.
+   *
+   * @param brake True to set motors to brake mode, false for coast.
+   */
+  public void setMotorBrake(boolean brake) {
+    {
+      for (Module swerveModule : modules) {
+        swerveModule.setBrakeMode(brake);
+      }
+    }
   }
 
   /**
@@ -297,6 +310,11 @@ public class Drive extends SubsystemBase {
     for (int i = 0; i < 4; i++) {
       modules[i].runCharacterization(output);
     }
+  }
+
+  /** Re-zero the gyro at the present heading */
+  public void zero() {
+    gyroIO.zero();
   }
 
   /** Stops the drive. */
@@ -375,7 +393,7 @@ public class Drive extends SubsystemBase {
   /** Returns the current odometry pose. */
   @AutoLogOutput(key = "Odometry/Robot")
   public Pose2d getPose() {
-    return poseEstimator.getEstimatedPosition();
+    return m_PoseEstimator.getEstimatedPosition();
   }
 
   /** Returns the current odometry rotation. */
@@ -385,7 +403,7 @@ public class Drive extends SubsystemBase {
 
   /** Resets the current odometry pose. */
   public void setPose(Pose2d pose) {
-    poseEstimator.resetPosition(rawGyroRotation, getModulePositions(), pose);
+    m_PoseEstimator.resetPosition(rawGyroRotation, getModulePositions(), pose);
   }
 
   /** Adds a new timestamped vision measurement. */
@@ -393,13 +411,13 @@ public class Drive extends SubsystemBase {
       Pose2d visionRobotPoseMeters,
       double timestampSeconds,
       Matrix<N3, N1> visionMeasurementStdDevs) {
-    poseEstimator.addVisionMeasurement(
+    m_PoseEstimator.addVisionMeasurement(
         visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
   }
 
   /** Returns the maximum linear speed in meters per sec. */
   public double getMaxLinearSpeedMetersPerSec() {
-    return DrivebaseConstants.kMaxLinearSpeed;
+    return DrivebaseConstants.kMaxLinearSpeed.in(MetersPerSecond);
   }
 
   /** Returns the maximum angular speed in radians per sec. */
