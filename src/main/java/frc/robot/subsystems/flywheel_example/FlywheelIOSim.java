@@ -15,11 +15,27 @@ package frc.robot.subsystems.flywheel_example;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.system.plant.LinearSystemId;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 
 public class FlywheelIOSim implements FlywheelIO {
-  private FlywheelSim sim = new FlywheelSim(DCMotor.getNEO(1), 1.5, 0.004);
+  // Reduction between motors and encoder, as output over input. If the flywheel
+  // spins slower than the motors, this number should be greater than one.
+  private static final double kFlywheelGearing = 1.0;
+
+  // 1/2 MR²
+  private static final double kFlywheelMomentOfInertia =
+      0.5 * Units.lbsToKilograms(1.5) * Math.pow(Units.inchesToMeters(4), 2);
+
+  private final DCMotor m_gearbox = DCMotor.getNEO(1);
+  private final LinearSystem<N1, N1, N1> m_plant =
+      LinearSystemId.createFlywheelSystem(m_gearbox, kFlywheelGearing, kFlywheelMomentOfInertia);
+
+  private final FlywheelSim sim = new FlywheelSim(m_plant, m_gearbox);
   private PIDController pid = new PIDController(0.0, 0.0, 0.0);
 
   private boolean closedLoop = false;

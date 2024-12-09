@@ -80,7 +80,7 @@ public class FlywheelIOSpark implements FlywheelIO {
         () ->
             leader.configure(
                 leaderConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters));
-    tryUntilOk(leader, 5, () -> leaderEncoder.setPosition(0.0));
+    tryUntilOk(leader, 5, () -> encoder.setPosition(0.0));
   }
 
   @Override
@@ -112,11 +112,18 @@ public class FlywheelIOSpark implements FlywheelIO {
     leader.stopMotor();
   }
 
+  /**
+   * Configure the closed-loop PID
+   *
+   * <p>TODO: This functionality is no longer supported by the REVLib SparkClosedLoopController
+   * class. In order to keep control of the flywheel's underlying funtionality, shift everything to
+   * SmartMotion control.
+   */
   @Override
   public void configurePID(double kP, double kI, double kD) {
-    pid.setP(kP, 0);
-    pid.setI(kI, 0);
-    pid.setD(kD, 0);
-    pid.setFF(0, 0);
+    // pid.setP(kP, 0);
+    // pid.setI(kI, 0);
+    // pid.setD(kD, 0);
+    // pid.setFF(0, 0);
   }
 }

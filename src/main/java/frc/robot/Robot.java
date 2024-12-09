@@ -13,6 +13,7 @@
 
 package frc.robot;
 
+import choreo.auto.AutoRoutine;
 import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -35,7 +36,8 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
  * project.
  */
 public class Robot extends LoggedRobot {
-  private Command m_autonomousCommand;
+  private Command m_autoCommandPathPlanner;
+  private AutoRoutine m_autoCommandChoreo;
   private RobotContainer m_robotContainer;
   private Timer m_disabledTimer;
 
@@ -151,18 +153,22 @@ public class Robot extends LoggedRobot {
     m_robotContainer.setMotorBrake(true);
     switch (Constants.getAutoType()) {
       case PATHPLANNER:
-        m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+        m_autoCommandPathPlanner = m_robotContainer.getAutonomousCommandPathPlanner();
+        // schedule the autonomous command
+        if (m_autoCommandPathPlanner != null) {
+          m_autoCommandPathPlanner.schedule();
+        }
         break;
       case CHOREO:
-        m_autonomousCommand = m_robotContainer.getAutonomousCommandChoreo();
+        m_autoCommandChoreo = m_robotContainer.getAutonomousCommandChoreo();
+        // schedule the autonomous command (example)
+        if (m_autoCommandChoreo != null) {
+          CommandScheduler.getInstance().schedule(m_autoCommandChoreo.cmd());
+        }
         break;
       default:
         throw new RuntimeException(
             "Incorrect AUTO type selected in Constants: " + Constants.getAutoType());
-    }
-    // schedule the autonomous command (example)
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.schedule();
     }
   }
 
@@ -177,8 +183,8 @@ public class Robot extends LoggedRobot {
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
     // this line or comment it out.
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.cancel();
+    if (m_autoCommandPathPlanner != null) {
+      m_autoCommandPathPlanner.cancel();
     } else {
       CommandScheduler.getInstance().cancelAll();
     }

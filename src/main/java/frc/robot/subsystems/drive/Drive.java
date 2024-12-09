@@ -18,7 +18,9 @@ package frc.robot.subsystems.drive;
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.drive.DriveConstants.*;
 
+import choreo.trajectory.SwerveSample;
 import com.ctre.phoenix6.CANBus;
+import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.PIDConstants;
@@ -30,6 +32,7 @@ import edu.wpi.first.hal.FRCNetComm.tInstances;
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.hal.HAL;
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -51,9 +54,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.Constants.DrivebaseConstants;
-import frc.robot.Constants.Mode;
 import frc.robot.generated.TunerConstants;
 import frc.robot.util.LocalADStarAK;
+import frc.robot.util.RBSIEnum.Mode;
 import frc.robot.util.YagslConstants;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -492,5 +495,40 @@ public class Drive extends SubsystemBase {
         throw new RuntimeException("Invalid swerve encoder type");
     }
     return (byte) (0b00000000 | b_drive << 6 | b_steer << 4 | b_encoder << 2);
+  }
+
+  public Command resetOdometry(Pose2d orElseGet) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'resetOdometry'");
+  }
+
+  /** Swerve request to apply during field-centric path following */
+  private final SwerveRequest.ApplyFieldSpeeds m_pathApplyFieldSpeeds =
+      new SwerveRequest.ApplyFieldSpeeds();
+
+  private final PIDController m_pathXController = new PIDController(10, 0, 0);
+  private final PIDController m_pathYController = new PIDController(10, 0, 0);
+  private final PIDController m_pathThetaController = new PIDController(7, 0, 0);
+
+  /**
+   * Follows the given field-centric path sample with PID for Choreo
+   *
+   * @param pose Current pose of the robot
+   * @param sample Sample along the path to follow
+   */
+  public void choreoController(Pose2d pose, SwerveSample sample) {
+    m_pathThetaController.enableContinuousInput(-Math.PI, Math.PI);
+
+    var targetSpeeds = sample.getChassisSpeeds();
+    targetSpeeds.vxMetersPerSecond += m_pathXController.calculate(pose.getX(), sample.x);
+    targetSpeeds.vyMetersPerSecond += m_pathYController.calculate(pose.getY(), sample.y);
+    targetSpeeds.omegaRadiansPerSecond +=
+        m_pathThetaController.calculate(pose.getRotation().getRadians(), sample.heading);
+
+    // setControl(
+    //     m_pathApplyFieldSpeeds
+    //         .withSpeeds(targetSpeeds)
+    //         .withWheelForceFeedforwardsX(sample.moduleForcesX())
+    //         .withWheelForceFeedforwardsY(sample.moduleForcesY()));
   }
 }

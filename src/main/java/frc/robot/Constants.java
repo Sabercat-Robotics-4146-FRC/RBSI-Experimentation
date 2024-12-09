@@ -17,6 +17,8 @@
 
 package frc.robot;
 
+import static frc.robot.util.RBSIEnum.*;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pathplanner.lib.config.PIDConstants;
@@ -33,6 +35,11 @@ import edu.wpi.first.wpilibj.RobotBase;
 import frc.robot.generated.TunerConstants;
 import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
+import frc.robot.util.RBSIEnum.AutoType;
+import frc.robot.util.RBSIEnum.Mode;
+import frc.robot.util.RBSIEnum.RobotType;
+import frc.robot.util.RBSIEnum.SwerveType;
+import frc.robot.util.RBSIEnum.VisionType;
 import java.io.IOException;
 import java.nio.file.Path;
 import lombok.Getter;
@@ -62,20 +69,6 @@ public final class Constants {
 
   public static boolean disableHAL = false;
 
-  /** Enumerate the robot types (add additional bots here) */
-  public static enum RobotType {
-    DEVBOT, // Development / Alpha / Practice Bot
-    COMPBOT, // Competition robot
-    SIMBOT // Simulated robot
-  }
-
-  /** Enumerate the robot operation modes */
-  public static enum Mode {
-    REAL, // REAL == Running on a real robot
-    REPLAY, // REPLAY == Replaying from a log file
-    SIM // SIM == Running a physics simulator
-  }
-
   /** Get the current robot */
   public static RobotType getRobot() {
     if (!disableHAL && RobotBase.isReal() && robotType == RobotType.SIMBOT) {
@@ -84,14 +77,6 @@ public final class Constants {
       robotType = RobotType.COMPBOT;
     }
     return robotType;
-  }
-
-  /** Get the current mode */
-  public static Mode getMode() {
-    return switch (robotType) {
-      case DEVBOT, COMPBOT -> RobotBase.isReal() ? Mode.REAL : Mode.REPLAY;
-      case SIMBOT -> Mode.SIM;
-    };
   }
 
   /** Disable the Hardware Abstraction Layer, if requested */
@@ -107,10 +92,12 @@ public final class Constants {
     }
   }
 
-  /** Enumerate the supported swerve drive types */
-  public static enum SwerveType {
-    PHOENIX6, // The all-CTRE Phoenix6 swerve generator
-    YAGSL // The generic YAGSL swerve generator
+  /** Get the current robot mode */
+  public static Mode getMode() {
+    return switch (robotType) {
+      case DEVBOT, COMPBOT -> RobotBase.isReal() ? Mode.REAL : Mode.REPLAY;
+      case SIMBOT -> Mode.SIM;
+    };
   }
 
   /** Get the current swerve drive type */
@@ -118,22 +105,9 @@ public final class Constants {
     return swerveType;
   }
 
-  /** Enumerate the supported autonomous path planning types */
-  public static enum AutoType {
-    PATHPLANNER, // PathPlanner (https://pathplanner.dev/home.html)
-    CHOREO // Choreo (https://sleipnirgroup.github.io/Choreo/)
-  }
-
   /** Get the current autonomous path planning type */
   public static AutoType getAutoType() {
     return autoType;
-  }
-
-  /** Enumerate the supported vision types */
-  public static enum VisionType {
-    PHOTON, // PhotonVision (https://docs.photonvision.org/en/latest/)
-    LIMELIGHT, // Limelight (...)
-    NONE // No cameras
   }
 
   /** Get the current autonomous path planning type */
