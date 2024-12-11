@@ -66,23 +66,6 @@ public final class Constants {
   private static AutoType autoType = AutoType.PATHPLANNER;
   private static VisionType visionType = VisionType.NONE;
 
-  public static boolean disableHAL = false;
-
-  /** Get the current robot */
-  public static RobotType getRobot() {
-    if (!disableHAL && RobotBase.isReal() && robotType == RobotType.SIMBOT) {
-      new Alert("Invalid robot selected, using competition robot as default.", AlertType.ERROR)
-          .set(true);
-      robotType = RobotType.COMPBOT;
-    }
-    return robotType;
-  }
-
-  /** Disable the Hardware Abstraction Layer, if requested */
-  public static void disableHAL() {
-    disableHAL = true;
-  }
-
   /** Checks whether the correct robot is selected when deploying. */
   public static void main(String... args) {
     if (robotType == RobotType.SIMBOT) {
@@ -91,27 +74,11 @@ public final class Constants {
     }
   }
 
-  /** Get the current robot mode */
-  public static Mode getMode() {
-    return switch (robotType) {
-      case DEVBOT, COMPBOT -> RobotBase.isReal() ? Mode.REAL : Mode.REPLAY;
-      case SIMBOT -> Mode.SIM;
-    };
-  }
+  /** Disable the Hardware Abstraction Layer, if requested */
+  public static boolean disableHAL = false;
 
-  /** Get the current swerve drive type */
-  public static SwerveType getSwerveType() {
-    return swerveType;
-  }
-
-  /** Get the current autonomous path planning type */
-  public static AutoType getAutoType() {
-    return autoType;
-  }
-
-  /** Get the current autonomous path planning type */
-  public static VisionType getVisionType() {
-    return visionType;
+  public static void disableHAL() {
+    disableHAL = true;
   }
 
   /***************************************************************************/
@@ -122,8 +89,29 @@ public final class Constants {
 
   public static final boolean tuningMode = false;
 
+  /** Physical Constants for Robot Operation ******************************* */
+  public static final class PhysicalConstants {
+
+    public static final double kRobotMass = (148 - 20.3) * 0.453592; // 32lbs * kg per pound
+    public static final Matter kChassis =
+        new Matter(new Translation3d(0, 0, Units.inchesToMeters(8)), kRobotMass);
+    public static final double kLoopTime = 0.13; // s, 20ms + 110ms sprk max velocity lag
+  }
+
+  /** Power Distribution Constants ********************************** */
+  public static final class PowerConstants {
+
+    // Set this to either kRev or kCTRE for the type of Power Distribution Module
+    public static final ModuleType kPowerModule = ModuleType.kRev;
+    // Current Limits
+    public static final double kTotalMaxCurrent = 120.;
+    public static final double kMotorPortMaxCurrent = 40.;
+    public static final double kSmallPortMaxCurrent = 20.;
+  }
+
   /** Accelerometer Constants ********************************************** */
   public static class AccelerometerConstants {
+
     // Insert here the orientation (CCW == +) of the Rio and IMU from the robot
     // An angle of "0." means the x-y-z markings on the device match the robot's intrinsic reference
     //   frame.
@@ -141,60 +129,6 @@ public final class Constants {
           case DEVBOT -> Rotation2d.fromDegrees(0.);
           default -> Rotation2d.fromDegrees(0.);
         };
-  }
-
-  /** Physical Constants for Robot Operation ******************************* */
-  public static final class PhysicalConstants {
-    public static final double kRobotMass = (148 - 20.3) * 0.453592; // 32lbs * kg per pound
-    public static final Matter kChassis =
-        new Matter(new Translation3d(0, 0, Units.inchesToMeters(8)), PhysicalConstants.kRobotMass);
-    public static final double kLoopTime = 0.13; // s, 20ms + 110ms sprk max velocity lag
-  }
-
-  /** Deploy Directoy Location Constants *********************************** */
-  public static final class DeployConstants {
-    public static final String apriltagDir = "apriltags";
-    public static final String choreoDir = "choreo";
-    public static final String pathplannerDir = "pathplanner";
-    public static final String yagslDir = "swerve";
-  }
-
-  /** Power Distribution Constants ********************************** */
-  public static final class PowerConstants {
-
-    // Set this to either kRev or kCTRE for the type of Power Distribution Module
-    public static final ModuleType kPowerModule = ModuleType.kRev;
-
-    // Current Limits
-    public static final double kTotalMaxCurrent = 120.;
-    public static final double kMotorPortMaxCurrent = 40.;
-    public static final double kSmallPortMaxCurrent = 20.;
-  }
-
-  /** Autonomous Action Constants ****************************************** */
-  public static final class AutonConstants {
-
-    // Translation PID constants
-    public static final PIDConstants kAutoTranslatePID = new PIDConstants(0.7, 0, 0);
-    // Rotation PID constants
-    public static final PIDConstants kAutoAnglePID = new PIDConstants(0.4, 0, 0.01);
-  }
-
-  /** Choreo Autonomous Action Constants *********************************** */
-  public static final class AutoConstants {
-    public static final double kMaxSpeedMetersPerSecond = 3;
-    public static final double kMaxAccelerationMetersPerSecondSquared = 3;
-    public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI;
-    public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.PI;
-
-    public static final double kPXController = 1;
-    public static final double kPYController = 1;
-    public static final double kPThetaController = 1;
-
-    // Constraint for the motion profiled robot angle controller
-    public static final TrapezoidProfile.Constraints kThetaControllerConstraints =
-        new TrapezoidProfile.Constraints(
-            kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared);
   }
 
   /** Drive Base Constants ************************************************* */
@@ -258,6 +192,33 @@ public final class Constants {
     public static final double kTurnConstant = 6;
   }
 
+  /** Autonomous Action Constants ****************************************** */
+  public static final class AutonConstants {
+
+    // Translation PID constants
+    public static final PIDConstants kAutoTranslatePID = new PIDConstants(0.7, 0, 0);
+    // Rotation PID constants
+    public static final PIDConstants kAutoAnglePID = new PIDConstants(0.4, 0, 0.01);
+  }
+
+  /** Choreo Autonomous Action Constants *********************************** */
+  public static final class AutoConstants {
+
+    public static final double kMaxSpeedMetersPerSecond = 3;
+    public static final double kMaxAccelerationMetersPerSecondSquared = 3;
+    public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI;
+    public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.PI;
+
+    public static final double kPXController = 1;
+    public static final double kPYController = 1;
+    public static final double kPThetaController = 1;
+
+    // Constraint for the motion profiled robot angle controller
+    public static final TrapezoidProfile.Constraints kThetaControllerConstraints =
+        new TrapezoidProfile.Constraints(
+            kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared);
+  }
+
   /** Vision Constants (Assuming PhotonVision) ***************************** */
   public static class VisionConstants {
 
@@ -272,6 +233,7 @@ public final class Constants {
 
   /** AprilTag Field Layout ************************************************ */
   /* SEASON SPECIFIC! -- This section is for 2024 (Crescendo) */
+  // NOTE: This section will be updated to 2025 "Reefscape" following kickoff
   public static class AprilTagConstants {
 
     public static final double aprilTagWidth = Units.inchesToMeters(6.50);
@@ -315,5 +277,48 @@ public final class Constants {
       private final AprilTagFieldLayout layout;
       private final String layoutString;
     }
+  }
+
+  /** Deploy Directoy Location Constants *********************************** */
+  public static final class DeployConstants {
+    public static final String apriltagDir = "apriltags";
+    public static final String choreoDir = "choreo";
+    public static final String pathplannerDir = "pathplanner";
+    public static final String yagslDir = "swerve";
+  }
+
+  /***************************************************************************/
+  /** Getter functions -- do not modify ************************************ */
+  /** Get the current robot */
+  public static RobotType getRobot() {
+    if (!disableHAL && RobotBase.isReal() && robotType == RobotType.SIMBOT) {
+      new Alert("Invalid robot selected, using competition robot as default.", AlertType.ERROR)
+          .set(true);
+      robotType = RobotType.COMPBOT;
+    }
+    return robotType;
+  }
+
+  /** Get the current robot mode */
+  public static Mode getMode() {
+    return switch (robotType) {
+      case DEVBOT, COMPBOT -> RobotBase.isReal() ? Mode.REAL : Mode.REPLAY;
+      case SIMBOT -> Mode.SIM;
+    };
+  }
+
+  /** Get the current swerve drive type */
+  public static SwerveType getSwerveType() {
+    return swerveType;
+  }
+
+  /** Get the current autonomous path planning type */
+  public static AutoType getAutoType() {
+    return autoType;
+  }
+
+  /** Get the current autonomous path planning type */
+  public static VisionType getVisionType() {
+    return visionType;
   }
 }
