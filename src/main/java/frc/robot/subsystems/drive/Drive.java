@@ -54,10 +54,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.Constants.DrivebaseConstants;
-import frc.robot.generated.TunerConstants;
 import frc.robot.util.LocalADStarAK;
 import frc.robot.util.RBSIEnum.Mode;
-import frc.robot.util.YagslConstants;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -66,16 +64,8 @@ import org.littletonrobotics.junction.Logger;
 public class Drive extends SubsystemBase {
 
   // TunerConstants doesn't include these constants, so they are declared locally
-  static final double ODOMETRY_FREQUENCY =
-      new CANBus(TunerConstants.DrivetrainConstants.CANBusName).isNetworkFD() ? 250.0 : 100.0;
-  public static final double DRIVE_BASE_RADIUS =
-      Math.max(
-          Math.max(
-              Math.hypot(TunerConstants.FrontLeft.LocationX, TunerConstants.FrontRight.LocationY),
-              Math.hypot(TunerConstants.FrontRight.LocationX, TunerConstants.FrontRight.LocationY)),
-          Math.max(
-              Math.hypot(TunerConstants.BackLeft.LocationX, TunerConstants.BackLeft.LocationY),
-              Math.hypot(TunerConstants.BackRight.LocationX, TunerConstants.BackRight.LocationY)));
+  static final double ODOMETRY_FREQUENCY = new CANBus(kCANbusName).isNetworkFD() ? 250.0 : 100.0;
+  public static final double DRIVE_BASE_RADIUS = kDriveBaseRadiusMeters;
 
   // PathPlanner config constants
   private static final double ROBOT_MASS_KG = 74.088;
@@ -86,12 +76,11 @@ public class Drive extends SubsystemBase {
           ROBOT_MASS_KG,
           ROBOT_MOI,
           new ModuleConfig(
-              TunerConstants.FrontLeft.WheelRadius,
-              TunerConstants.kSpeedAt12Volts.in(MetersPerSecond),
+              kWheelRadiusMeters,
+              DrivebaseConstants.kMaxLinearSpeed.magnitude(),
               WHEEL_COF,
-              DCMotor.getKrakenX60Foc(1)
-                  .withReduction(TunerConstants.FrontLeft.DriveMotorGearRatio),
-              TunerConstants.FrontLeft.SlipCurrent,
+              DCMotor.getKrakenX60Foc(1).withReduction(kDriveGearRatio),
+              kDriveSlipCurrent,
               1),
           getModuleTranslations());
 
@@ -112,7 +101,6 @@ public class Drive extends SubsystemBase {
         new SwerveModulePosition(),
         new SwerveModulePosition()
       };
-
   private SwerveDrivePoseEstimator m_PoseEstimator =
       new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
 
@@ -121,7 +109,7 @@ public class Drive extends SubsystemBase {
     switch (Constants.getSwerveType()) {
       case PHOENIX6:
         // This one is easy because it's all CTRE all the time
-        gyroIO = new GyroIOPigeon2();
+        this.gyroIO = new GyroIOPigeon2();
         for (int i = 0; i < 4; i++) {
           modules[i] = new Module(new ModuleIOTalonFX(i), i);
         }
@@ -129,13 +117,13 @@ public class Drive extends SubsystemBase {
 
       case YAGSL:
         // First, choose the Gyro
-        switch (YagslConstants.swerveDriveJson.imu.type) {
+        switch (kImuType) {
           case "pigeon2":
-            gyroIO = new GyroIOPigeon2();
+            this.gyroIO = new GyroIOPigeon2();
             break;
           case "navx":
           case "navx_spi":
-            gyroIO = new GyroIONavX();
+            this.gyroIO = new GyroIONavX();
             break;
           default:
             throw new RuntimeException("Invalid IMU type");
@@ -164,17 +152,17 @@ public class Drive extends SubsystemBase {
       default:
         throw new RuntimeException("Invalid Swerve Drive Type");
     }
+
     // Usage reporting for swerve template
     HAL.report(tResourceType.kResourceType_RobotDrive, tInstances.kRobotDriveSwerve_AdvantageKit);
 
     // Start odometry thread
     PhoenixOdometryThread.getInstance().start();
 
-    // Configure AutoBuilder for PathPlanner
-
     // Configure Autonomous Path Building for PathPlanner based on `AutoType`
     switch (Constants.getAutoType()) {
       case PATHPLANNER:
+        // Configure AutoBuilder for PathPlanner
         AutoBuilder.configure(
             this::getPose,
             this::setPose,
@@ -195,12 +183,14 @@ public class Drive extends SubsystemBase {
             (targetPose) -> {
               Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
             });
-
         break;
+
       case CHOREO:
+        // TODO: Probably need to add something here for Choreo autonomous path building
         break;
       default:
     }
+
     // Configure SysId
     sysId =
         new SysIdRoutine(
@@ -291,9 +281,9 @@ public class Drive extends SubsystemBase {
    */
   public void runVelocity(ChassisSpeeds speeds) {
     // Calculate module setpoints
-    speeds.discretize(0.02);
+    speeds.discretize(Constants.loopPeriodSecs);
     SwerveModuleState[] setpointStates = kinematics.toSwerveModuleStates(speeds);
-    SwerveDriveKinematics.desaturateWheelSpeeds(setpointStates, TunerConstants.kSpeedAt12Volts);
+    SwerveDriveKinematics.desaturateWheelSpeeds(setpointStates, DrivebaseConstants.kMaxLinearSpeed);
 
     // Log unoptimized setpoints and setpoint speeds
     Logger.recordOutput("SwerveStates/Setpoints", setpointStates);
@@ -431,15 +421,50 @@ public class Drive extends SubsystemBase {
   /** Returns an array of module translations. */
   public static Translation2d[] getModuleTranslations() {
     return new Translation2d[] {
-      new Translation2d(TunerConstants.FrontLeft.LocationX, TunerConstants.FrontLeft.LocationY),
-      new Translation2d(TunerConstants.FrontRight.LocationX, TunerConstants.FrontRight.LocationY),
-      new Translation2d(TunerConstants.BackLeft.LocationX, TunerConstants.BackLeft.LocationY),
-      new Translation2d(TunerConstants.BackRight.LocationX, TunerConstants.BackRight.LocationY)
+      new Translation2d(kFrontLeftXPosMeters, kFrontLeftYPosMeters),
+      new Translation2d(kFrontRightXPosMeters, kFrontRightYPosMeters),
+      new Translation2d(kBackLeftXPosMeters, kBackLeftYPosMeters),
+      new Translation2d(kBackRightXPosMeters, kBackRightYPosMeters)
     };
   }
 
   public Object getGyro() {
     return gyroIO.getGyro();
+  }
+
+  public Command resetOdometry(Pose2d orElseGet) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'resetOdometry'");
+  }
+
+  /** Swerve request to apply during field-centric path following */
+  private final SwerveRequest.ApplyFieldSpeeds m_pathApplyFieldSpeeds =
+      new SwerveRequest.ApplyFieldSpeeds();
+
+  private final PIDController m_pathXController = new PIDController(10, 0, 0);
+  private final PIDController m_pathYController = new PIDController(10, 0, 0);
+  private final PIDController m_pathThetaController = new PIDController(7, 0, 0);
+
+  /**
+   * Follows the given field-centric path sample with PID for Choreo
+   *
+   * @param pose Current pose of the robot
+   * @param sample Sample along the path to follow
+   */
+  public void choreoController(Pose2d pose, SwerveSample sample) {
+    m_pathThetaController.enableContinuousInput(-Math.PI, Math.PI);
+
+    var targetSpeeds = sample.getChassisSpeeds();
+    targetSpeeds.vxMetersPerSecond += m_pathXController.calculate(pose.getX(), sample.x);
+    targetSpeeds.vyMetersPerSecond += m_pathYController.calculate(pose.getY(), sample.y);
+    targetSpeeds.omegaRadiansPerSecond +=
+        m_pathThetaController.calculate(pose.getRotation().getRadians(), sample.heading);
+
+    // setControl(
+    //     m_pathApplyFieldSpeeds
+    //         .withSpeeds(targetSpeeds)
+    //         .withWheelForceFeedforwardsX(sample.moduleForcesX())
+    //         .withWheelForceFeedforwardsY(sample.moduleForcesY()));
   }
 
   /**
@@ -495,40 +520,5 @@ public class Drive extends SubsystemBase {
         throw new RuntimeException("Invalid swerve encoder type");
     }
     return (byte) (0b00000000 | b_drive << 6 | b_steer << 4 | b_encoder << 2);
-  }
-
-  public Command resetOdometry(Pose2d orElseGet) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'resetOdometry'");
-  }
-
-  /** Swerve request to apply during field-centric path following */
-  private final SwerveRequest.ApplyFieldSpeeds m_pathApplyFieldSpeeds =
-      new SwerveRequest.ApplyFieldSpeeds();
-
-  private final PIDController m_pathXController = new PIDController(10, 0, 0);
-  private final PIDController m_pathYController = new PIDController(10, 0, 0);
-  private final PIDController m_pathThetaController = new PIDController(7, 0, 0);
-
-  /**
-   * Follows the given field-centric path sample with PID for Choreo
-   *
-   * @param pose Current pose of the robot
-   * @param sample Sample along the path to follow
-   */
-  public void choreoController(Pose2d pose, SwerveSample sample) {
-    m_pathThetaController.enableContinuousInput(-Math.PI, Math.PI);
-
-    var targetSpeeds = sample.getChassisSpeeds();
-    targetSpeeds.vxMetersPerSecond += m_pathXController.calculate(pose.getX(), sample.x);
-    targetSpeeds.vyMetersPerSecond += m_pathYController.calculate(pose.getY(), sample.y);
-    targetSpeeds.omegaRadiansPerSecond +=
-        m_pathThetaController.calculate(pose.getRotation().getRadians(), sample.heading);
-
-    // setControl(
-    //     m_pathApplyFieldSpeeds
-    //         .withSpeeds(targetSpeeds)
-    //         .withWheelForceFeedforwardsX(sample.moduleForcesX())
-    //         .withWheelForceFeedforwardsY(sample.moduleForcesY()));
   }
 }

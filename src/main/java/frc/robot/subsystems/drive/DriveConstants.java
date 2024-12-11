@@ -33,6 +33,7 @@ import frc.robot.util.YagslConstants;
 public class DriveConstants {
 
   // Declare all the constants
+  public static final String kImuType;
   public static final double kCoupleRatio;
   public static final double kDriveGearRatio;
   public static final double kSteerGearRatio;
@@ -45,6 +46,7 @@ public class DriveConstants {
   public static final double kDriveFrictionVoltage;
   public static final double kSteerCurrentLimit;
   public static final double kDriveCurrentLimit;
+  public static final double kDriveSlipCurrent;
   public static final double kOptimalVoltage;
   public static final int kFrontLeftDriveMotorId;
   public static final int kFrontLeftSteerMotorId;
@@ -59,8 +61,8 @@ public class DriveConstants {
   public static final boolean kFrontLeftDriveInvert;
   public static final boolean kFrontLeftSteerInvert;
   public static final boolean kFrontLeftEncoderInvert;
-  public static final double kFrontLeftXPosInches;
-  public static final double kFrontLeftYPosInches;
+  public static final double kFrontLeftXPosMeters;
+  public static final double kFrontLeftYPosMeters;
   public static final int kFrontRightDriveMotorId;
   public static final int kFrontRightSteerMotorId;
   public static final int kFrontRightEncoderId;
@@ -74,8 +76,8 @@ public class DriveConstants {
   public static final boolean kFrontRightDriveInvert;
   public static final boolean kFrontRightSteerInvert;
   public static final boolean kFrontRightEncoderInvert;
-  public static final double kFrontRightXPosInches;
-  public static final double kFrontRightYPosInches;
+  public static final double kFrontRightXPosMeters;
+  public static final double kFrontRightYPosMeters;
   public static final int kBackLeftDriveMotorId;
   public static final int kBackLeftSteerMotorId;
   public static final int kBackLeftEncoderId;
@@ -89,8 +91,8 @@ public class DriveConstants {
   public static final boolean kBackLeftDriveInvert;
   public static final boolean kBackLeftSteerInvert;
   public static final boolean kBackLeftEncoderInvert;
-  public static final double kBackLeftXPosInches;
-  public static final double kBackLeftYPosInches;
+  public static final double kBackLeftXPosMeters;
+  public static final double kBackLeftYPosMeters;
   public static final int kBackRightDriveMotorId;
   public static final int kBackRightSteerMotorId;
   public static final int kBackRightEncoderId;
@@ -104,8 +106,8 @@ public class DriveConstants {
   public static final boolean kBackRightDriveInvert;
   public static final boolean kBackRightSteerInvert;
   public static final boolean kBackRightEncoderInvert;
-  public static final double kBackRightXPosInches;
-  public static final double kBackRightYPosInches;
+  public static final double kBackRightXPosMeters;
+  public static final double kBackRightYPosMeters;
   public static final double kDriveP;
   public static final double kDriveI;
   public static final double kDriveD;
@@ -121,6 +123,7 @@ public class DriveConstants {
   static {
     switch (Constants.getSwerveType()) {
       case PHOENIX6:
+        kImuType = "pigeon2";
         kCoupleRatio = TunerConstants.FrontLeft.CouplingGearRatio;
         kDriveGearRatio = TunerConstants.FrontLeft.DriveMotorGearRatio;
         kSteerGearRatio = TunerConstants.FrontLeft.SteerMotorGearRatio;
@@ -133,6 +136,7 @@ public class DriveConstants {
         kDriveFrictionVoltage = 0.1;
         kSteerCurrentLimit = 40.0; // Example from CTRE documentation
         kDriveCurrentLimit = 120.0; // Example from CTRE documentation
+        kDriveSlipCurrent = TunerConstants.FrontLeft.SlipCurrent;
         kOptimalVoltage = 12.0; // Assumed Ideal
         kFrontLeftDriveMotorId = TunerConstants.FrontLeft.DriveMotorId;
         kFrontLeftSteerMotorId = TunerConstants.FrontLeft.SteerMotorId;
@@ -148,8 +152,8 @@ public class DriveConstants {
         kFrontLeftDriveInvert = TunerConstants.FrontLeft.DriveMotorInverted;
         kFrontLeftSteerInvert = TunerConstants.FrontLeft.SteerMotorInverted;
         kFrontLeftEncoderInvert = false;
-        kFrontLeftXPosInches = TunerConstants.FrontLeft.LocationX;
-        kFrontLeftYPosInches = TunerConstants.FrontLeft.LocationY;
+        kFrontLeftXPosMeters = TunerConstants.FrontLeft.LocationX;
+        kFrontLeftYPosMeters = TunerConstants.FrontLeft.LocationY;
         kFrontRightDriveMotorId = TunerConstants.FrontRight.DriveMotorId;
         kFrontRightSteerMotorId = TunerConstants.FrontRight.SteerMotorId;
         kFrontRightEncoderId = TunerConstants.FrontRight.CANcoderId;
@@ -164,8 +168,8 @@ public class DriveConstants {
         kFrontRightDriveInvert = TunerConstants.FrontRight.DriveMotorInverted;
         kFrontRightSteerInvert = TunerConstants.FrontRight.SteerMotorInverted;
         kFrontRightEncoderInvert = false;
-        kFrontRightXPosInches = TunerConstants.FrontRight.LocationX;
-        kFrontRightYPosInches = TunerConstants.FrontRight.LocationY;
+        kFrontRightXPosMeters = TunerConstants.FrontRight.LocationX;
+        kFrontRightYPosMeters = TunerConstants.FrontRight.LocationY;
         kBackLeftDriveMotorId = TunerConstants.BackLeft.DriveMotorId;
         kBackLeftSteerMotorId = TunerConstants.BackLeft.SteerMotorId;
         kBackLeftEncoderId = TunerConstants.BackLeft.CANcoderId;
@@ -180,8 +184,8 @@ public class DriveConstants {
         kBackLeftDriveInvert = TunerConstants.BackLeft.DriveMotorInverted;
         kBackLeftSteerInvert = TunerConstants.BackLeft.SteerMotorInverted;
         kBackLeftEncoderInvert = false;
-        kBackLeftXPosInches = TunerConstants.BackLeft.LocationX;
-        kBackLeftYPosInches = TunerConstants.BackLeft.LocationY;
+        kBackLeftXPosMeters = TunerConstants.BackLeft.LocationX;
+        kBackLeftYPosMeters = TunerConstants.BackLeft.LocationY;
         kBackRightDriveMotorId = TunerConstants.BackRight.DriveMotorId;
         kBackRightSteerMotorId = TunerConstants.BackRight.SteerMotorId;
         kBackRightEncoderId = TunerConstants.BackRight.CANcoderId;
@@ -196,8 +200,8 @@ public class DriveConstants {
         kBackRightDriveInvert = TunerConstants.BackRight.DriveMotorInverted;
         kBackRightSteerInvert = TunerConstants.BackRight.SteerMotorInverted;
         kBackRightEncoderInvert = false;
-        kBackRightXPosInches = TunerConstants.BackRight.LocationX;
-        kBackRightYPosInches = TunerConstants.BackRight.LocationY;
+        kBackRightXPosMeters = TunerConstants.BackRight.LocationX;
+        kBackRightYPosMeters = TunerConstants.BackRight.LocationY;
         // NOTE: The PIDF values from TunerConstants.java make WPILib/AK implemention go crazy
         //       These values are from the AK example sketches
         kDriveP = 0.05;
@@ -213,6 +217,7 @@ public class DriveConstants {
         break;
 
       case YAGSL:
+        kImuType = YagslConstants.swerveDriveJson.imu.type;
         kCoupleRatio = YagslConstants.kCoupleRatio;
         kDriveGearRatio = YagslConstants.kDriveGearRatio;
         kSteerGearRatio = YagslConstants.kSteerGearRatio;
@@ -225,6 +230,7 @@ public class DriveConstants {
         kDriveFrictionVoltage = YagslConstants.kDriveFrictionVoltage;
         kSteerCurrentLimit = YagslConstants.kSteerCurrentLimit;
         kDriveCurrentLimit = YagslConstants.kDriveCurrentLimit;
+        kDriveSlipCurrent = 120.0;
         kOptimalVoltage = YagslConstants.kOptimalVoltage;
         kFrontLeftDriveMotorId = YagslConstants.kFrontLeftDriveMotorId;
         kFrontLeftSteerMotorId = YagslConstants.kFrontLeftSteerMotorId;
@@ -239,8 +245,8 @@ public class DriveConstants {
         kFrontLeftDriveInvert = YagslConstants.kFrontLeftDriveInvert;
         kFrontLeftSteerInvert = YagslConstants.kFrontLeftSteerInvert;
         kFrontLeftEncoderInvert = YagslConstants.kFrontLeftEncoderInvert;
-        kFrontLeftXPosInches = YagslConstants.kFrontLeftXPosInches;
-        kFrontLeftYPosInches = YagslConstants.kFrontLeftYPosInches;
+        kFrontLeftXPosMeters = Units.inchesToMeters(YagslConstants.kFrontLeftXPosInches);
+        kFrontLeftYPosMeters = Units.inchesToMeters(YagslConstants.kFrontLeftYPosInches);
         kFrontRightDriveMotorId = YagslConstants.kFrontRightDriveMotorId;
         kFrontRightSteerMotorId = YagslConstants.kFrontRightSteerMotorId;
         kFrontRightEncoderId = YagslConstants.kFrontRightEncoderId;
@@ -254,8 +260,8 @@ public class DriveConstants {
         kFrontRightDriveInvert = YagslConstants.kFrontRightDriveInvert;
         kFrontRightSteerInvert = YagslConstants.kFrontRightSteerInvert;
         kFrontRightEncoderInvert = YagslConstants.kFrontRightEncoderInvert;
-        kFrontRightXPosInches = YagslConstants.kFrontRightXPosInches;
-        kFrontRightYPosInches = YagslConstants.kFrontRightYPosInches;
+        kFrontRightXPosMeters = Units.inchesToMeters(YagslConstants.kFrontRightXPosInches);
+        kFrontRightYPosMeters = Units.inchesToMeters(YagslConstants.kFrontRightYPosInches);
         kBackLeftDriveMotorId = YagslConstants.kBackLeftDriveMotorId;
         kBackLeftSteerMotorId = YagslConstants.kBackLeftSteerMotorId;
         kBackLeftEncoderId = YagslConstants.kBackLeftEncoderId;
@@ -269,8 +275,8 @@ public class DriveConstants {
         kBackLeftDriveInvert = YagslConstants.kBackLeftDriveInvert;
         kBackLeftSteerInvert = YagslConstants.kBackLeftSteerInvert;
         kBackLeftEncoderInvert = YagslConstants.kBackLeftEncoderInvert;
-        kBackLeftXPosInches = YagslConstants.kBackLeftXPosInches;
-        kBackLeftYPosInches = YagslConstants.kBackLeftYPosInches;
+        kBackLeftXPosMeters = Units.inchesToMeters(YagslConstants.kBackLeftXPosInches);
+        kBackLeftYPosMeters = Units.inchesToMeters(YagslConstants.kBackLeftYPosInches);
         kBackRightDriveMotorId = YagslConstants.kBackRightDriveMotorId;
         kBackRightSteerMotorId = YagslConstants.kBackRightSteerMotorId;
         kBackRightEncoderId = YagslConstants.kBackRightEncoderId;
@@ -284,8 +290,8 @@ public class DriveConstants {
         kBackRightDriveInvert = YagslConstants.kBackRightDriveInvert;
         kBackRightSteerInvert = YagslConstants.kBackRightSteerInvert;
         kBackRightEncoderInvert = YagslConstants.kBackRightEncoderInvert;
-        kBackRightXPosInches = YagslConstants.kBackRightXPosInches;
-        kBackRightYPosInches = YagslConstants.kBackRightYPosInches;
+        kBackRightXPosMeters = Units.inchesToMeters(YagslConstants.kBackRightXPosInches);
+        kBackRightYPosMeters = Units.inchesToMeters(YagslConstants.kBackRightYPosInches);
         kDriveP = YagslConstants.kDriveP;
         kDriveI = YagslConstants.kDriveI;
         kDriveD = YagslConstants.kDriveD;
@@ -304,8 +310,15 @@ public class DriveConstants {
   }
 
   // Computed quantities
-  public static final double kDriveBaseRadiusInches =
-      Math.hypot(kFrontLeftXPosInches, kFrontLeftYPosInches);
+  public static final double kDriveBaseRadiusMeters =
+      Math.max(
+          Math.max(
+              Math.hypot(kFrontLeftXPosMeters, kFrontLeftYPosMeters),
+              Math.hypot(kFrontRightXPosMeters, kFrontRightYPosMeters)),
+          Math.max(
+              Math.hypot(kBackLeftXPosMeters, kBackLeftYPosMeters),
+              Math.hypot(kBackRightXPosMeters, kBackRightYPosMeters)));
+  public static final double kDriveBaseRadiusInches = Units.metersToInches(kDriveBaseRadiusMeters);
   public static final double kWheelRadiusMeters = Units.inchesToMeters(kWheelRadiusInches);
 
   // Stuff to deal with from AK25's Spark Swerve Template

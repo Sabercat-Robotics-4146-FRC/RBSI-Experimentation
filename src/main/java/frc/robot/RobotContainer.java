@@ -45,7 +45,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.AprilTagConstants;
 import frc.robot.Constants.AprilTagConstants.AprilTagLayoutType;
 import frc.robot.Constants.PowerConstants;
-import frc.robot.commands.AutoController;
+import frc.robot.commands.ChoreoAutoController;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.accelerometer.Accelerometer;
 import frc.robot.subsystems.drive.Drive;
@@ -90,7 +90,7 @@ public class RobotContainer {
   private final LoggedDashboardChooser<Command> autoChooserPathPlanner;
   private final AutoChooser autoChooserChoreo;
   private final AutoFactory autoFactoryChoreo;
-  private final AutoController choreoController;
+  private final ChoreoAutoController choreoController;
   // EXAMPLE TUNABLE FLYWHEEL SPEED INPUT FROM DASHBOARD
   private final LoggedTunableNumber flywheelSpeedInput =
       new LoggedTunableNumber("Flywheel Speed", 1500.0);
@@ -176,7 +176,7 @@ public class RobotContainer {
         choreoController = null;
         break;
       case CHOREO:
-        choreoController = new AutoController(m_drivebase);
+        choreoController = new ChoreoAutoController(m_drivebase);
         autoFactoryChoreo =
             Choreo.createAutoFactory(
                 m_drivebase::getPose, // A function that returns the current robot pose

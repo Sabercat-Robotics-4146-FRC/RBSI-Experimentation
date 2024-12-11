@@ -24,7 +24,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import frc.robot.subsystems.drive.Drive;
 import java.util.function.Consumer;
 
-public class AutoController implements Consumer<SwerveSample> {
+public class ChoreoAutoController implements Consumer<SwerveSample> {
   private final Drive drive; // drive subsystem
   private final PIDController xController =
       new PIDController(kAutoTranslatePID.kP, 0.0, kAutoTranslatePID.kD);
@@ -33,7 +33,7 @@ public class AutoController implements Consumer<SwerveSample> {
   private final PIDController headingController =
       new PIDController(kAutoAnglePID.kP, 0.0, kAutoAnglePID.kD);
 
-  public AutoController(Drive drive) {
+  public ChoreoAutoController(Drive drive) {
     this.drive = drive;
     headingController.enableContinuousInput(-Math.PI, Math.PI);
   }

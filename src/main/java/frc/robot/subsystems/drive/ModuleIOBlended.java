@@ -119,8 +119,8 @@ public class ModuleIOBlended implements ModuleIO {
                   kFrontLeftDriveMotorId,
                   kFrontLeftEncoderId,
                   kFrontLeftEncoderOffset,
-                  kFrontLeftXPosInches,
-                  kFrontLeftYPosInches,
+                  kFrontLeftXPosMeters,
+                  kFrontLeftYPosMeters,
                   kFrontLeftDriveInvert,
                   kFrontLeftSteerInvert,
                   kFrontLeftEncoderInvert);
@@ -130,8 +130,8 @@ public class ModuleIOBlended implements ModuleIO {
                   kFrontRightDriveMotorId,
                   kFrontRightEncoderId,
                   kFrontRightEncoderOffset,
-                  kFrontRightXPosInches,
-                  kFrontRightYPosInches,
+                  kFrontRightXPosMeters,
+                  kFrontRightYPosMeters,
                   kFrontRightDriveInvert,
                   kFrontRightSteerInvert,
                   kFrontRightEncoderInvert);
@@ -141,8 +141,8 @@ public class ModuleIOBlended implements ModuleIO {
                   kBackLeftDriveMotorId,
                   kBackLeftEncoderId,
                   kBackLeftEncoderOffset,
-                  kBackLeftXPosInches,
-                  kBackLeftYPosInches,
+                  kBackLeftXPosMeters,
+                  kBackLeftYPosMeters,
                   kBackLeftDriveInvert,
                   kBackLeftSteerInvert,
                   kBackLeftEncoderInvert);
@@ -152,8 +152,8 @@ public class ModuleIOBlended implements ModuleIO {
                   kBackRightDriveMotorId,
                   kBackRightEncoderId,
                   kBackRightEncoderOffset,
-                  kBackRightXPosInches,
-                  kBackRightYPosInches,
+                  kBackRightXPosMeters,
+                  kBackRightYPosMeters,
                   kBackRightDriveInvert,
                   kBackRightSteerInvert,
                   kBackRightEncoderInvert);
