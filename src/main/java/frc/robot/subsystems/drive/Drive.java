@@ -133,8 +133,8 @@ public class Drive extends SubsystemBase {
         for (int i = 0; i < 4; i++) {
           switch (modType) {
             case 0b00000000: // ALL-CTRE
-              modules[i] = new Module(new ModuleIOTalonFX(i), i);
-              break;
+              throw new RuntimeException(
+                  "For an all-CTRE drive base, use Phoenix Tuner X Swerve Generator instead of YAGSL!");
             case 0b00010000: // Blended Talon Drive / NEO Steer
               modules[i] = new Module(new ModuleIOBlended(i), i);
               break;

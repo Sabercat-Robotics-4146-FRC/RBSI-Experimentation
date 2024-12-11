@@ -35,11 +35,6 @@ import edu.wpi.first.wpilibj.RobotBase;
 import frc.robot.generated.TunerConstants;
 import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
-import frc.robot.util.RBSIEnum.AutoType;
-import frc.robot.util.RBSIEnum.Mode;
-import frc.robot.util.RBSIEnum.RobotType;
-import frc.robot.util.RBSIEnum.SwerveType;
-import frc.robot.util.RBSIEnum.VisionType;
 import java.io.IOException;
 import java.nio.file.Path;
 import lombok.Getter;
@@ -63,6 +58,10 @@ public final class Constants {
   private static RobotType robotType = RobotType.COMPBOT;
 
   // Define swerve, auto, and vision types being used
+  // NOTE: Only PHOENIX6 swerve base has been tested at this point!!!
+  //       If you have a swerve base with non-CTRE compoments, use YAGSL
+  //       under strict caveat emptor -- and submit any error and bugfixes
+  //       via GitHub issues.
   private static SwerveType swerveType = SwerveType.PHOENIX6;
   private static AutoType autoType = AutoType.PATHPLANNER;
   private static VisionType visionType = VisionType.NONE;
