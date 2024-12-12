@@ -64,8 +64,9 @@ import org.littletonrobotics.junction.Logger;
 public class Drive extends SubsystemBase {
 
   // TunerConstants doesn't include these constants, so they are declared locally
-  static final double ODOMETRY_FREQUENCY = new CANBus(kCANbusName).isNetworkFD() ? 250.0 : 100.0;
   public static final double DRIVE_BASE_RADIUS = kDriveBaseRadiusMeters;
+  // Are we on the CANivore or not?
+  static final double ODOMETRY_FREQUENCY = new CANBus(kCANbusName).isNetworkFD() ? 250.0 : 100.0;
 
   // PathPlanner config constants
   private static final double ROBOT_MASS_KG = 74.088;

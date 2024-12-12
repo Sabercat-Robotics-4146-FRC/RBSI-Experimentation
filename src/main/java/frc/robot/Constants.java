@@ -62,9 +62,10 @@ public final class Constants {
   //       If you have a swerve base with non-CTRE compoments, use YAGSL
   //       under strict caveat emptor -- and submit any error and bugfixes
   //       via GitHub issues.
-  private static SwerveType swerveType = SwerveType.PHOENIX6;
-  private static AutoType autoType = AutoType.PATHPLANNER;
-  private static VisionType visionType = VisionType.NONE;
+  private static SwerveType swerveType = SwerveType.PHOENIX6; // PHOENIX6, YAGSL
+  private static boolean phoenixPro = false; // CTRE Pro License?  true, false
+  private static AutoType autoType = AutoType.PATHPLANNER; // PATHPLANNER, CHOREO
+  private static VisionType visionType = VisionType.NONE; // PHOTON, LIMELIGHT, NONE
 
   /** Checks whether the correct robot is selected when deploying. */
   public static void main(String... args) {
@@ -320,5 +321,10 @@ public final class Constants {
   /** Get the current autonomous path planning type */
   public static VisionType getVisionType() {
     return visionType;
+  }
+
+  /** Get the current CTRE/Phoenix Pro License state */
+  public static boolean getPhoenixPro() {
+    return phoenixPro;
   }
 }
