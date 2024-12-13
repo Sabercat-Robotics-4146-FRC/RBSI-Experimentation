@@ -13,6 +13,8 @@
 
 package frc.robot;
 
+import choreo.auto.AutoRoutine;
+import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -20,7 +22,6 @@ import frc.robot.Constants.PowerConstants;
 import frc.robot.RobotContainer.Ports;
 import frc.robot.util.VirtualSubsystem;
 import org.littletonrobotics.junction.LogFileUtil;
-import org.littletonrobotics.junction.LogTable;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.inputs.LoggedPowerDistribution;
@@ -35,7 +36,8 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
  * project.
  */
 public class Robot extends LoggedRobot {
-  private Command m_autonomousCommand;
+  private Command m_autoCommandPathPlanner;
+  private AutoRoutine m_autoCommandChoreo;
   private RobotContainer m_robotContainer;
   private Timer m_disabledTimer;
 
@@ -93,9 +95,8 @@ public class Robot extends LoggedRobot {
     // See http://bit.ly/3YIzFZ6 for more information on timestamps in AdvantageKit.
     // Logger.disableDeterministicTimestamps()
 
-    // Start AdvantageKit logger; disable protobuf warnings
+    // Start AdvantageKit logger
     Logger.start();
-    LogTable.disableProtobufWarning();
 
     // Instantiate our RobotContainer. This will perform all our button bindings,
     // and put our autonomous chooser on the dashboard.
@@ -110,6 +111,9 @@ public class Robot extends LoggedRobot {
   /** This function is called periodically during all modes. */
   @Override
   public void robotPeriodic() {
+    // Switch thread to high priority to improve loop timing
+    Threads.setCurrentThreadPriority(true, 99);
+
     // Run all virtual subsystems each time through the loop
     VirtualSubsystem.periodicAll();
 
@@ -119,6 +123,9 @@ public class Robot extends LoggedRobot {
     // This must be called from the robot's periodic block in order for anything in
     // the Command-based framework to work.
     CommandScheduler.getInstance().run();
+
+    // Return to normal thread priority
+    Threads.setCurrentThreadPriority(false, 10);
   }
 
   /** This function is called once when the robot is disabled. */
@@ -146,18 +153,22 @@ public class Robot extends LoggedRobot {
     m_robotContainer.setMotorBrake(true);
     switch (Constants.getAutoType()) {
       case PATHPLANNER:
-        m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+        m_autoCommandPathPlanner = m_robotContainer.getAutonomousCommandPathPlanner();
+        // schedule the autonomous command
+        if (m_autoCommandPathPlanner != null) {
+          m_autoCommandPathPlanner.schedule();
+        }
         break;
       case CHOREO:
-        m_autonomousCommand = m_robotContainer.getAutonomousCommandChoreo();
+        m_autoCommandChoreo = m_robotContainer.getAutonomousCommandChoreo();
+        // schedule the autonomous command (example)
+        if (m_autoCommandChoreo != null) {
+          CommandScheduler.getInstance().schedule(m_autoCommandChoreo.cmd());
+        }
         break;
       default:
         throw new RuntimeException(
             "Incorrect AUTO type selected in Constants: " + Constants.getAutoType());
-    }
-    // schedule the autonomous command (example)
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.schedule();
     }
   }
 
@@ -172,8 +183,8 @@ public class Robot extends LoggedRobot {
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
     // this line or comment it out.
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.cancel();
+    if (m_autoCommandPathPlanner != null) {
+      m_autoCommandPathPlanner.cancel();
     } else {
       CommandScheduler.getInstance().cancelAll();
     }

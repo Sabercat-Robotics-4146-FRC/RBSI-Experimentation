@@ -17,15 +17,18 @@
 
 package frc.robot;
 
+import static frc.robot.util.RBSIEnum.*;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.pathplanner.lib.util.PIDConstants;
+import com.pathplanner.lib.config.PIDConstants;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -55,48 +58,14 @@ public final class Constants {
   private static RobotType robotType = RobotType.COMPBOT;
 
   // Define swerve, auto, and vision types being used
-  private static SwerveType swerveType = SwerveType.PHOENIX6;
-  private static AutoType autoType = AutoType.PATHPLANNER;
-  private static VisionType visionType = VisionType.NONE;
-
-  public static boolean disableHAL = false;
-
-  /** Enumerate the robot types (add additional bots here) */
-  public static enum RobotType {
-    DEVBOT, // Development / Alpha / Practice Bot
-    COMPBOT, // Competition robot
-    SIMBOT // Simulated robot
-  }
-
-  /** Enumerate the robot operation modes */
-  public static enum Mode {
-    REAL, // REAL == Running on a real robot
-    REPLAY, // REPLAY == Replaying from a log file
-    SIM // SIM == Running a physics simulator
-  }
-
-  /** Get the current robot */
-  public static RobotType getRobot() {
-    if (!disableHAL && RobotBase.isReal() && robotType == RobotType.SIMBOT) {
-      new Alert("Invalid robot selected, using competition robot as default.", AlertType.ERROR)
-          .set(true);
-      robotType = RobotType.COMPBOT;
-    }
-    return robotType;
-  }
-
-  /** Get the current mode */
-  public static Mode getMode() {
-    return switch (robotType) {
-      case DEVBOT, COMPBOT -> RobotBase.isReal() ? Mode.REAL : Mode.REPLAY;
-      case SIMBOT -> Mode.SIM;
-    };
-  }
-
-  /** Disable the Hardware Abstraction Layer, if requested */
-  public static void disableHAL() {
-    disableHAL = true;
-  }
+  // NOTE: Only PHOENIX6 swerve base has been tested at this point!!!
+  //       If you have a swerve base with non-CTRE compoments, use YAGSL
+  //       under strict caveat emptor -- and submit any error and bugfixes
+  //       via GitHub issues.
+  private static SwerveType swerveType = SwerveType.PHOENIX6; // PHOENIX6, YAGSL
+  private static boolean phoenixPro = false; // CTRE Pro License?  true, false
+  private static AutoType autoType = AutoType.PATHPLANNER; // PATHPLANNER, CHOREO
+  private static VisionType visionType = VisionType.NONE; // PHOTON, LIMELIGHT, NONE
 
   /** Checks whether the correct robot is selected when deploying. */
   public static void main(String... args) {
@@ -106,37 +75,11 @@ public final class Constants {
     }
   }
 
-  /** Enumerate the supported swerve drive types */
-  public static enum SwerveType {
-    PHOENIX6, // The all-CTRE Phoenix6 swerve generator
-    YAGSL // The generic YAGSL swerve generator
-  }
+  /** Disable the Hardware Abstraction Layer, if requested */
+  public static boolean disableHAL = false;
 
-  /** Get the current swerve drive type */
-  public static SwerveType getSwerveType() {
-    return swerveType;
-  }
-
-  /** Enumerate the supported autonomous path planning types */
-  public static enum AutoType {
-    PATHPLANNER, // PathPlanner (https://pathplanner.dev/home.html)
-    CHOREO // Choreo (https://sleipnirgroup.github.io/Choreo/)
-  }
-
-  /** Get the current autonomous path planning type */
-  public static AutoType getAutoType() {
-    return autoType;
-  }
-
-  /** Enumerate the supported vision types */
-  public static enum VisionType {
-    PHOTON, // PhotonVision (https://docs.photonvision.org/en/latest/)
-    NONE // No cameras
-  }
-
-  /** Get the current autonomous path planning type */
-  public static VisionType getVisionType() {
-    return visionType;
+  public static void disableHAL() {
+    disableHAL = true;
   }
 
   /***************************************************************************/
@@ -147,8 +90,29 @@ public final class Constants {
 
   public static final boolean tuningMode = false;
 
+  /** Physical Constants for Robot Operation ******************************* */
+  public static final class PhysicalConstants {
+
+    public static final double kRobotMass = (148 - 20.3) * 0.453592; // 32lbs * kg per pound
+    public static final Matter kChassis =
+        new Matter(new Translation3d(0, 0, Units.inchesToMeters(8)), kRobotMass);
+    public static final double kLoopTime = 0.13; // s, 20ms + 110ms sprk max velocity lag
+  }
+
+  /** Power Distribution Constants ********************************** */
+  public static final class PowerConstants {
+
+    // Set this to either kRev or kCTRE for the type of Power Distribution Module
+    public static final ModuleType kPowerModule = ModuleType.kRev;
+    // Current Limits
+    public static final double kTotalMaxCurrent = 120.;
+    public static final double kMotorPortMaxCurrent = 40.;
+    public static final double kSmallPortMaxCurrent = 20.;
+  }
+
   /** Accelerometer Constants ********************************************** */
   public static class AccelerometerConstants {
+
     // Insert here the orientation (CCW == +) of the Rio and IMU from the robot
     // An angle of "0." means the x-y-z markings on the device match the robot's intrinsic reference
     //   frame.
@@ -168,67 +132,13 @@ public final class Constants {
         };
   }
 
-  /** Physical Constants for Robot Operation ******************************* */
-  public static final class PhysicalConstants {
-    public static final double kRobotMass = (148 - 20.3) * 0.453592; // 32lbs * kg per pound
-    public static final Matter kChassis =
-        new Matter(new Translation3d(0, 0, Units.inchesToMeters(8)), PhysicalConstants.kRobotMass);
-    public static final double kLoopTime = 0.13; // s, 20ms + 110ms sprk max velocity lag
-  }
-
-  /** Deploy Directoy Location Constants *********************************** */
-  public static final class DeployConstants {
-    public static final String apriltagDir = "apriltags";
-    public static final String choreoDir = "choreo";
-    public static final String pathplannerDir = "pathplanner";
-    public static final String yagslDir = "swerve";
-  }
-
-  /** Power Distribution Constants ********************************** */
-  public static final class PowerConstants {
-
-    // Set this to either kRev or kCTRE for the type of Power Distribution Module
-    public static final ModuleType kPowerModule = ModuleType.kRev;
-
-    // Current Limits
-    public static final double kTotalMaxCurrent = 120.;
-    public static final double kMotorPortMaxCurrent = 40.;
-    public static final double kSmallPortMaxCurrent = 20.;
-  }
-
-  /** Autonomous Action Constants ****************************************** */
-  public static final class AutonConstants {
-
-    // Translation PID constants
-    public static final PIDConstants kAutoTranslatePID = new PIDConstants(0.7, 0, 0);
-    // Rotation PID constants
-    public static final PIDConstants kAutoAnglePID = new PIDConstants(0.4, 0, 0.01);
-  }
-
-  /** Choreo Autonomous Action Constants *********************************** */
-  public static final class AutoConstants {
-    public static final double kMaxSpeedMetersPerSecond = 3;
-    public static final double kMaxAccelerationMetersPerSecondSquared = 3;
-    public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI;
-    public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.PI;
-
-    public static final double kPXController = 1;
-    public static final double kPYController = 1;
-    public static final double kPThetaController = 1;
-
-    // Constraint for the motion profiled robot angle controller
-    public static final TrapezoidProfile.Constraints kThetaControllerConstraints =
-        new TrapezoidProfile.Constraints(
-            kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared);
-  }
-
   /** Drive Base Constants ************************************************* */
   public static final class DrivebaseConstants {
 
     // Theoretical free speed (m/s) at 12v applied output;
     // This needs to be tuned to your individual robot
     // NOTE: If using SwerveType.PHOENIX6, adjust this in the Phoenix X Tuner Swerve Generator
-    public static final double kMaxLinearSpeed = TunerConstants.kSpeedAt12VoltsMps;
+    public static final LinearVelocity kMaxLinearSpeed = TunerConstants.kSpeedAt12Volts;
     //       Otherwise, set the maximum linear speed here
     // public static final double kMaxLinearSpeed = 5.21;
 
@@ -283,6 +193,33 @@ public final class Constants {
     public static final double kTurnConstant = 6;
   }
 
+  /** Autonomous Action Constants ****************************************** */
+  public static final class AutonConstants {
+
+    // Translation PID constants
+    public static final PIDConstants kAutoTranslatePID = new PIDConstants(0.7, 0, 0);
+    // Rotation PID constants
+    public static final PIDConstants kAutoAnglePID = new PIDConstants(0.4, 0, 0.01);
+  }
+
+  /** Choreo Autonomous Action Constants *********************************** */
+  public static final class AutoConstants {
+
+    public static final double kMaxSpeedMetersPerSecond = 3;
+    public static final double kMaxAccelerationMetersPerSecondSquared = 3;
+    public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI;
+    public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.PI;
+
+    public static final double kPXController = 1;
+    public static final double kPYController = 1;
+    public static final double kPThetaController = 1;
+
+    // Constraint for the motion profiled robot angle controller
+    public static final TrapezoidProfile.Constraints kThetaControllerConstraints =
+        new TrapezoidProfile.Constraints(
+            kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared);
+  }
+
   /** Vision Constants (Assuming PhotonVision) ***************************** */
   public static class VisionConstants {
 
@@ -297,13 +234,14 @@ public final class Constants {
 
   /** AprilTag Field Layout ************************************************ */
   /* SEASON SPECIFIC! -- This section is for 2024 (Crescendo) */
+  // NOTE: This section will be updated to 2025 "Reefscape" following kickoff
   public static class AprilTagConstants {
 
     public static final double aprilTagWidth = Units.inchesToMeters(6.50);
     public static final AprilTagLayoutType defaultAprilTagType = AprilTagLayoutType.OFFICIAL;
 
     public static final AprilTagFieldLayout aprilTagFieldLayout =
-        AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
+        AprilTagFields.kDefaultField.loadAprilTagLayoutField();
 
     @Getter
     public enum AprilTagLayoutType {
@@ -340,5 +278,53 @@ public final class Constants {
       private final AprilTagFieldLayout layout;
       private final String layoutString;
     }
+  }
+
+  /** Deploy Directoy Location Constants *********************************** */
+  public static final class DeployConstants {
+    public static final String apriltagDir = "apriltags";
+    public static final String choreoDir = "choreo";
+    public static final String pathplannerDir = "pathplanner";
+    public static final String yagslDir = "swerve";
+  }
+
+  /***************************************************************************/
+  /** Getter functions -- do not modify ************************************ */
+  /** Get the current robot */
+  public static RobotType getRobot() {
+    if (!disableHAL && RobotBase.isReal() && robotType == RobotType.SIMBOT) {
+      new Alert("Invalid robot selected, using competition robot as default.", AlertType.ERROR)
+          .set(true);
+      robotType = RobotType.COMPBOT;
+    }
+    return robotType;
+  }
+
+  /** Get the current robot mode */
+  public static Mode getMode() {
+    return switch (robotType) {
+      case DEVBOT, COMPBOT -> RobotBase.isReal() ? Mode.REAL : Mode.REPLAY;
+      case SIMBOT -> Mode.SIM;
+    };
+  }
+
+  /** Get the current swerve drive type */
+  public static SwerveType getSwerveType() {
+    return swerveType;
+  }
+
+  /** Get the current autonomous path planning type */
+  public static AutoType getAutoType() {
+    return autoType;
+  }
+
+  /** Get the current autonomous path planning type */
+  public static VisionType getVisionType() {
+    return visionType;
+  }
+
+  /** Get the current CTRE/Phoenix Pro License state */
+  public static boolean getPhoenixPro() {
+    return phoenixPro;
   }
 }
