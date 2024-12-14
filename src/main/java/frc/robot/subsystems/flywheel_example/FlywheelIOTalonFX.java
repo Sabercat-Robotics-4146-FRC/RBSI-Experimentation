@@ -1,3 +1,5 @@
+// Copyright (c) 2024 Az-FIRST
+// http://github.com/AZ-First
 // Copyright 2021-2024 FRC 6328
 // http://github.com/Mechanical-Advantage
 //
@@ -25,6 +27,10 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.units.measure.Voltage;
 import frc.robot.RobotContainer.Ports;
 
 public class FlywheelIOTalonFX implements FlywheelIO {
@@ -39,11 +45,11 @@ public class FlywheelIOTalonFX implements FlywheelIO {
     Ports.FLYWHEEL_LEADER.getPowerPort(), Ports.FLYWHEEL_FOLLOWER.getPowerPort()
   };
 
-  private final StatusSignal<Double> leaderPosition = leader.getPosition();
-  private final StatusSignal<Double> leaderVelocity = leader.getVelocity();
-  private final StatusSignal<Double> leaderAppliedVolts = leader.getMotorVoltage();
-  private final StatusSignal<Double> leaderCurrent = leader.getSupplyCurrent();
-  private final StatusSignal<Double> followerCurrent = follower.getSupplyCurrent();
+  private final StatusSignal<Angle> leaderPosition = leader.getPosition();
+  private final StatusSignal<AngularVelocity> leaderVelocity = leader.getVelocity();
+  private final StatusSignal<Voltage> leaderAppliedVolts = leader.getMotorVoltage();
+  private final StatusSignal<Current> leaderCurrent = leader.getSupplyCurrent();
+  private final StatusSignal<Current> followerCurrent = follower.getSupplyCurrent();
 
   public FlywheelIOTalonFX() {
     var config = new TalonFXConfiguration();
@@ -80,16 +86,7 @@ public class FlywheelIOTalonFX implements FlywheelIO {
 
   @Override
   public void setVelocity(double velocityRadPerSec, double ffVolts) {
-    leader.setControl(
-        new VelocityVoltage(
-            Units.radiansToRotations(velocityRadPerSec),
-            0.0,
-            true,
-            ffVolts,
-            0,
-            false,
-            false,
-            false));
+    leader.setControl(new VelocityVoltage(Units.radiansToRotations(velocityRadPerSec)));
   }
 
   @Override

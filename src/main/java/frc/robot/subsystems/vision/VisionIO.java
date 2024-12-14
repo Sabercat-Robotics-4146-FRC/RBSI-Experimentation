@@ -1,5 +1,7 @@
 // Copyright (c) 2024 Az-FIRST
 // http://github.com/AZ-First
+// Copyright 2021-2024 FRC 6328
+// http://github.com/Mechanical-Advantage
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -13,42 +15,37 @@
 
 package frc.robot.subsystems.vision;
 
-import java.util.ArrayList;
-import java.util.List;
-import org.littletonrobotics.junction.LogTable;
-import org.littletonrobotics.junction.inputs.LoggableInputs;
-import org.photonvision.targeting.PhotonTrackedTarget;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import org.littletonrobotics.junction.AutoLog;
 
 public interface VisionIO {
-
-  class VisionIOInputs implements LoggableInputs {
-    public String camname = "";
-    public double latency = 0.0;
-    public double timestamp = 0.0;
-    public List<PhotonTrackedTarget> targets = new ArrayList<PhotonTrackedTarget>() {};
-
-    public long fps = 0;
-
-    @Override
-    public void toLog(LogTable table) {
-      table.put("Latency", latency);
-      table.put("Timestamp", timestamp);
-      table.put("TargetCount", targets.size());
-      for (int i = 0; i < targets.size(); i++) {
-        table.put("Target/" + i, targets.get(i));
-      }
-      table.put("Fps", fps);
-    }
-
-    @Override
-    public void fromLog(LogTable table) {
-      latency = table.get("Latency", 0.0);
-      timestamp = table.get("Timestamp", 0.0);
-      int targetCount = table.get("TargetCount", 0);
-      targets = new ArrayList<PhotonTrackedTarget>(targetCount);
-      fps = table.get("Fps", 0);
-    }
+  @AutoLog
+  public static class VisionIOInputs {
+    public boolean connected = false;
+    public TargetObservation latestTargetObservation =
+        new TargetObservation(new Rotation2d(), new Rotation2d());
+    public PoseObservation[] poseObservations = new PoseObservation[0];
+    public int[] tagIds = new int[0];
   }
 
-  default void updateInputs(VisionIOInputs inputs) {}
+  /** Represents the angle to a simple target, not used for pose estimation. */
+  public static record TargetObservation(Rotation2d tx, Rotation2d ty) {}
+
+  /** Represents a robot pose sample used for pose estimation. */
+  public static record PoseObservation(
+      double timestamp,
+      Pose3d pose,
+      double ambiguity,
+      int tagCount,
+      double averageTagDistance,
+      PoseObservationType type) {}
+
+  public static enum PoseObservationType {
+    MEGATAG_1,
+    MEGATAG_2,
+    PHOTONVISION
+  }
+
+  public default void updateInputs(VisionIOInputs inputs) {}
 }
