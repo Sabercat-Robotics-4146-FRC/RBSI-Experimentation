@@ -155,11 +155,7 @@ public class Robot extends LoggedRobot {
         }
         break;
       case CHOREO:
-        m_autoCommandChoreo = m_robotContainer.getAutonomousCommandChoreo();
-        // schedule the autonomous command (example)
-        if (m_autoCommandChoreo != null) {
-          CommandScheduler.getInstance().schedule(m_autoCommandChoreo.cmd());
-        }
+        m_robotContainer.getAutonomousCommandChoreo();
         break;
       default:
         throw new RuntimeException(
