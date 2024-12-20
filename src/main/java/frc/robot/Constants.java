@@ -238,7 +238,7 @@ public final class Constants {
     public static final AprilTagLayoutType defaultAprilTagType = AprilTagLayoutType.OFFICIAL;
 
     public static final AprilTagFieldLayout aprilTagFieldLayout =
-        AprilTagFields.kDefaultField.loadAprilTagLayoutField();
+        AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
 
     @Getter
     public enum AprilTagLayoutType {
