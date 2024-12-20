@@ -52,10 +52,8 @@ public class ChoreoAutoController implements Consumer<SwerveSample> {
 
     // Convert to field relative speeds & send command
     ChassisSpeeds out =
-        new ChassisSpeeds(xFF + xFeedback, yFF + yFeedback, rotationFF + rotationFeedback);
-    // Convert from field-relative to robot-relative speeds
-    out.toRobotRelativeSpeeds(pose.getRotation());
-
+        ChassisSpeeds.fromFieldRelativeSpeeds(
+            xFF + xFeedback, yFF + yFeedback, rotationFF + rotationFeedback, pose.getRotation());
     drive.runVelocity(out);
   }
 }
