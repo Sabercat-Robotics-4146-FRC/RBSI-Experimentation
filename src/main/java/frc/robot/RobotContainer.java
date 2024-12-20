@@ -44,7 +44,6 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.AprilTagConstants;
 import frc.robot.Constants.AprilTagConstants.AprilTagLayoutType;
-import frc.robot.Constants.PowerConstants;
 import frc.robot.commands.ChoreoAutoController;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.accelerometer.Accelerometer;
@@ -79,8 +78,10 @@ public class RobotContainer {
   Field2d m_field = new Field2d();
 
   // Declare the robot subsystems here
+  // These are the "Active Subsystems" that the robot controlls
   private final Drive m_drivebase;
   private final Flywheel m_flywheel;
+  // These are "Virtual Subsystems" that report information but have no motors
   private final Accelerometer m_accel;
   private final Vision m_vision;
   private final PowerMonitoring m_power;
@@ -91,6 +92,9 @@ public class RobotContainer {
   private final AutoChooser autoChooserChoreo;
   private final AutoFactory autoFactoryChoreo;
   private final ChoreoAutoController choreoController;
+  // Input estimated battery capacity (if full, use printed value)
+  private final LoggedTunableNumber batteryCapacity =
+      new LoggedTunableNumber("Battery Amp-Hours", 18.0);
   // EXAMPLE TUNABLE FLYWHEEL SPEED INPUT FROM DASHBOARD
   private final LoggedTunableNumber flywheelSpeedInput =
       new LoggedTunableNumber("Flywheel Speed", 1500.0);
@@ -108,7 +112,6 @@ public class RobotContainer {
   }
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
-  @SuppressWarnings("unchecked")
   public RobotContainer() {
 
     // Instantiate Robot Subsystems based on RobotType
@@ -160,10 +163,10 @@ public class RobotContainer {
         break;
     }
 
-    // ``PowerMonitoring`` takes all the non-drivebase subsystems for which
-    //   you wish to have power monitoring; DO NOT include ``m_drivebase``,
-    //   as that is automatically monitored.
-    m_power = null; // new PowerMonitoring(m_flywheel);
+    // In addition to the initial battery capacity from the Dashbaord, ``PowerMonitoring`` takes all
+    // the non-drivebase subsystems for which you wish to have power monitoring; DO NOT include
+    // ``m_drivebase``, as that is automatically monitored.
+    m_power = new PowerMonitoring(batteryCapacity, m_flywheel);
 
     // Set up the SmartDashboard Auto Chooser based on auto type
     switch (Constants.getAutoType()) {
@@ -370,14 +373,6 @@ public class RobotContainer {
     public static final RobotDeviceId BR_CANCODER = new RobotDeviceId(12, "DriveTrain", null);
 
     public static final RobotDeviceId PIGEON = new RobotDeviceId(13, "DriveTrain", null);
-
-    /* POWER DISTRIBUTION CAN ID (set by device type in PowerConstants) */
-    public static final RobotDeviceId POWER_CAN_DEVICE_ID =
-        switch (PowerConstants.kPowerModule) {
-          case kRev -> new RobotDeviceId(1, null);
-          case kCTRE -> new RobotDeviceId(0, null);
-          default -> null;
-        };
 
     /* SUBSYSTEM CAN DEVICE IDS */
     // This is where mechanism subsystem devices are defined
