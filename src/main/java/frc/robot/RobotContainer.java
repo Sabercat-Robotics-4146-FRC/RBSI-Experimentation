@@ -45,6 +45,7 @@ import frc.robot.Constants.AprilTagConstants.AprilTagLayoutType;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.accelerometer.Accelerometer;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.drive.DriveConstants;
 import frc.robot.subsystems.flywheel_example.Flywheel;
 import frc.robot.subsystems.flywheel_example.FlywheelIO;
 import frc.robot.subsystems.flywheel_example.FlywheelIOSim;
@@ -349,29 +350,39 @@ public class RobotContainer {
   public static class Ports {
 
     /* DRIVETRAIN CAN DEVICE IDS */
-    // This is the default setup for the Az-RBSI swerve base
-    // Swerve Modules go:
-    // FL,FR,BL,BR
-    //
-    // 0 1
-    // 2 3
-    public static final RobotDeviceId FL_DRIVE = new RobotDeviceId(1, "DriveTrain", 18);
-    public static final RobotDeviceId FL_ROTATION = new RobotDeviceId(2, "DriveTrain", 19);
-    public static final RobotDeviceId FL_CANCODER = new RobotDeviceId(3, "DriveTrain", null);
+    // Input the correct Power Distribution Module port for each motor!!!!
 
-    public static final RobotDeviceId FR_DRIVE = new RobotDeviceId(4, "DriveTrain", 17);
-    public static final RobotDeviceId FR_ROTATION = new RobotDeviceId(5, "DriveTrain", 16);
-    public static final RobotDeviceId FR_CANCODER = new RobotDeviceId(6, "DriveTrain", null);
-
-    public static final RobotDeviceId BL_DRIVE = new RobotDeviceId(7, "DriveTrain", 1);
-    public static final RobotDeviceId BL_ROTATION = new RobotDeviceId(8, "DriveTrain", 0);
-    public static final RobotDeviceId BL_CANCODER = new RobotDeviceId(9, "DriveTrain", null);
-
-    public static final RobotDeviceId BR_DRIVE = new RobotDeviceId(10, "DriveTrain", 2);
-    public static final RobotDeviceId BR_ROTATION = new RobotDeviceId(11, "DriveTrain", 3);
-    public static final RobotDeviceId BR_CANCODER = new RobotDeviceId(12, "DriveTrain", null);
-
-    public static final RobotDeviceId PIGEON = new RobotDeviceId(13, "DriveTrain", null);
+    // Front Left
+    public static final RobotDeviceId FL_DRIVE =
+        new RobotDeviceId(DriveConstants.kFLDriveMotorId, DriveConstants.kFLDriveCanbus, 18);
+    public static final RobotDeviceId FL_ROTATION =
+        new RobotDeviceId(DriveConstants.kFLSteerMotorId, DriveConstants.kFLSteerCanbus, 19);
+    public static final RobotDeviceId FL_CANCODER =
+        new RobotDeviceId(DriveConstants.kFLEncoderId, DriveConstants.kFLEncoderCanbus, null);
+    // Front Right
+    public static final RobotDeviceId FR_DRIVE =
+        new RobotDeviceId(DriveConstants.kFRDriveMotorId, DriveConstants.kFRDriveCanbus, 17);
+    public static final RobotDeviceId FR_ROTATION =
+        new RobotDeviceId(DriveConstants.kFRSteerMotorId, DriveConstants.kFRSteerCanbus, 16);
+    public static final RobotDeviceId FR_CANCODER =
+        new RobotDeviceId(DriveConstants.kFREncoderId, DriveConstants.kFREncoderCanbus, null);
+    // Back Left
+    public static final RobotDeviceId BL_DRIVE =
+        new RobotDeviceId(DriveConstants.kBLDriveMotorId, DriveConstants.kBLDriveCanbus, 1);
+    public static final RobotDeviceId BL_ROTATION =
+        new RobotDeviceId(DriveConstants.kBLSteerMotorId, DriveConstants.kBLSteerCanbus, 0);
+    public static final RobotDeviceId BL_CANCODER =
+        new RobotDeviceId(DriveConstants.kBLEncoderId, DriveConstants.kBLEncoderCanbus, null);
+    // Back Right
+    public static final RobotDeviceId BR_DRIVE =
+        new RobotDeviceId(DriveConstants.kBRDriveMotorId, DriveConstants.kBRSteerCanbus, 2);
+    public static final RobotDeviceId BR_ROTATION =
+        new RobotDeviceId(DriveConstants.kBRSteerMotorId, DriveConstants.kBRSteerCanbus, 3);
+    public static final RobotDeviceId BR_CANCODER =
+        new RobotDeviceId(DriveConstants.kBREncoderId, DriveConstants.kBREncoderCanbus, null);
+    // Pigeon
+    public static final RobotDeviceId PIGEON =
+        new RobotDeviceId(DriveConstants.kPigeonId, DriveConstants.kCANbusName, null);
 
     /* SUBSYSTEM CAN DEVICE IDS */
     // This is where mechanism subsystem devices are defined

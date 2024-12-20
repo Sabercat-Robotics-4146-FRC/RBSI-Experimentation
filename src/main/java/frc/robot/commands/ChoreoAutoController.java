@@ -15,7 +15,7 @@
 
 package frc.robot.commands;
 
-import static frc.robot.Constants.AutonConstants.*;
+import static frc.robot.Constants.AutoConstantsPathPlanner.*;
 
 import choreo.trajectory.SwerveSample;
 import edu.wpi.first.math.controller.PIDController;

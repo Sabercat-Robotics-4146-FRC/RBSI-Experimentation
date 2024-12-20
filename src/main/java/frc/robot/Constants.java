@@ -17,8 +17,6 @@
 
 package frc.robot;
 
-import static frc.robot.util.RBSIEnum.*;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pathplanner.lib.config.PIDConstants;
@@ -34,6 +32,11 @@ import edu.wpi.first.wpilibj.RobotBase;
 import frc.robot.generated.TunerConstants;
 import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
+import frc.robot.util.RBSIEnum.AutoType;
+import frc.robot.util.RBSIEnum.Mode;
+import frc.robot.util.RBSIEnum.RobotType;
+import frc.robot.util.RBSIEnum.SwerveType;
+import frc.robot.util.RBSIEnum.VisionType;
 import java.io.IOException;
 import java.nio.file.Path;
 import lombok.Getter;
@@ -96,6 +99,10 @@ public final class Constants {
     public static final Matter kChassis =
         new Matter(new Translation3d(0, 0, Units.inchesToMeters(8)), kRobotMass);
     public static final double kLoopTime = 0.13; // s, 20ms + 110ms sprk max velocity lag
+
+    public static final double robotMassKg = 74.088;
+    public static final double robotMOI = 6.883;
+    public static final double wheelCOF = 1.2;
   }
 
   /** Power Distribution Constants ********************************** */
@@ -154,6 +161,15 @@ public final class Constants {
     public static final double kDelay = 3.0; // seconds
     public static final double kQuasiTimeout = 5.0; // seconds
     public static final double kDynamicTimeout = 3.0; // seconds
+
+    public static final PIDConstants drivePID = new PIDConstants(0.05, 0.0, 0.0);
+    public static final PIDConstants steerPID = new PIDConstants(5.0, 0.0, 0.4);
+
+    // kDriveF = 0.13;
+    // kDriveIZ = 0.0;
+
+    // kSteerF = 0.0;
+    // kSteerIZ = 0.0;
   }
 
   /** Example Flywheel Mechanism Constants ********************************* */
@@ -167,18 +183,14 @@ public final class Constants {
     public static final double kStaticGainReal = 0.1;
     public static final double kVelocityGainReal = 0.05;
     // Feedback (PID) constants
-    public static final double kPReal = 1.0;
-    public static final double kIReal = 0.0;
-    public static final double kDReal = 0.0;
+    public static final PIDConstants pidReal = new PIDConstants(1.0, 0.0, 0.0);
 
     // MODE == SIM
     // Feedforward constants
     public static final double kStaticGainSim = 0.0;
     public static final double kVelocityGainSim = 0.03;
     // Feedback (PID) constants
-    public static final double kPSim = 1.0;
-    public static final double kISim = 0.0;
-    public static final double kDSim = 0.0;
+    public static final PIDConstants pidSim = new PIDConstants(1.0, 0.0, 0.0);
   }
 
   /** Operator Constants *************************************************** */
@@ -191,16 +203,20 @@ public final class Constants {
   }
 
   /** Autonomous Action Constants ****************************************** */
-  public static final class AutonConstants {
+  public static final class AutoConstantsPathPlanner {
 
     // Translation PID constants
     public static final PIDConstants kAutoTranslatePID = new PIDConstants(0.7, 0, 0);
     // Rotation PID constants
     public static final PIDConstants kAutoAnglePID = new PIDConstants(0.4, 0, 0.01);
+
+    public static final double ROBOT_MASS_KG = 74.088;
+    public static final double ROBOT_MOI = 6.883;
+    public static final double WHEEL_COF = 1.2;
   }
 
   /** Choreo Autonomous Action Constants *********************************** */
-  public static final class AutoConstants {
+  public static final class AutoConstantsChoreo {
 
     public static final double kMaxSpeedMetersPerSecond = 3;
     public static final double kMaxAccelerationMetersPerSecondSquared = 3;

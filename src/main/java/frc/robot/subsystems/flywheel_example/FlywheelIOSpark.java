@@ -58,7 +58,7 @@ public class FlywheelIOSpark implements FlywheelIO {
     var leaderConfig = new SparkFlexConfig();
     leaderConfig
         .idleMode(IdleMode.kBrake)
-        .smartCurrentLimit(DriveConstants.driveMotorCurrentLimit)
+        .smartCurrentLimit((int) DriveConstants.kDriveCurrentLimit)
         .voltageCompensation(12.0);
     leaderConfig.encoder.uvwMeasurementPeriod(10).uvwAverageDepth(2);
     leaderConfig
@@ -70,7 +70,7 @@ public class FlywheelIOSpark implements FlywheelIO {
     leaderConfig
         .signals
         .primaryEncoderPositionAlwaysOn(true)
-        .primaryEncoderPositionPeriodMs((int) (1000.0 / DriveConstants.odometryFrequency))
+        .primaryEncoderPositionPeriodMs((int) (1000.0 / DriveConstants.kOdometryFrequency))
         .primaryEncoderVelocityAlwaysOn(true)
         .primaryEncoderVelocityPeriodMs(20)
         .appliedOutputPeriodMs(20)

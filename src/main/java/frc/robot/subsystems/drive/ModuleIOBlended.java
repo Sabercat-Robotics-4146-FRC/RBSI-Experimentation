@@ -50,6 +50,7 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
+import frc.robot.Constants.DrivebaseConstants;
 import frc.robot.util.PhoenixUtil;
 import frc.robot.util.SparkUtil;
 import java.util.Queue;
@@ -115,48 +116,48 @@ public class ModuleIOBlended implements ModuleIO {
         switch (module) {
           case 0 ->
               ConstantCreator.createModuleConstants(
-                  kFrontLeftSteerMotorId,
-                  kFrontLeftDriveMotorId,
-                  kFrontLeftEncoderId,
-                  kFrontLeftEncoderOffset,
-                  kFrontLeftXPosMeters,
-                  kFrontLeftYPosMeters,
-                  kFrontLeftDriveInvert,
-                  kFrontLeftSteerInvert,
-                  kFrontLeftEncoderInvert);
+                  kFLSteerMotorId,
+                  kFLDriveMotorId,
+                  kFLEncoderId,
+                  kFLEncoderOffset,
+                  kFLXPosMeters,
+                  kFLYPosMeters,
+                  kFLDriveInvert,
+                  kFLSteerInvert,
+                  kFLEncoderInvert);
           case 1 ->
               ConstantCreator.createModuleConstants(
-                  kFrontRightSteerMotorId,
-                  kFrontRightDriveMotorId,
-                  kFrontRightEncoderId,
-                  kFrontRightEncoderOffset,
-                  kFrontRightXPosMeters,
-                  kFrontRightYPosMeters,
-                  kFrontRightDriveInvert,
-                  kFrontRightSteerInvert,
-                  kFrontRightEncoderInvert);
+                  kFRSteerMotorId,
+                  kFRDriveMotorId,
+                  kFREncoderId,
+                  kFREncoderOffset,
+                  kFRXPosMeters,
+                  kFRYPosMeters,
+                  kFRDriveInvert,
+                  kFRSteerInvert,
+                  kFREncoderInvert);
           case 2 ->
               ConstantCreator.createModuleConstants(
-                  kBackLeftSteerMotorId,
-                  kBackLeftDriveMotorId,
-                  kBackLeftEncoderId,
-                  kBackLeftEncoderOffset,
-                  kBackLeftXPosMeters,
-                  kBackLeftYPosMeters,
-                  kBackLeftDriveInvert,
-                  kBackLeftSteerInvert,
-                  kBackLeftEncoderInvert);
+                  kBLSteerMotorId,
+                  kBLDriveMotorId,
+                  kBLEncoderId,
+                  kBLEncoderOffset,
+                  kBLXPosMeters,
+                  kBLYPosMeters,
+                  kBLDriveInvert,
+                  kBLSteerInvert,
+                  kBLEncoderInvert);
           case 3 ->
               ConstantCreator.createModuleConstants(
-                  kBackRightSteerMotorId,
-                  kBackRightDriveMotorId,
-                  kBackRightEncoderId,
-                  kBackRightEncoderOffset,
-                  kBackRightXPosMeters,
-                  kBackRightYPosMeters,
-                  kBackRightDriveInvert,
-                  kBackRightSteerInvert,
-                  kBackRightEncoderInvert);
+                  kBRSteerMotorId,
+                  kBRDriveMotorId,
+                  kBREncoderId,
+                  kBREncoderOffset,
+                  kBRXPosMeters,
+                  kBRYPosMeters,
+                  kBRDriveInvert,
+                  kBRSteerInvert,
+                  kBREncoderInvert);
           default -> throw new IllegalArgumentException("Invalid module index");
         };
 
@@ -185,13 +186,13 @@ public class ModuleIOBlended implements ModuleIO {
     // Configure turn motor
     var turnConfig = new SparkMaxConfig();
     turnConfig
-        .inverted(turnInverted)
+        .inverted(constants.SteerMotorInverted)
         .idleMode(IdleMode.kBrake)
-        .smartCurrentLimit(turnMotorCurrentLimit)
+        .smartCurrentLimit((int) DriveConstants.kSteerCurrentLimit)
         .voltageCompensation(12.0);
     turnConfig
         .absoluteEncoder
-        .inverted(turnEncoderInverted)
+        .inverted(constants.CANcoderInverted)
         .positionConversionFactor(turnEncoderPositionFactor)
         .velocityConversionFactor(turnEncoderVelocityFactor)
         .averageDepth(2);
@@ -200,11 +201,15 @@ public class ModuleIOBlended implements ModuleIO {
         .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
         .positionWrappingEnabled(true)
         .positionWrappingInputRange(turnPIDMinInput, turnPIDMaxInput)
-        .pidf(turnKp, 0.0, turnKd, 0.0);
+        .pidf(
+            DrivebaseConstants.steerPID.kP,
+            DrivebaseConstants.steerPID.kI,
+            DrivebaseConstants.steerPID.kD,
+            0.0);
     turnConfig
         .signals
         .absoluteEncoderPositionAlwaysOn(true)
-        .absoluteEncoderPositionPeriodMs((int) (1000.0 / odometryFrequency))
+        .absoluteEncoderPositionPeriodMs((int) (1000.0 / kOdometryFrequency))
         .absoluteEncoderVelocityAlwaysOn(true)
         .absoluteEncoderVelocityPeriodMs(20)
         .appliedOutputPeriodMs(20)
@@ -244,7 +249,7 @@ public class ModuleIOBlended implements ModuleIO {
     turnPositionQueue = PhoenixOdometryThread.getInstance().registerSignal(cancoder.getPosition());
 
     // Configure periodic frames
-    BaseStatusSignal.setUpdateFrequencyForAll(Drive.ODOMETRY_FREQUENCY, drivePosition);
+    BaseStatusSignal.setUpdateFrequencyForAll(DriveConstants.kOdometryFrequency, drivePosition);
     BaseStatusSignal.setUpdateFrequencyForAll(50.0, driveVelocity, driveAppliedVolts, driveCurrent);
     ParentDevice.optimizeBusUtilizationForAll(driveTalon);
   }
