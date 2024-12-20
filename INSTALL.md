@@ -44,7 +44,17 @@ steps you need to complete:
    generic Az-RBSI template contains a team number "0", and your code will not
    deploy properly if this variable is not set (*e.g.*, VSCode looks for the
    RoboRIO on IP address `10.TE.AM.2`, and it will not find anything if it
-   tries to contact `10.0.0.2`.)
+   tries to contact `10.0.0.2`.)  If you forget to change this value, you will
+   get an error message when deploying code to your robot like:
+
+   ```
+   Missing Target!
+   =============================================
+   Are you connected to the robot, and is it on?
+   =============================================
+   GradleRIO detected this build failed due to not being able to find "roborio"!
+   Scroll up in this error log for more information.
+   ```
 
 2. If you have an all-CTRE swerve base (*i.e.*, 8x TalonFX-controlled motors,
    4x CANCoders, and 1x Pigeon2), use Phoenix Tuner X to create a swerve

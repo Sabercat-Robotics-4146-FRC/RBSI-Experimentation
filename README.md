@@ -53,3 +53,8 @@ effective logging for troubleshooting.
 * [PhotonVision](https://docs.photonvision.org/en/latest/) / [Limelight](
   https://docs.limelightvision.io/docs/docs-limelight/getting-started/summary)
   -- Robot vision / tracking
+
+## Further Reading
+
+For tips on command-based programming, see this post:
+https://bovlb.github.io/frc-tips/commands/best-practices.html

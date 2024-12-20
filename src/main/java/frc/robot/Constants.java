@@ -30,7 +30,6 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.Filesystem;
-import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.RobotBase;
 import frc.robot.generated.TunerConstants;
 import frc.robot.util.Alert;
@@ -102,8 +101,6 @@ public final class Constants {
   /** Power Distribution Constants ********************************** */
   public static final class PowerConstants {
 
-    // Set this to either kRev or kCTRE for the type of Power Distribution Module
-    public static final ModuleType kPowerModule = ModuleType.kRev;
     // Current Limits
     public static final double kTotalMaxCurrent = 120.;
     public static final double kMotorPortMaxCurrent = 40.;
