@@ -15,7 +15,7 @@
 
 package frc.robot.subsystems.drive;
 
-import static frc.robot.subsystems.drive.DriveConstants.*;
+import static frc.robot.subsystems.drive.SwerveConstants.*;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
@@ -161,9 +161,9 @@ public class ModuleIOBlended implements ModuleIO {
           default -> throw new IllegalArgumentException("Invalid module index");
         };
 
-    driveTalon = new TalonFX(constants.DriveMotorId, DriveConstants.kCANbusName);
+    driveTalon = new TalonFX(constants.DriveMotorId, SwerveConstants.kCANbusName);
     turnSpark = new SparkMax(constants.SteerMotorId, MotorType.kBrushless);
-    cancoder = new CANcoder(constants.CANcoderId, DriveConstants.kCANbusName);
+    cancoder = new CANcoder(constants.CANcoderId, SwerveConstants.kCANbusName);
 
     turnController = turnSpark.getClosedLoopController();
 
@@ -188,7 +188,7 @@ public class ModuleIOBlended implements ModuleIO {
     turnConfig
         .inverted(constants.SteerMotorInverted)
         .idleMode(IdleMode.kBrake)
-        .smartCurrentLimit((int) DriveConstants.kSteerCurrentLimit)
+        .smartCurrentLimit((int) SwerveConstants.kSteerCurrentLimit)
         .voltageCompensation(12.0);
     turnConfig
         .absoluteEncoder
@@ -249,7 +249,7 @@ public class ModuleIOBlended implements ModuleIO {
     turnPositionQueue = PhoenixOdometryThread.getInstance().registerSignal(cancoder.getPosition());
 
     // Configure periodic frames
-    BaseStatusSignal.setUpdateFrequencyForAll(DriveConstants.kOdometryFrequency, drivePosition);
+    BaseStatusSignal.setUpdateFrequencyForAll(SwerveConstants.kOdometryFrequency, drivePosition);
     BaseStatusSignal.setUpdateFrequencyForAll(50.0, driveVelocity, driveAppliedVolts, driveCurrent);
     ParentDevice.optimizeBusUtilizationForAll(driveTalon);
   }

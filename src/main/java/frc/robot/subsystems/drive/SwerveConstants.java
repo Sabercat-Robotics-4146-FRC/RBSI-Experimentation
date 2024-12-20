@@ -27,7 +27,7 @@ import frc.robot.util.YagslConstants;
  * <p>Does some translation of how the two keep values to return a completely unified API. This file
  * should not be modified.
  */
-public class DriveConstants {
+public class SwerveConstants {
 
   // Declare all the constants
   public static final String kImuType;

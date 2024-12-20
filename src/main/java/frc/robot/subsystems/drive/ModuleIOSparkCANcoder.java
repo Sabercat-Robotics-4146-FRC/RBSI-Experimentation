@@ -15,7 +15,7 @@
 
 package frc.robot.subsystems.drive;
 
-import static frc.robot.subsystems.drive.DriveConstants.*;
+import static frc.robot.subsystems.drive.SwerveConstants.*;
 import static frc.robot.util.SparkUtil.*;
 
 import com.ctre.phoenix6.BaseStatusSignal;
@@ -180,7 +180,7 @@ public class ModuleIOSparkCANcoder implements ModuleIO {
     turnConfig
         .inverted(turnInverted)
         .idleMode(IdleMode.kBrake)
-        .smartCurrentLimit((int) DriveConstants.kSteerCurrentLimit)
+        .smartCurrentLimit((int) SwerveConstants.kSteerCurrentLimit)
         .voltageCompensation(12.0);
     turnConfig
         .absoluteEncoder
@@ -283,7 +283,7 @@ public class ModuleIOSparkCANcoder implements ModuleIO {
   @Override
   public void setDriveVelocity(double velocityRadPerSec) {
     double ffVolts =
-        DriveConstants.kDriveFrictionVoltage * Math.signum(velocityRadPerSec)
+        SwerveConstants.kDriveFrictionVoltage * Math.signum(velocityRadPerSec)
             + driveKv * velocityRadPerSec;
     driveController.setReference(
         velocityRadPerSec, ControlType.kVelocity, 0, ffVolts, ArbFFUnits.kVoltage);

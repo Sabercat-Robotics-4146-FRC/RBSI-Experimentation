@@ -107,9 +107,9 @@ public class ModuleIOTalonFX implements ModuleIO {
           default -> throw new IllegalArgumentException("Invalid module index");
         };
 
-    driveTalon = new TalonFX(constants.DriveMotorId, DriveConstants.kCANbusName);
-    turnTalon = new TalonFX(constants.SteerMotorId, DriveConstants.kCANbusName);
-    cancoder = new CANcoder(constants.CANcoderId, DriveConstants.kCANbusName);
+    driveTalon = new TalonFX(constants.DriveMotorId, SwerveConstants.kCANbusName);
+    turnTalon = new TalonFX(constants.SteerMotorId, SwerveConstants.kCANbusName);
+    cancoder = new CANcoder(constants.CANcoderId, SwerveConstants.kCANbusName);
 
     // Configure drive motor
     var driveConfig = constants.DriveMotorInitialConfigs;
@@ -181,7 +181,7 @@ public class ModuleIOTalonFX implements ModuleIO {
 
     // Configure periodic frames
     BaseStatusSignal.setUpdateFrequencyForAll(
-        DriveConstants.kOdometryFrequency, drivePosition, turnPosition);
+        SwerveConstants.kOdometryFrequency, drivePosition, turnPosition);
     BaseStatusSignal.setUpdateFrequencyForAll(
         50.0,
         driveVelocity,

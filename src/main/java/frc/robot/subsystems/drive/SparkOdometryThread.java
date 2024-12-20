@@ -55,7 +55,7 @@ public class SparkOdometryThread {
 
   public void start() {
     if (timestampQueues.size() > 0) {
-      notifier.startPeriodic(1.0 / DriveConstants.kOdometryFrequency);
+      notifier.startPeriodic(1.0 / SwerveConstants.kOdometryFrequency);
     }
   }
 

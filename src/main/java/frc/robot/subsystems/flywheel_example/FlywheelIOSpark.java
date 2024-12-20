@@ -32,7 +32,7 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkFlexConfig;
 import edu.wpi.first.math.util.Units;
 import frc.robot.RobotContainer.Ports;
-import frc.robot.subsystems.drive.DriveConstants;
+import frc.robot.subsystems.drive.SwerveConstants;
 
 /**
  * NOTE: To use the Spark Flex / NEO Vortex, replace all instances of "CANSparkMax" with
@@ -58,7 +58,7 @@ public class FlywheelIOSpark implements FlywheelIO {
     var leaderConfig = new SparkFlexConfig();
     leaderConfig
         .idleMode(IdleMode.kBrake)
-        .smartCurrentLimit((int) DriveConstants.kDriveCurrentLimit)
+        .smartCurrentLimit((int) SwerveConstants.kDriveCurrentLimit)
         .voltageCompensation(12.0);
     leaderConfig.encoder.uvwMeasurementPeriod(10).uvwAverageDepth(2);
     leaderConfig
@@ -70,7 +70,7 @@ public class FlywheelIOSpark implements FlywheelIO {
     leaderConfig
         .signals
         .primaryEncoderPositionAlwaysOn(true)
-        .primaryEncoderPositionPeriodMs((int) (1000.0 / DriveConstants.kOdometryFrequency))
+        .primaryEncoderPositionPeriodMs((int) (1000.0 / SwerveConstants.kOdometryFrequency))
         .primaryEncoderVelocityAlwaysOn(true)
         .primaryEncoderVelocityPeriodMs(20)
         .appliedOutputPeriodMs(20)
