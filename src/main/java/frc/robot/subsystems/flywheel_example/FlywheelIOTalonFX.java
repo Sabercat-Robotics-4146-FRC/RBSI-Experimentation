@@ -31,18 +31,23 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
-import frc.robot.RobotContainer.Ports;
+import frc.robot.Constants.CANandPowerPorts;
 
 public class FlywheelIOTalonFX implements FlywheelIO {
 
   // Define the leader / follower motors from the Ports section of RobotContainer
   private final TalonFX leader =
-      new TalonFX(Ports.FLYWHEEL_LEADER.getDeviceNumber(), Ports.FLYWHEEL_LEADER.getBus());
+      new TalonFX(
+          CANandPowerPorts.FLYWHEEL_LEADER.getDeviceNumber(),
+          CANandPowerPorts.FLYWHEEL_LEADER.getBus());
   private final TalonFX follower =
-      new TalonFX(Ports.FLYWHEEL_FOLLOWER.getDeviceNumber(), Ports.FLYWHEEL_FOLLOWER.getBus());
+      new TalonFX(
+          CANandPowerPorts.FLYWHEEL_FOLLOWER.getDeviceNumber(),
+          CANandPowerPorts.FLYWHEEL_FOLLOWER.getBus());
   // IMPORTANT: Include here all devices listed above that are part of this mechanism!
   public final int[] powerPorts = {
-    Ports.FLYWHEEL_LEADER.getPowerPort(), Ports.FLYWHEEL_FOLLOWER.getPowerPort()
+    CANandPowerPorts.FLYWHEEL_LEADER.getPowerPort(),
+    CANandPowerPorts.FLYWHEEL_FOLLOWER.getPowerPort()
   };
 
   private final StatusSignal<Angle> leaderPosition = leader.getPosition();

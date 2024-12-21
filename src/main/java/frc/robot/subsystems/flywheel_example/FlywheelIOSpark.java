@@ -31,7 +31,7 @@ import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkFlexConfig;
 import edu.wpi.first.math.util.Units;
-import frc.robot.RobotContainer.Ports;
+import frc.robot.Constants.CANandPowerPorts;
 import frc.robot.subsystems.drive.SwerveConstants;
 
 /**
@@ -42,14 +42,15 @@ public class FlywheelIOSpark implements FlywheelIO {
 
   // Define the leader / follower motors from the Ports section of RobotContainer
   private final SparkBase leader =
-      new SparkMax(Ports.FLYWHEEL_LEADER.getDeviceNumber(), MotorType.kBrushless);
+      new SparkMax(CANandPowerPorts.FLYWHEEL_LEADER.getDeviceNumber(), MotorType.kBrushless);
   private final SparkBase follower =
-      new SparkMax(Ports.FLYWHEEL_LEADER.getDeviceNumber(), MotorType.kBrushless);
+      new SparkMax(CANandPowerPorts.FLYWHEEL_LEADER.getDeviceNumber(), MotorType.kBrushless);
   private final RelativeEncoder encoder = leader.getEncoder();
   private final SparkClosedLoopController pid = leader.getClosedLoopController();
   // IMPORTANT: Include here all devices listed above that are part of this mechanism!
   public final int[] powerPorts = {
-    Ports.FLYWHEEL_LEADER.getPowerPort(), Ports.FLYWHEEL_FOLLOWER.getPowerPort()
+    CANandPowerPorts.FLYWHEEL_LEADER.getPowerPort(),
+    CANandPowerPorts.FLYWHEEL_FOLLOWER.getPowerPort()
   };
 
   public FlywheelIOSpark() {

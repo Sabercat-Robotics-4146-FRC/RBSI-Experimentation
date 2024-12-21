@@ -52,8 +52,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
-import frc.robot.Constants.AutoConstantsPathPlanner;
 import frc.robot.Constants.DrivebaseConstants;
+import frc.robot.Constants.PhysicalConstants;
 import frc.robot.util.LocalADStarAK;
 import frc.robot.util.RBSIEnum.Mode;
 import java.util.concurrent.locks.Lock;
@@ -66,12 +66,12 @@ public class Drive extends SubsystemBase {
   // PathPlanner config constants
   private static final RobotConfig PP_CONFIG =
       new RobotConfig(
-          AutoConstantsPathPlanner.ROBOT_MASS_KG,
-          AutoConstantsPathPlanner.ROBOT_MOI,
+          PhysicalConstants.kRobotMassKg,
+          PhysicalConstants.kRobotMOI,
           new ModuleConfig(
               kWheelRadiusMeters,
-              DrivebaseConstants.kMaxLinearSpeed.magnitude(),
-              AutoConstantsPathPlanner.WHEEL_COF,
+              DrivebaseConstants.kMaxLinearSpeed,
+              PhysicalConstants.kWheelCOF,
               DCMotor.getKrakenX60Foc(1).withReduction(kDriveGearRatio),
               kDriveSlipCurrent,
               1),
@@ -406,7 +406,7 @@ public class Drive extends SubsystemBase {
 
   /** Returns the maximum linear speed in meters per sec. */
   public double getMaxLinearSpeedMetersPerSec() {
-    return DrivebaseConstants.kMaxLinearSpeed.in(MetersPerSecond);
+    return DrivebaseConstants.kMaxLinearSpeed;
   }
 
   /** Returns the maximum angular speed in radians per sec. */

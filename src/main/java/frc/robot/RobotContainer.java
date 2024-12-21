@@ -19,7 +19,7 @@
 
 package frc.robot;
 
-import static frc.robot.Constants.VisionConstants2.*;
+import static frc.robot.Constants.MoreVisionConstants.*;
 
 import choreo.auto.AutoChooser;
 import choreo.auto.AutoFactory;
@@ -28,24 +28,18 @@ import choreo.auto.AutoRoutine;
 import choreo.auto.AutoTrajectory;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.Constants.AprilTagConstants;
 import frc.robot.Constants.AprilTagConstants.AprilTagLayoutType;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.accelerometer.Accelerometer;
 import frc.robot.subsystems.drive.Drive;
-import frc.robot.subsystems.drive.SwerveConstants;
 import frc.robot.subsystems.flywheel_example.Flywheel;
 import frc.robot.subsystems.flywheel_example.FlywheelIO;
 import frc.robot.subsystems.flywheel_example.FlywheelIOSim;
@@ -60,33 +54,32 @@ import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.OverrideSwitches;
 import frc.robot.util.PowerMonitoring;
 import frc.robot.util.RBSIEnum;
-import frc.robot.util.RobotDeviceId;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /** This is the location for defining robot hardware, commands, and controller button bindings. */
 public class RobotContainer {
 
-  // Define the Driver and, optionally, the Operator/Co-Driver Controllers
+  /** Define the Driver and, optionally, the Operator/Co-Driver Controllers */
   // Replace with ``CommandPS4Controller`` or ``CommandJoystick`` if needed
-  final CommandXboxController driverXbox = new CommandXboxController(0);
-  final CommandXboxController operatorXbox = new CommandXboxController(1);
-  final OverrideSwitches overrides = new OverrideSwitches(2);
+  final CommandXboxController driverXbox = new CommandXboxController(0); // Main Driver
 
-  // Autonomous Things
-  Field2d m_field = new Field2d();
+  final CommandXboxController operatorXbox = new CommandXboxController(1); // Second Operator
+  final OverrideSwitches overrides = new OverrideSwitches(2); // Console toggle switches
 
-  // Declare the robot subsystems here
+  /** Declare the robot subsystems here ************************************ */
   // These are the "Active Subsystems" that the robot controlls
   private final Drive m_drivebase;
+
   private final Flywheel m_flywheel;
   // These are "Virtual Subsystems" that report information but have no motors
   private final Accelerometer m_accel;
   private final Vision m_vision;
   private final PowerMonitoring m_power;
 
-  // Dashboard inputs
+  /** Dashboard inputs ***************************************************** */
   // AutoChoosers for both supported path planning types
   private final LoggedDashboardChooser<Command> autoChooserPathPlanner;
+
   private final AutoChooser autoChooserChoreo;
   private final AutoFactory autoFactoryChoreo;
   // Input estimated battery capacity (if full, use printed value)
@@ -99,16 +92,10 @@ public class RobotContainer {
   // Alerts
   private final Alert aprilTagLayoutAlert = new Alert("", AlertType.INFO);
 
-  /** Returns the current AprilTag layout type. */
-  public AprilTagLayoutType getAprilTagLayoutType() {
-    return AprilTagConstants.defaultAprilTagType;
-  }
-
-  public static AprilTagLayoutType staticGetAprilTagLayoutType() {
-    return AprilTagConstants.defaultAprilTagType;
-  }
-
-  /** The container for the robot. Contains subsystems, OI devices, and commands. */
+  /**
+   * Constructor for the Robot Container. This container holds subsystems, opertator interface
+   * devices, and commands.
+   */
   public RobotContainer() {
 
     // Instantiate Robot Subsystems based on RobotType
@@ -211,49 +198,6 @@ public class RobotContainer {
   }
 
   /**
-   * Set up the SysID routines from AdvantageKit
-   *
-   * <p>NOTE: These are currently only accessible with Constants.AutoType.PATHPLANNER
-   */
-  private void definesysIdRoutines() {
-    if (Constants.getAutoType() == RBSIEnum.AutoType.PATHPLANNER) {
-      // Drivebase characterization
-      autoChooserPathPlanner.addOption(
-          "Drive Wheel Radius Characterization",
-          DriveCommands.wheelRadiusCharacterization(m_drivebase));
-      autoChooserPathPlanner.addOption(
-          "Drive Simple FF Characterization",
-          DriveCommands.feedforwardCharacterization(m_drivebase));
-      autoChooserPathPlanner.addOption(
-          "Drive SysId (Quasistatic Forward)",
-          m_drivebase.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-      autoChooserPathPlanner.addOption(
-          "Drive SysId (Quasistatic Reverse)",
-          m_drivebase.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-      autoChooserPathPlanner.addOption(
-          "Drive SysId (Dynamic Forward)",
-          m_drivebase.sysIdDynamic(SysIdRoutine.Direction.kForward));
-      autoChooserPathPlanner.addOption(
-          "Drive SysId (Dynamic Reverse)",
-          m_drivebase.sysIdDynamic(SysIdRoutine.Direction.kReverse));
-
-      // Example Flywheel SysId Characterization
-      autoChooserPathPlanner.addOption(
-          "Flywheel SysId (Quasistatic Forward)",
-          m_flywheel.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-      autoChooserPathPlanner.addOption(
-          "Flywheel SysId (Quasistatic Reverse)",
-          m_flywheel.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-      autoChooserPathPlanner.addOption(
-          "Flywheel SysId (Dynamic Forward)",
-          m_flywheel.sysIdDynamic(SysIdRoutine.Direction.kForward));
-      autoChooserPathPlanner.addOption(
-          "Flywheel SysId (Dynamic Reverse)",
-          m_flywheel.sysIdDynamic(SysIdRoutine.Direction.kReverse));
-    }
-  }
-
-  /**
    * Use this method to define your button->command mappings. Buttons can be created by
    * instantiating a {@link GenericHID} or one of its subclasses ({@link
    * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
@@ -338,107 +282,57 @@ public class RobotContainer {
   /** Updates the alerts. */
   public void updateAlerts() {
     // AprilTag layout alert
-    boolean aprilTagAlertActive = getAprilTagLayoutType() != AprilTagLayoutType.OFFICIAL;
+    boolean aprilTagAlertActive = Constants.getAprilTagLayoutType() != AprilTagLayoutType.OFFICIAL;
     aprilTagLayoutAlert.set(aprilTagAlertActive);
     if (aprilTagAlertActive) {
       aprilTagLayoutAlert.setText(
-          "Non-official AprilTag layout in use (" + getAprilTagLayoutType().toString() + ").");
+          "Non-official AprilTag layout in use ("
+              + Constants.getAprilTagLayoutType().toString()
+              + ").");
     }
   }
 
-  /** List of Device CAN and Power Distribution Circuit IDs **************** */
-  public static class Ports {
+  /**
+   * Set up the SysID routines from AdvantageKit
+   *
+   * <p>NOTE: These are currently only accessible with Constants.AutoType.PATHPLANNER
+   */
+  private void definesysIdRoutines() {
+    if (Constants.getAutoType() == RBSIEnum.AutoType.PATHPLANNER) {
+      // Drivebase characterization
+      autoChooserPathPlanner.addOption(
+          "Drive Wheel Radius Characterization",
+          DriveCommands.wheelRadiusCharacterization(m_drivebase));
+      autoChooserPathPlanner.addOption(
+          "Drive Simple FF Characterization",
+          DriveCommands.feedforwardCharacterization(m_drivebase));
+      autoChooserPathPlanner.addOption(
+          "Drive SysId (Quasistatic Forward)",
+          m_drivebase.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+      autoChooserPathPlanner.addOption(
+          "Drive SysId (Quasistatic Reverse)",
+          m_drivebase.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+      autoChooserPathPlanner.addOption(
+          "Drive SysId (Dynamic Forward)",
+          m_drivebase.sysIdDynamic(SysIdRoutine.Direction.kForward));
+      autoChooserPathPlanner.addOption(
+          "Drive SysId (Dynamic Reverse)",
+          m_drivebase.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
-    /* DRIVETRAIN CAN DEVICE IDS */
-    // Input the correct Power Distribution Module port for each motor!!!!
-    // NOTE: The CAN ID and bus are set in the Swerve Generator (Phoenix Tuner or YAGSL)
-
-    // Front Left
-    public static final RobotDeviceId FL_DRIVE =
-        new RobotDeviceId(SwerveConstants.kFLDriveMotorId, SwerveConstants.kFLDriveCanbus, 18);
-    public static final RobotDeviceId FL_ROTATION =
-        new RobotDeviceId(SwerveConstants.kFLSteerMotorId, SwerveConstants.kFLSteerCanbus, 19);
-    public static final RobotDeviceId FL_CANCODER =
-        new RobotDeviceId(SwerveConstants.kFLEncoderId, SwerveConstants.kFLEncoderCanbus, null);
-    // Front Right
-    public static final RobotDeviceId FR_DRIVE =
-        new RobotDeviceId(SwerveConstants.kFRDriveMotorId, SwerveConstants.kFRDriveCanbus, 17);
-    public static final RobotDeviceId FR_ROTATION =
-        new RobotDeviceId(SwerveConstants.kFRSteerMotorId, SwerveConstants.kFRSteerCanbus, 16);
-    public static final RobotDeviceId FR_CANCODER =
-        new RobotDeviceId(SwerveConstants.kFREncoderId, SwerveConstants.kFREncoderCanbus, null);
-    // Back Left
-    public static final RobotDeviceId BL_DRIVE =
-        new RobotDeviceId(SwerveConstants.kBLDriveMotorId, SwerveConstants.kBLDriveCanbus, 1);
-    public static final RobotDeviceId BL_ROTATION =
-        new RobotDeviceId(SwerveConstants.kBLSteerMotorId, SwerveConstants.kBLSteerCanbus, 0);
-    public static final RobotDeviceId BL_CANCODER =
-        new RobotDeviceId(SwerveConstants.kBLEncoderId, SwerveConstants.kBLEncoderCanbus, null);
-    // Back Right
-    public static final RobotDeviceId BR_DRIVE =
-        new RobotDeviceId(SwerveConstants.kBRDriveMotorId, SwerveConstants.kBRSteerCanbus, 2);
-    public static final RobotDeviceId BR_ROTATION =
-        new RobotDeviceId(SwerveConstants.kBRSteerMotorId, SwerveConstants.kBRSteerCanbus, 3);
-    public static final RobotDeviceId BR_CANCODER =
-        new RobotDeviceId(SwerveConstants.kBREncoderId, SwerveConstants.kBREncoderCanbus, null);
-    // Pigeon
-    public static final RobotDeviceId PIGEON =
-        new RobotDeviceId(SwerveConstants.kPigeonId, SwerveConstants.kCANbusName, null);
-
-    /* SUBSYSTEM CAN DEVICE IDS */
-    // This is where mechanism subsystem devices are defined (Including ID, bus, and power port)
-    // Example:
-    public static final RobotDeviceId FLYWHEEL_LEADER = new RobotDeviceId(3, "", 8);
-    public static final RobotDeviceId FLYWHEEL_FOLLOWER = new RobotDeviceId(4, "", 9);
-
-    /* BEAM BREAK and/or LIMIT SWITCH DIO CHANNELS */
-    // This is where digital I/O feedback devices are defined
-    // Example:
-    // public static final int ELEVATOR_BOTTOM_LIMIT = 3;
-
-    /* LINEAR SERVO PWM CHANNELS */
-    // This is where PWM-controlled devices (actuators, servos, pneumatics, etc.)
-    // are defined
-    // Example:
-    // public static final int INTAKE_SERVO = 0;
-  }
-
-  /** Override and Console Toggle Switches ********************************* */
-  public static class Overrides {
-
-    // Assumes this controller: https://www.amazon.com/gp/product/B00UUROWWK
-    // Example from:
-    // https://www.chiefdelphi.com/t/frc-6328-mechanical-advantage-2024-build-thread/442736/72
-    public static final int DRIVER_SWITCH_0 = 1;
-    public static final int DRIVER_SWITCH_1 = 2;
-    public static final int DRIVER_SWITCH_2 = 3;
-
-    public static final int OPERATOR_SWITCH_0 = 8;
-    public static final int OPERATOR_SWITCH_1 = 9;
-    public static final int OPERATOR_SWITCH_2 = 10;
-    public static final int OPERATOR_SWITCH_3 = 11;
-    public static final int OPERATOR_SWITCH_4 = 12;
-
-    public static final int[] MULTI_TOGGLE = {4, 5};
-  }
-
-  /** Vision Camera Posses ************************************************* */
-  public static class Cameras {
-
-    public static final Pose3d[] cameraPoses =
-        switch (Constants.getRobot()) {
-          case COMPBOT ->
-              new Pose3d[] {
-                // Camera #1
-                new Pose3d(
-                    Units.inchesToMeters(-1.0),
-                    Units.inchesToMeters(0),
-                    Units.inchesToMeters(23.5),
-                    new Rotation3d(0.0, Units.degreesToRadians(-20), 0.0)),
-              };
-          case DEVBOT -> new Pose3d[] {};
-          default -> new Pose3d[] {};
-        };
+      // Example Flywheel SysId Characterization
+      autoChooserPathPlanner.addOption(
+          "Flywheel SysId (Quasistatic Forward)",
+          m_flywheel.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+      autoChooserPathPlanner.addOption(
+          "Flywheel SysId (Quasistatic Reverse)",
+          m_flywheel.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+      autoChooserPathPlanner.addOption(
+          "Flywheel SysId (Dynamic Forward)",
+          m_flywheel.sysIdDynamic(SysIdRoutine.Direction.kForward));
+      autoChooserPathPlanner.addOption(
+          "Flywheel SysId (Dynamic Reverse)",
+          m_flywheel.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+    }
   }
 
   /**
