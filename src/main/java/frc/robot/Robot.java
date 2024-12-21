@@ -13,7 +13,6 @@
 
 package frc.robot;
 
-import choreo.auto.AutoRoutine;
 import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -34,7 +33,6 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
  */
 public class Robot extends LoggedRobot {
   private Command m_autoCommandPathPlanner;
-  private AutoRoutine m_autoCommandChoreo;
   private RobotContainer m_robotContainer;
   private Timer m_disabledTimer;
 
@@ -155,11 +153,7 @@ public class Robot extends LoggedRobot {
         }
         break;
       case CHOREO:
-        m_autoCommandChoreo = m_robotContainer.getAutonomousCommandChoreo();
-        // schedule the autonomous command (example)
-        if (m_autoCommandChoreo != null) {
-          CommandScheduler.getInstance().schedule(m_autoCommandChoreo.cmd());
-        }
+        m_robotContainer.getAutonomousCommandChoreo();
         break;
       default:
         throw new RuntimeException(

@@ -21,7 +21,6 @@ package frc.robot;
 
 import static frc.robot.subsystems.vision.VisionConstants.*;
 
-import choreo.Choreo;
 import choreo.auto.AutoChooser;
 import choreo.auto.AutoFactory;
 import choreo.auto.AutoFactory.AutoBindings;
@@ -29,22 +28,20 @@ import choreo.auto.AutoRoutine;
 import choreo.auto.AutoTrajectory;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.AprilTagConstants;
 import frc.robot.Constants.AprilTagConstants.AprilTagLayoutType;
-import frc.robot.commands.ChoreoAutoController;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.accelerometer.Accelerometer;
 import frc.robot.subsystems.drive.Drive;
@@ -91,7 +88,6 @@ public class RobotContainer {
   private final LoggedDashboardChooser<Command> autoChooserPathPlanner;
   private final AutoChooser autoChooserChoreo;
   private final AutoFactory autoFactoryChoreo;
-  private final ChoreoAutoController choreoController;
   // Input estimated battery capacity (if full, use printed value)
   private final LoggedTunableNumber batteryCapacity =
       new LoggedTunableNumber("Battery Amp-Hours", 18.0);
@@ -176,21 +172,20 @@ public class RobotContainer {
         // Set the others to null
         autoChooserChoreo = null;
         autoFactoryChoreo = null;
-        choreoController = null;
         break;
       case CHOREO:
-        choreoController = new ChoreoAutoController(m_drivebase);
         autoFactoryChoreo =
-            Choreo.createAutoFactory(
+            new AutoFactory(
                 m_drivebase::getPose, // A function that returns the current robot pose
-                choreoController, // The controller for the drive subsystem
-                this::isRedAlliance, // A function that returns true if the robot is on the red
-                // alliance
-                m_drivebase,
-                new AutoBindings() // An empty `AutoBindings` object, you can learn more below
+                m_drivebase::resetOdometry, // A function that resets the current robot pose to the
+                // provided Pose2d
+                m_drivebase::followTrajectory, // The drive subsystem trajectory follower
+                true, // If alliance flipping should be enabled
+                m_drivebase, // The drive subsystem
+                new AutoBindings() // An empty AutoBindings object
                 );
-        autoChooserChoreo = new AutoChooser(autoFactoryChoreo, "");
-        autoChooserChoreo.addAutoRoutine("twoPieceAuto", this::twoPieceAuto);
+        autoChooserChoreo = new AutoChooser();
+        autoChooserChoreo.addRoutine("twoPieceAuto", this::twoPieceAuto);
         // Set the others to null
         autoChooserPathPlanner = null;
         break;
@@ -322,8 +317,12 @@ public class RobotContainer {
    *
    * @return the command to run in autonomous
    */
-  public AutoRoutine getAutonomousCommandChoreo() {
-    return autoChooserChoreo.getSelectedAutoRoutine();
+  public void getAutonomousCommandChoreo() {
+    // Put the auto chooser on the dashboard
+    SmartDashboard.putData(autoChooserChoreo);
+
+    // Schedule the selected auto during the autonomous period
+    RobotModeTriggers.autonomous().whileTrue(autoChooserChoreo.selectedCommandScheduler());
   }
 
   public void setDriveMode() {
@@ -435,33 +434,28 @@ public class RobotContainer {
    *
    * <p>NOTE: This would normally be in a spearate file.
    */
-  private AutoRoutine twoPieceAuto(AutoFactory factory) {
-    final AutoRoutine routine = factory.newRoutine("twoPieceAuto");
+  private AutoRoutine twoPieceAuto() {
+    AutoRoutine routine = autoFactoryChoreo.newRoutine("twoPieceAuto");
 
-    final AutoTrajectory trajectory = routine.trajectory("twoPieceAuto");
+    // Load the routine's trajectories
+    AutoTrajectory pickupTraj = routine.trajectory("pickupGamepiece");
+    AutoTrajectory scoreTraj = routine.trajectory("scoreGamepiece");
 
-    routine
-        .running()
-        .onTrue(
-            m_drivebase
-                .resetOdometry(
-                    trajectory
-                        .getInitialPose()
-                        .orElseGet(
-                            () -> {
-                              routine.kill();
-                              return new Pose2d();
-                            }))
-                .andThen(trajectory.cmd())
-                .withName("twoPieceAuto entry point"));
+    // When the routine begins, reset odometry and start the first trajectory
+    routine.active().onTrue(Commands.sequence(routine.resetOdometry(pickupTraj), pickupTraj.cmd()));
 
-    // trajectory.atTime("intake").onTrue(intake.extend());
-    // trajectory.atTime("shoot").onTrue(shooter.launch());
+    // Starting at the event marker named "intake", run the intake
+    // pickupTraj.atTime("intake").onTrue(intakeSubsystem.intake());
+
+    // When the trajectory is done, start the next trajectory
+    pickupTraj.done().onTrue(scoreTraj.cmd());
+
+    // While the trajectory is active, prepare the scoring subsystem
+    // scoreTraj.active().whileTrue(scoringSubsystem.getReady());
+
+    // When the trajectory is done, score
+    // scoreTraj.done().onTrue(scoringSubsystem.score());
 
     return routine;
-  }
-
-  private boolean isRedAlliance() {
-    return DriverStation.getAlliance().orElseGet(() -> Alliance.Blue).equals(Alliance.Red);
   }
 }

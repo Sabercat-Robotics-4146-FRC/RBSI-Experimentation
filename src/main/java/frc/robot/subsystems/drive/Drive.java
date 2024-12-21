@@ -105,6 +105,9 @@ public class Drive extends SubsystemBase {
   private SwerveDrivePoseEstimator m_PoseEstimator =
       new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
 
+  // Choreo drive controller
+  private final PIDController xController = new PIDController(10.0, 0.0, 0.0);
+
   // Constructor
   public Drive() {
     switch (Constants.getSwerveType()) {
@@ -282,13 +285,13 @@ public class Drive extends SubsystemBase {
    */
   public void runVelocity(ChassisSpeeds speeds) {
     // Calculate module setpoints
-    speeds.discretize(Constants.loopPeriodSecs);
-    SwerveModuleState[] setpointStates = kinematics.toSwerveModuleStates(speeds);
+    ChassisSpeeds discreteSpeeds = ChassisSpeeds.discretize(speeds, 0.02);
+    SwerveModuleState[] setpointStates = kinematics.toSwerveModuleStates(discreteSpeeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(setpointStates, DrivebaseConstants.kMaxLinearSpeed);
 
     // Log unoptimized setpoints and setpoint speeds
     Logger.recordOutput("SwerveStates/Setpoints", setpointStates);
-    Logger.recordOutput("SwerveChassisSpeeds/Setpoints", speeds);
+    Logger.recordOutput("SwerveChassisSpeeds/Setpoints", discreteSpeeds);
 
     // Send setpoints to modules
     for (int i = 0; i < 4; i++) {
@@ -466,6 +469,21 @@ public class Drive extends SubsystemBase {
     //         .withSpeeds(targetSpeeds)
     //         .withWheelForceFeedforwardsX(sample.moduleForcesX())
     //         .withWheelForceFeedforwardsY(sample.moduleForcesY()));
+  }
+
+  public void followTrajectory(SwerveSample sample) {
+    // Get the current pose of the robot
+    Pose2d pose = getPose();
+
+    // Generate the next speeds for the robot
+    ChassisSpeeds speeds =
+        new ChassisSpeeds(
+            sample.vx + xController.calculate(pose.getX(), sample.x),
+            sample.vy + xController.calculate(pose.getX(), sample.y),
+            sample.omega + xController.calculate(pose.getRotation().getRadians(), sample.heading));
+
+    // Apply the generated speeds
+    runVelocity(speeds);
   }
 
   /**
