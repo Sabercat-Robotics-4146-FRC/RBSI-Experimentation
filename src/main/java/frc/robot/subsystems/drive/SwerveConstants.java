@@ -1,7 +1,5 @@
 // Copyright (c) 2024 Az-FIRST
 // http://github.com/AZ-First
-// Copyright 2021-2024 FRC 6328
-// http://github.com/Mechanical-Advantage
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
