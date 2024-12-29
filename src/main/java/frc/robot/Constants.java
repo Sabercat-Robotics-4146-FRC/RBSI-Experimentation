@@ -22,7 +22,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pathplanner.lib.config.PIDConstants;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -200,6 +199,10 @@ public final class Constants {
   /** Operator Constants *************************************************** */
   public static class OperatorConstants {
 
+    // Joystick Functions
+    // Set to TRUE for Drive = Left, Turn = Right; else FALSE
+    public static final boolean kDriveLeftTurnRight = true;
+
     // Joystick Deadbands
     public static final double kLeftDeadband = 0.1;
     public static final double kRightDeadband = 0.1;
@@ -241,49 +244,35 @@ public final class Constants {
     public static final double kZMargin = 0.75;
     public static final double kXYZStdDevCoefficient = 0.005;
     public static final double kThetaStdDevCoefficient = 0.01;
+
+    // Basic filtering thresholds
+    public static final double maxAmbiguity = 0.3;
+    public static final double maxZError = 0.75;
+
+    // Standard deviation baselines, for 1 meter distance and 1 tag
+    // (Adjusted automatically based on distance and # of tags)
+    public static final double linearStdDevBaseline = 0.02; // Meters
+    public static final double angularStdDevBaseline = 0.06; // Radians
+
+    // Multipliers to apply for MegaTag 2 observations
+    public static final double linearStdDevMegatag2Factor = 0.5; // More stable than full 3D solve
+    public static final double angularStdDevMegatag2Factor =
+        Double.POSITIVE_INFINITY; // No rotation data available
   }
 
   /** Vision Camera Posses ************************************************* */
   public static class Cameras {
-
-    public static final Pose3d[] cameraPoses =
-        switch (Constants.getRobot()) {
-          case COMPBOT ->
-              new Pose3d[] {
-                // Camera #1
-                new Pose3d(
-                    Units.inchesToMeters(-1.0),
-                    Units.inchesToMeters(0),
-                    Units.inchesToMeters(23.5),
-                    new Rotation3d(0.0, Units.degreesToRadians(-20), 0.0)),
-              };
-          case DEVBOT -> new Pose3d[] {};
-          default -> new Pose3d[] {};
-        };
-  }
-
-  /** More Vision Constants ********************************************** */
-  public class MoreVisionConstants {
-
     // Camera names, must match names configured on coprocessor
     public static String camera0Name = "camera_0";
     public static String camera1Name = "camera_1";
+    // ... And more, if needed
 
     // Robot to camera transforms
-    // (Not used by Limelight, configure in web UI instead)
+    // (ONLY USED FOR PHOTONVISION -- Limelight: configure in web UI instead)
     public static Transform3d robotToCamera0 =
         new Transform3d(0.2, 0.0, 0.2, new Rotation3d(0.0, -0.4, 0.0));
     public static Transform3d robotToCamera1 =
         new Transform3d(-0.2, 0.0, 0.2, new Rotation3d(0.0, -0.4, Math.PI));
-
-    // Basic filtering thresholds
-    public static double maxAmbiguity = 0.3;
-    public static double maxZError = 0.75;
-
-    // Standard deviation baselines, for 1 meter distance and 1 tag
-    // (Adjusted automatically based on distance and # of tags)
-    public static double linearStdDevBaseline = 0.02; // Meters
-    public static double angularStdDevBaseline = 0.06; // Radians
 
     // Standard deviation multipliers for each camera
     // (Adjust to trust some cameras more than others)
@@ -292,11 +281,6 @@ public final class Constants {
           1.0, // Camera 0
           1.0 // Camera 1
         };
-
-    // Multipliers to apply for MegaTag 2 observations
-    public static double linearStdDevMegatag2Factor = 0.5; // More stable than full 3D solve
-    public static double angularStdDevMegatag2Factor =
-        Double.POSITIVE_INFINITY; // No rotation data available
   }
 
   /** List of Device CAN and Power Distribution Circuit IDs **************** */

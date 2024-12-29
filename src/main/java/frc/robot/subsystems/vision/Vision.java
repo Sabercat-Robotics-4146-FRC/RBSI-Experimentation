@@ -17,7 +17,8 @@
 
 package frc.robot.subsystems.vision;
 
-import static frc.robot.Constants.MoreVisionConstants.*;
+import static frc.robot.Constants.Cameras.*;
+import static frc.robot.Constants.VisionConstants.*;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;

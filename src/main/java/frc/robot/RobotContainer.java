@@ -19,7 +19,7 @@
 
 package frc.robot;
 
-import static frc.robot.Constants.MoreVisionConstants.*;
+import static frc.robot.Constants.Cameras.*;
 
 import choreo.auto.AutoChooser;
 import choreo.auto.AutoFactory;
@@ -37,6 +37,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.AprilTagConstants.AprilTagLayoutType;
+import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.accelerometer.Accelerometer;
 import frc.robot.subsystems.drive.Drive;
@@ -50,6 +51,7 @@ import frc.robot.subsystems.vision.VisionIOPhotonVision;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
 import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
+import frc.robot.util.GetJoystickValue;
 import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.OverrideSwitches;
 import frc.robot.util.PowerMonitoring;
@@ -61,9 +63,9 @@ public class RobotContainer {
 
   /** Define the Driver and, optionally, the Operator/Co-Driver Controllers */
   // Replace with ``CommandPS4Controller`` or ``CommandJoystick`` if needed
-  final CommandXboxController driverXbox = new CommandXboxController(0); // Main Driver
+  final CommandXboxController driverController = new CommandXboxController(0); // Main Driver
 
-  final CommandXboxController operatorXbox = new CommandXboxController(1); // Second Operator
+  final CommandXboxController operatorController = new CommandXboxController(1); // Second Operator
   final OverrideSwitches overrides = new OverrideSwitches(2); // Console toggle switches
 
   /** Declare the robot subsystems here ************************************ */
@@ -205,40 +207,55 @@ public class RobotContainer {
    */
   private void configureBindings() {
 
+    // Send the proper joystick input based on driver preference -- Set this in `Constants.java`
+    GetJoystickValue driveStickY;
+    GetJoystickValue driveStickX;
+    GetJoystickValue turnStickX;
+    if (OperatorConstants.kDriveLeftTurnRight) {
+      driveStickY = driverController::getLeftY;
+      driveStickX = driverController::getLeftX;
+      turnStickX = driverController::getRightX;
+    } else {
+      driveStickY = driverController::getRightY;
+      driveStickX = driverController::getRightX;
+      turnStickX = driverController::getLeftX;
+    }
+
     // SET STANDARD DRIVING AS DEFAULT COMMAND FOR THE DRIVEBASE
-    // NOTE: Left joystick controls lateral translation, right joystick (X) controls rotation
     m_drivebase.setDefaultCommand(
         DriveCommands.fieldRelativeDrive(
             m_drivebase,
-            () -> -driverXbox.getLeftY(),
-            () -> -driverXbox.getLeftX(),
-            () -> driverXbox.getRightX()));
+            () -> -driveStickY.value(),
+            () -> -driveStickX.value(),
+            () -> turnStickX.value()));
 
     // Example Commands
     // Press B button while driving --> ROBOT-CENTRIC
-    driverXbox
+    driverController
         .b()
         .onTrue(
             Commands.runOnce(
                 () ->
                     DriveCommands.robotRelativeDrive(
                         m_drivebase,
-                        () -> -driverXbox.getLeftY(),
-                        () -> -driverXbox.getLeftX(),
-                        () -> driverXbox.getRightX()),
+                        () -> -driveStickY.value(),
+                        () -> -driveStickX.value(),
+                        () -> turnStickX.value()),
                 m_drivebase));
 
     // Press A button -> BRAKE
-    driverXbox.a().whileTrue(Commands.runOnce(() -> m_drivebase.setMotorBrake(true), m_drivebase));
+    driverController
+        .a()
+        .whileTrue(Commands.runOnce(() -> m_drivebase.setMotorBrake(true), m_drivebase));
 
     // Press X button --> Stop with wheels in X-Lock position
-    driverXbox.x().onTrue(Commands.runOnce(m_drivebase::stopWithX, m_drivebase));
+    driverController.x().onTrue(Commands.runOnce(m_drivebase::stopWithX, m_drivebase));
 
     // Press Y button --> Manually Re-Zero the Gyro
-    driverXbox.y().onTrue(Commands.runOnce(() -> m_drivebase.zero()));
+    driverController.y().onTrue(Commands.runOnce(() -> m_drivebase.zero()));
 
     // Press RIGHT BUMPER --> Run the example flywheel
-    driverXbox
+    driverController
         .rightBumper()
         .whileTrue(
             Commands.startEnd(
