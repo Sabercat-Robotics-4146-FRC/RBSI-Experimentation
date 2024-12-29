@@ -87,7 +87,7 @@ public class VisionIOPhotonVision implements VisionIO {
                 multitagResult.fiducialIDsUsed.size(), // Tag count
                 totalTagDistance / result.targets.size(), // Average tag distance
                 PoseObservationType.PHOTONVISION)); // Observation type
-                
+
       } else if (!result.targets.isEmpty()) { // Single tag result
         var target = result.targets.get(0);
         // Calculate robot pose
