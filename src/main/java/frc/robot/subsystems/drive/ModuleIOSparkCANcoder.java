@@ -15,7 +15,7 @@
 
 package frc.robot.subsystems.drive;
 
-import static frc.robot.subsystems.drive.DriveConstants.*;
+import static frc.robot.subsystems.drive.SwerveConstants.*;
 import static frc.robot.util.SparkUtil.*;
 
 import com.ctre.phoenix6.BaseStatusSignal;
@@ -41,6 +41,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
+import frc.robot.Constants.DrivebaseConstants;
 import java.util.Queue;
 import java.util.function.DoubleSupplier;
 
@@ -56,6 +57,8 @@ public class ModuleIOSparkCANcoder implements ModuleIO {
   private final SparkBase turnSpark;
   private final RelativeEncoder driveEncoder;
   private final CANcoder cancoder;
+  private final boolean turnInverted;
+  private final boolean turnEncoderInverted;
 
   // Closed loop controllers
   private final SparkClosedLoopController driveController;
@@ -79,40 +82,56 @@ public class ModuleIOSparkCANcoder implements ModuleIO {
   public ModuleIOSparkCANcoder(int module) {
     zeroRotation =
         switch (module) {
-          case 0 -> new Rotation2d(kFrontLeftEncoderOffset);
-          case 1 -> new Rotation2d(kFrontRightEncoderOffset);
-          case 2 -> new Rotation2d(kBackLeftEncoderOffset);
-          case 3 -> new Rotation2d(kBackRightEncoderOffset);
+          case 0 -> new Rotation2d(kFLEncoderOffset);
+          case 1 -> new Rotation2d(kFREncoderOffset);
+          case 2 -> new Rotation2d(kBLEncoderOffset);
+          case 3 -> new Rotation2d(kBREncoderOffset);
           default -> new Rotation2d();
         };
     driveSpark =
         new SparkFlex(
             switch (module) {
-              case 0 -> kFrontLeftDriveMotorId;
-              case 1 -> kFrontRightDriveMotorId;
-              case 2 -> kBackLeftDriveMotorId;
-              case 3 -> kBackRightDriveMotorId;
+              case 0 -> kFLDriveMotorId;
+              case 1 -> kFRDriveMotorId;
+              case 2 -> kBLDriveMotorId;
+              case 3 -> kBRDriveMotorId;
               default -> 0;
             },
             MotorType.kBrushless);
     turnSpark =
         new SparkMax(
             switch (module) {
-              case 0 -> kFrontLeftSteerMotorId;
-              case 1 -> kFrontRightSteerMotorId;
-              case 2 -> kBackLeftSteerMotorId;
-              case 3 -> kBackRightSteerMotorId;
+              case 0 -> kFLSteerMotorId;
+              case 1 -> kFRSteerMotorId;
+              case 2 -> kBLSteerMotorId;
+              case 3 -> kBRSteerMotorId;
               default -> 0;
             },
             MotorType.kBrushless);
+    turnInverted =
+        switch (module) {
+          case 0 -> kFLSteerInvert;
+          case 1 -> kFRSteerInvert;
+          case 2 -> kBLSteerInvert;
+          case 3 -> kBRSteerInvert;
+          default -> false;
+        };
+    turnEncoderInverted =
+        switch (module) {
+          case 0 -> kFLEncoderInvert;
+          case 1 -> kFREncoderInvert;
+          case 2 -> kBLEncoderInvert;
+          case 3 -> kBREncoderInvert;
+          default -> false;
+        };
     driveEncoder = driveSpark.getEncoder();
     cancoder =
         new CANcoder(
             switch (module) {
-              case 0 -> kFrontLeftEncoderId;
-              case 1 -> kFrontRightEncoderId;
-              case 2 -> kBackLeftEncoderId;
-              case 3 -> kBackRightEncoderId;
+              case 0 -> kFLEncoderId;
+              case 1 -> kFREncoderId;
+              case 2 -> kBLEncoderId;
+              case 3 -> kBREncoderId;
               default -> 0;
             },
             kCANbusName);
@@ -123,7 +142,7 @@ public class ModuleIOSparkCANcoder implements ModuleIO {
     var driveConfig = new SparkFlexConfig();
     driveConfig
         .idleMode(IdleMode.kBrake)
-        .smartCurrentLimit(driveMotorCurrentLimit)
+        .smartCurrentLimit((int) kDriveCurrentLimit)
         .voltageCompensation(12.0);
     driveConfig
         .encoder
@@ -135,12 +154,14 @@ public class ModuleIOSparkCANcoder implements ModuleIO {
         .closedLoop
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
         .pidf(
-            driveKp, 0.0,
-            driveKd, 0.0);
+            DrivebaseConstants.drivePID.kP,
+            DrivebaseConstants.drivePID.kI,
+            DrivebaseConstants.drivePID.kD,
+            0.0);
     driveConfig
         .signals
         .primaryEncoderPositionAlwaysOn(true)
-        .primaryEncoderPositionPeriodMs((int) (1000.0 / odometryFrequency))
+        .primaryEncoderPositionPeriodMs((int) (1000.0 / kOdometryFrequency))
         .primaryEncoderVelocityAlwaysOn(true)
         .primaryEncoderVelocityPeriodMs(20)
         .appliedOutputPeriodMs(20)
@@ -159,7 +180,7 @@ public class ModuleIOSparkCANcoder implements ModuleIO {
     turnConfig
         .inverted(turnInverted)
         .idleMode(IdleMode.kBrake)
-        .smartCurrentLimit(turnMotorCurrentLimit)
+        .smartCurrentLimit((int) SwerveConstants.kSteerCurrentLimit)
         .voltageCompensation(12.0);
     turnConfig
         .absoluteEncoder
@@ -172,11 +193,15 @@ public class ModuleIOSparkCANcoder implements ModuleIO {
         .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
         .positionWrappingEnabled(true)
         .positionWrappingInputRange(turnPIDMinInput, turnPIDMaxInput)
-        .pidf(turnKp, 0.0, turnKd, 0.0);
+        .pidf(
+            DrivebaseConstants.steerPID.kP,
+            DrivebaseConstants.steerPID.kI,
+            DrivebaseConstants.steerPID.kD,
+            0.0);
     turnConfig
         .signals
         .absoluteEncoderPositionAlwaysOn(true)
-        .absoluteEncoderPositionPeriodMs((int) (1000.0 / odometryFrequency))
+        .absoluteEncoderPositionPeriodMs((int) (1000.0 / kOdometryFrequency))
         .absoluteEncoderVelocityAlwaysOn(true)
         .absoluteEncoderVelocityPeriodMs(20)
         .appliedOutputPeriodMs(20)
@@ -257,7 +282,9 @@ public class ModuleIOSparkCANcoder implements ModuleIO {
 
   @Override
   public void setDriveVelocity(double velocityRadPerSec) {
-    double ffVolts = driveKs * Math.signum(velocityRadPerSec) + driveKv * velocityRadPerSec;
+    double ffVolts =
+        SwerveConstants.kDriveFrictionVoltage * Math.signum(velocityRadPerSec)
+            + driveKv * velocityRadPerSec;
     driveController.setReference(
         velocityRadPerSec, ControlType.kVelocity, 0, ffVolts, ArbFFUnits.kVoltage);
   }

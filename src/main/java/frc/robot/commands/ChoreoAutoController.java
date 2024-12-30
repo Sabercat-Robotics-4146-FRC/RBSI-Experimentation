@@ -15,7 +15,7 @@
 
 package frc.robot.commands;
 
-import static frc.robot.Constants.AutonConstants.*;
+import static frc.robot.Constants.AutoConstants.*;
 
 import choreo.trajectory.SwerveSample;
 import edu.wpi.first.math.controller.PIDController;
@@ -27,11 +27,11 @@ import java.util.function.Consumer;
 public class ChoreoAutoController implements Consumer<SwerveSample> {
   private final Drive drive; // drive subsystem
   private final PIDController xController =
-      new PIDController(kAutoTranslatePID.kP, 0.0, kAutoTranslatePID.kD);
+      new PIDController(kAutoDrivePID.kP, 0.0, kAutoDrivePID.kD);
   private final PIDController yController =
-      new PIDController(kAutoTranslatePID.kP, 0.0, kAutoTranslatePID.kD);
+      new PIDController(kAutoDrivePID.kP, 0.0, kAutoDrivePID.kD);
   private final PIDController headingController =
-      new PIDController(kAutoAnglePID.kP, 0.0, kAutoAnglePID.kD);
+      new PIDController(kAutoSteerPID.kP, 0.0, kAutoSteerPID.kD);
 
   public ChoreoAutoController(Drive drive) {
     this.drive = drive;

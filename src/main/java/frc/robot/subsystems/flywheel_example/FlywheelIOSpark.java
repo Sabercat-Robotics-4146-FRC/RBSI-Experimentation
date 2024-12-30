@@ -31,8 +31,8 @@ import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkFlexConfig;
 import edu.wpi.first.math.util.Units;
-import frc.robot.RobotContainer.Ports;
-import frc.robot.subsystems.drive.DriveConstants;
+import frc.robot.Constants.CANandPowerPorts;
+import frc.robot.subsystems.drive.SwerveConstants;
 
 /**
  * NOTE: To use the Spark Flex / NEO Vortex, replace all instances of "CANSparkMax" with
@@ -42,14 +42,15 @@ public class FlywheelIOSpark implements FlywheelIO {
 
   // Define the leader / follower motors from the Ports section of RobotContainer
   private final SparkBase leader =
-      new SparkMax(Ports.FLYWHEEL_LEADER.getDeviceNumber(), MotorType.kBrushless);
+      new SparkMax(CANandPowerPorts.FLYWHEEL_LEADER.getDeviceNumber(), MotorType.kBrushless);
   private final SparkBase follower =
-      new SparkMax(Ports.FLYWHEEL_LEADER.getDeviceNumber(), MotorType.kBrushless);
+      new SparkMax(CANandPowerPorts.FLYWHEEL_LEADER.getDeviceNumber(), MotorType.kBrushless);
   private final RelativeEncoder encoder = leader.getEncoder();
   private final SparkClosedLoopController pid = leader.getClosedLoopController();
   // IMPORTANT: Include here all devices listed above that are part of this mechanism!
   public final int[] powerPorts = {
-    Ports.FLYWHEEL_LEADER.getPowerPort(), Ports.FLYWHEEL_FOLLOWER.getPowerPort()
+    CANandPowerPorts.FLYWHEEL_LEADER.getPowerPort(),
+    CANandPowerPorts.FLYWHEEL_FOLLOWER.getPowerPort()
   };
 
   public FlywheelIOSpark() {
@@ -58,7 +59,7 @@ public class FlywheelIOSpark implements FlywheelIO {
     var leaderConfig = new SparkFlexConfig();
     leaderConfig
         .idleMode(IdleMode.kBrake)
-        .smartCurrentLimit(DriveConstants.driveMotorCurrentLimit)
+        .smartCurrentLimit((int) SwerveConstants.kDriveCurrentLimit)
         .voltageCompensation(12.0);
     leaderConfig.encoder.uvwMeasurementPeriod(10).uvwAverageDepth(2);
     leaderConfig
@@ -70,7 +71,7 @@ public class FlywheelIOSpark implements FlywheelIO {
     leaderConfig
         .signals
         .primaryEncoderPositionAlwaysOn(true)
-        .primaryEncoderPositionPeriodMs((int) (1000.0 / DriveConstants.odometryFrequency))
+        .primaryEncoderPositionPeriodMs((int) (1000.0 / SwerveConstants.kOdometryFrequency))
         .primaryEncoderVelocityAlwaysOn(true)
         .primaryEncoderVelocityPeriodMs(20)
         .appliedOutputPeriodMs(20)

@@ -25,7 +25,7 @@ import java.util.Queue;
 
 /** IO implementation for Pigeon2 */
 public class GyroIONavX implements GyroIO<AHRS> {
-  private final AHRS navx = new AHRS(SPI.Port.kMXP, (byte) Drive.ODOMETRY_FREQUENCY);
+  private final AHRS navx = new AHRS(SPI.Port.kMXP, (byte) SwerveConstants.kOdometryFrequency);
   private final Queue<Double> yawPositionQueue;
   private final Queue<Double> yawTimestampQueue;
 

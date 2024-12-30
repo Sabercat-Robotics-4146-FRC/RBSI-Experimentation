@@ -43,11 +43,11 @@ public class Flywheel extends RBSISubsystem {
       case REAL:
       case REPLAY:
         ffModel = new SimpleMotorFeedforward(kStaticGainReal, kVelocityGainReal);
-        io.configurePID(kPReal, kIReal, kDReal);
+        io.configurePID(pidReal.kP, pidReal.kI, pidReal.kD);
         break;
       case SIM:
         ffModel = new SimpleMotorFeedforward(kStaticGainSim, kVelocityGainSim);
-        io.configurePID(kPSim, kISim, kDSim);
+        io.configurePID(pidSim.kP, pidSim.kI, pidSim.kD);
         break;
       default:
         ffModel = new SimpleMotorFeedforward(0.0, 0.0);

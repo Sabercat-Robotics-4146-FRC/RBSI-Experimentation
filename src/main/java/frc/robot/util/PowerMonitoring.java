@@ -15,8 +15,8 @@ package frc.robot.util;
 
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants.CANandPowerPorts;
 import frc.robot.Constants.PowerConstants;
-import frc.robot.RobotContainer.Ports;
 import frc.robot.util.Alert.AlertType;
 import org.littletonrobotics.conduit.ConduitApi;
 import org.littletonrobotics.junction.Logger;
@@ -33,7 +33,9 @@ public class PowerMonitoring extends VirtualSubsystem {
   private final RBSISubsystem[] subsystems;
 
   // Get the AdvantageKit conduit for pulling PDM information
+  @SuppressWarnings("unused")
   private LoggedPowerDistribution loggedPowerDistribution = LoggedPowerDistribution.getInstance();
+
   private ConduitApi conduit = ConduitApi.getInstance();
 
   // Define local variables
@@ -52,16 +54,16 @@ public class PowerMonitoring extends VirtualSubsystem {
 
   // DRIVE and STEER motor power ports
   private final int[] m_drivePowerPorts = {
-    Ports.FL_DRIVE.getPowerPort(),
-    Ports.FR_DRIVE.getPowerPort(),
-    Ports.BL_DRIVE.getPowerPort(),
-    Ports.BR_DRIVE.getPowerPort()
+    CANandPowerPorts.FL_DRIVE.getPowerPort(),
+    CANandPowerPorts.FR_DRIVE.getPowerPort(),
+    CANandPowerPorts.BL_DRIVE.getPowerPort(),
+    CANandPowerPorts.BR_DRIVE.getPowerPort()
   };
   private final int[] m_steerPowerPorts = {
-    Ports.FL_ROTATION.getPowerPort(),
-    Ports.FR_ROTATION.getPowerPort(),
-    Ports.BL_ROTATION.getPowerPort(),
-    Ports.BR_ROTATION.getPowerPort()
+    CANandPowerPorts.FL_ROTATION.getPowerPort(),
+    CANandPowerPorts.FR_ROTATION.getPowerPort(),
+    CANandPowerPorts.BL_ROTATION.getPowerPort(),
+    CANandPowerPorts.BR_ROTATION.getPowerPort()
   };
 
   // Class method definition, including inputs of optional subsystems
