@@ -50,6 +50,12 @@ public class DriveCommands {
   private static final double WHEEL_RADIUS_MAX_VELOCITY = 0.25; // Rad/Sec
   private static final double WHEEL_RADIUS_RAMP_RATE = 0.05; // Rad/Sec^2
 
+  // Create slew rate limiters for smoothing erratic joystick motions
+  private static final SlewRateLimiter linearVelocityFilter =
+      new SlewRateLimiter(OperatorConstants.kJoystickSlewLimit);
+  private static final SlewRateLimiter omegaFilter =
+      new SlewRateLimiter(OperatorConstants.kJoystickSlewLimit);
+
   private DriveCommands() {}
 
   /**
@@ -168,7 +174,7 @@ public class DriveCommands {
 
   /**
    * Compute the new linear velocity from inputs, including applying deadbands and squaring for
-   * smoothness
+   * smoothness. Also apply the linear velocity Slew Rate Limiter.
    */
   private static Translation2d getLinearVelocity(double x, double y) {
     // Apply deadband
@@ -181,17 +187,18 @@ public class DriveCommands {
 
     // Return new linear velocity
     return new Pose2d(new Translation2d(), linearDirection)
-        .transformBy(new Transform2d(linearMagnitude, 0.0, new Rotation2d()))
+        .transformBy(
+            new Transform2d(linearVelocityFilter.calculate(linearMagnitude), 0.0, new Rotation2d()))
         .getTranslation();
   }
 
   /**
    * Compute the new angular velocity from inputs, including applying deadbands and squaring for
-   * smoothness
+   * smoothness. Also apply the angular Slew Rate Limiter.
    */
   private static double getOmega(double omega) {
     omega = MathUtil.applyDeadband(omega, OperatorConstants.kDeadband);
-    return Math.copySign(omega * omega, omega);
+    return omegaFilter.calculate(Math.copySign(omega * omega, omega));
   }
 
   /***************************************************************************/

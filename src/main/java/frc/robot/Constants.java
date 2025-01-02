@@ -212,6 +212,9 @@ public final class Constants {
     public static final double kDeadband = 0.1;
     public static final double kTurnConstant = 6;
 
+    // Joystick slew rate limiters to smooth erratic joystick motions, measured in units per second
+    public static final double kJoystickSlewLimit = 0.5;
+
     // Override and Console Toggle Switches
     // Assumes this controller: https://www.amazon.com/gp/product/B00UUROWWK
     // Example from:
