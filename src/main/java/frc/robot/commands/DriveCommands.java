@@ -63,18 +63,22 @@ public class DriveCommands {
     return Commands.run(
         () -> {
           // Get the Linear Velocity & Omega from inputs
-          Translation2d linearVelocity = getLinearVelocity(xSupplier, ySupplier);
-          double omega = getOmega(omegaSupplier);
+          Translation2d linearVelocity =
+              getLinearVelocity(xSupplier.getAsDouble(), ySupplier.getAsDouble());
+          double omega = getOmega(omegaSupplier.getAsDouble());
 
           // Convert to field relative speeds & send command
+          ChassisSpeeds speeds =
+              new ChassisSpeeds(
+                  linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
+                  linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
+                  omega * drive.getMaxAngularSpeedRadPerSec());
           boolean isFlipped =
               DriverStation.getAlliance().isPresent()
                   && DriverStation.getAlliance().get() == Alliance.Red;
           drive.runVelocity(
               ChassisSpeeds.fromFieldRelativeSpeeds(
-                  linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
-                  linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
-                  omega * drive.getMaxAngularSpeedRadPerSec(),
+                  speeds,
                   isFlipped
                       ? drive.getRotation().plus(new Rotation2d(Math.PI))
                       : drive.getRotation()));
@@ -92,10 +96,10 @@ public class DriveCommands {
       DoubleSupplier omegaSupplier) {
     return Commands.run(
         () -> {
-
           // Get the Linear Velocity & Omega from inputs
-          Translation2d linearVelocity = getLinearVelocity(xSupplier, ySupplier);
-          double omega = getOmega(omegaSupplier);
+          Translation2d linearVelocity =
+              getLinearVelocity(xSupplier.getAsDouble(), ySupplier.getAsDouble());
+          double omega = getOmega(omegaSupplier.getAsDouble());
 
           // Run with straight-up velocities w.r.t. the robot!
           drive.runVelocity(
@@ -105,53 +109,6 @@ public class DriveCommands {
                   omega * drive.getMaxAngularSpeedRadPerSec()));
         },
         drive);
-  }
-
-  /**
-   * Compute the new linear velocity from inputs, including applying deadbands and squaring for
-   * smoothness
-   */
-  private static Translation2d getLinearVelocity(
-      DoubleSupplier xSupplier, DoubleSupplier ySupplier) {
-
-    // Apply deadband
-    double linearMagnitude =
-        MathUtil.applyDeadband(
-            Math.hypot(xSupplier.getAsDouble(), ySupplier.getAsDouble()),
-            OperatorConstants.kLeftDeadband);
-    Rotation2d linearDirection = new Rotation2d(xSupplier.getAsDouble(), ySupplier.getAsDouble());
-
-    // Square values
-    linearMagnitude = linearMagnitude * linearMagnitude;
-
-    return new Pose2d(new Translation2d(), linearDirection)
-        .transformBy(new Transform2d(linearMagnitude, 0.0, new Rotation2d()))
-        .getTranslation();
-  }
-
-  /**
-   * Compute the new angular velocity from inputs, including applying deadbands and squaring for
-   * smoothness
-   */
-  private static double getOmega(DoubleSupplier omegaSupplier) {
-    double omega =
-        MathUtil.applyDeadband(omegaSupplier.getAsDouble(), OperatorConstants.kRightDeadband);
-    return Math.copySign(omega * omega, omega);
-  }
-
-  private static Translation2d getLinearVelocityFromJoysticks(double x, double y) {
-    // Apply deadband
-    double linearMagnitude =
-        MathUtil.applyDeadband(Math.hypot(x, y), OperatorConstants.kLeftDeadband);
-    Rotation2d linearDirection = new Rotation2d(Math.atan2(y, x));
-
-    // Square magnitude for more precise control
-    linearMagnitude = linearMagnitude * linearMagnitude;
-
-    // Return new linear velocity
-    return new Pose2d(new Translation2d(), linearDirection)
-        .transformBy(new Transform2d(linearMagnitude, 0.0, new Rotation2d()))
-        .getTranslation();
   }
 
   /**
@@ -180,7 +137,7 @@ public class DriveCommands {
             () -> {
               // Get linear velocity
               Translation2d linearVelocity =
-                  getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble());
+                  getLinearVelocity(xSupplier.getAsDouble(), ySupplier.getAsDouble());
 
               // Calculate angular speed
               double omega =
@@ -209,6 +166,35 @@ public class DriveCommands {
         .beforeStarting(() -> angleController.reset(drive.getRotation().getRadians()));
   }
 
+  /**
+   * Compute the new linear velocity from inputs, including applying deadbands and squaring for
+   * smoothness
+   */
+  private static Translation2d getLinearVelocity(double x, double y) {
+    // Apply deadband
+    double linearMagnitude = MathUtil.applyDeadband(Math.hypot(x, y), OperatorConstants.kDeadband);
+    Rotation2d linearDirection = new Rotation2d(Math.atan2(y, x));
+
+    // Square magnitude for more precise control
+    linearMagnitude = linearMagnitude * linearMagnitude;
+
+    // Return new linear velocity
+    return new Pose2d(new Translation2d(), linearDirection)
+        .transformBy(new Transform2d(linearMagnitude, 0.0, new Rotation2d()))
+        .getTranslation();
+  }
+
+  /**
+   * Compute the new angular velocity from inputs, including applying deadbands and squaring for
+   * smoothness
+   */
+  private static double getOmega(double omega) {
+    omega = MathUtil.applyDeadband(omega, OperatorConstants.kDeadband);
+    return Math.copySign(omega * omega, omega);
+  }
+
+  /***************************************************************************/
+  /** DRIVEBASE CHARACTERIZATION ROUTINES ********************************** */
   /**
    * Measures the velocity feedforward constants for the drive motors.
    *

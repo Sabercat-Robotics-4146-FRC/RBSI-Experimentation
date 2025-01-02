@@ -209,8 +209,7 @@ public final class Constants {
     public static final boolean kDriveLeftTurnRight = true;
 
     // Joystick Deadbands
-    public static final double kLeftDeadband = 0.1;
-    public static final double kRightDeadband = 0.1;
+    public static final double kDeadband = 0.1;
     public static final double kTurnConstant = 6;
 
     // Override and Console Toggle Switches
