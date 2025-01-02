@@ -34,7 +34,9 @@ import frc.robot.subsystems.drive.SwerveConstants;
 import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
 import frc.robot.util.RBSIEnum.AutoType;
+import frc.robot.util.RBSIEnum.CTREPro;
 import frc.robot.util.RBSIEnum.Mode;
+import frc.robot.util.RBSIEnum.MotorIdleMode;
 import frc.robot.util.RBSIEnum.RobotType;
 import frc.robot.util.RBSIEnum.SwerveType;
 import frc.robot.util.RBSIEnum.VisionType;
@@ -67,7 +69,7 @@ public final class Constants {
   //       under strict caveat emptor -- and submit any error and bugfixes
   //       via GitHub issues.
   private static SwerveType swerveType = SwerveType.PHOENIX6; // PHOENIX6, YAGSL
-  private static boolean phoenixPro = false; // CTRE Pro License?  true, false
+  private static CTREPro phoenixPro = CTREPro.UNLICENSED; // LICENSED, UNLICENSED
   private static AutoType autoType = AutoType.PATHPLANNER; // PATHPLANNER, CHOREO
   private static VisionType visionType = VisionType.NONE; // PHOTON, LIMELIGHT, NONE
 
@@ -156,6 +158,9 @@ public final class Constants {
   /** Example Flywheel Mechanism Constants ********************************* */
   public static final class FlywheelConstants {
 
+    // Mechanism idle mode
+    public static final MotorIdleMode kFlywheelIdleMode = MotorIdleMode.COAST; // BRAKE, COAST
+
     // Mechanism motor gear ratio
     public static final double kFlywheelGearRatio = 1.5;
 
@@ -200,7 +205,7 @@ public final class Constants {
   public static class OperatorConstants {
 
     // Joystick Functions
-    // Set to TRUE for Drive = Left, Turn = Right; else FALSE
+    // Set to TRUE for Drive = Left Stick, Turn = Right Stick; else FALSE
     public static final boolean kDriveLeftTurnRight = true;
 
     // Joystick Deadbands
@@ -433,7 +438,7 @@ public final class Constants {
   }
 
   /** Get the current CTRE/Phoenix Pro License state */
-  public static boolean getPhoenixPro() {
+  public static CTREPro getPhoenixPro() {
     return phoenixPro;
   }
 

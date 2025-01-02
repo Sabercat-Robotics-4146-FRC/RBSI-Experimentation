@@ -60,9 +60,14 @@ public class FlywheelIOTalonFX implements FlywheelIO {
     var config = new TalonFXConfiguration();
     config.CurrentLimits.SupplyCurrentLimit = 30.0;
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
-    config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    config.MotorOutput.NeutralMode =
+        switch (kFlywheelIdleMode) {
+          case COAST -> NeutralModeValue.Coast;
+          case BRAKE -> NeutralModeValue.Brake;
+        };
     leader.getConfigurator().apply(config);
     follower.getConfigurator().apply(config);
+    // If follower rotates in the opposite direction, set "OpposeMasterDirection" to true
     follower.setControl(new Follower(leader.getDeviceID(), false));
 
     BaseStatusSignal.setUpdateFrequencyForAll(

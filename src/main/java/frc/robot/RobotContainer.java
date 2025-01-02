@@ -28,6 +28,8 @@ import choreo.auto.AutoRoutine;
 import choreo.auto.AutoTrajectory;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -222,6 +224,7 @@ public class RobotContainer {
     }
 
     // SET STANDARD DRIVING AS DEFAULT COMMAND FOR THE DRIVEBASE
+    // TODO: With a re-do of Phoenix Tuner X on George, ensure the signs are all correct!!!!!
     m_drivebase.setDefaultCommand(
         DriveCommands.fieldRelativeDrive(
             m_drivebase,
@@ -229,7 +232,7 @@ public class RobotContainer {
             () -> -driveStickX.value(),
             () -> turnStickX.value()));
 
-    // Example Commands
+    // ** Example Commands -- Remap, remove, or change as desired **
     // Press B button while driving --> ROBOT-CENTRIC
     driverController
         .b()
@@ -252,7 +255,15 @@ public class RobotContainer {
     driverController.x().onTrue(Commands.runOnce(m_drivebase::stopWithX, m_drivebase));
 
     // Press Y button --> Manually Re-Zero the Gyro
-    driverController.y().onTrue(Commands.runOnce(() -> m_drivebase.zero()));
+    driverController
+        .y()
+        .onTrue(
+            Commands.runOnce(
+                    () ->
+                        m_drivebase.setPose(
+                            new Pose2d(m_drivebase.getPose().getTranslation(), new Rotation2d())),
+                    m_drivebase)
+                .ignoringDisable(true));
 
     // Press RIGHT BUMPER --> Run the example flywheel
     driverController

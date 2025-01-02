@@ -58,7 +58,11 @@ public class FlywheelIOSpark implements FlywheelIO {
     // Configure leader motor
     var leaderConfig = new SparkFlexConfig();
     leaderConfig
-        .idleMode(IdleMode.kBrake)
+        .idleMode(
+            switch (kFlywheelIdleMode) {
+              case COAST -> IdleMode.kCoast;
+              case BRAKE -> IdleMode.kBrake;
+            })
         .smartCurrentLimit((int) SwerveConstants.kDriveCurrentLimit)
         .voltageCompensation(12.0);
     leaderConfig.encoder.uvwMeasurementPeriod(10).uvwAverageDepth(2);
