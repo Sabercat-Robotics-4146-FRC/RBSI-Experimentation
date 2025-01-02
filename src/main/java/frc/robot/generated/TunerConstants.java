@@ -29,10 +29,10 @@ public class TunerConstants {
       new Slot0Configs()
           .withKP(100)
           .withKI(0)
-          .withKD(1.0)
-          .withKS(0.2)
-          .withKV(0.0)
-          .withKA(0.0)
+          .withKD(0.5)
+          .withKS(0.1)
+          .withKV(2.66)
+          .withKA(0)
           .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign);
   // When using closed-loop control, the drive motor uses the control
   // output type specified by SwerveModuleConstants.DriveMotorClosedLoopOutput
@@ -76,14 +76,14 @@ public class TunerConstants {
 
   // Theoretical free speed (m/s) at 12 V applied output;
   // This needs to be tuned to your individual robot
-  public static final LinearVelocity kSpeedAt12Volts = MetersPerSecond.of(4.73);
+  public static final LinearVelocity kSpeedAt12Volts = MetersPerSecond.of(5.41);
 
   // Every 1 rotation of the azimuth results in kCoupleRatio drive motor turns;
   // This may need to be tuned to your individual robot
-  private static final double kCoupleRatio = 0;
+  private static final double kCoupleRatio = 3.125;
 
-  private static final double kDriveGearRatio = 6.746031746031747;
-  private static final double kSteerGearRatio = 15.42857142857143;
+  private static final double kDriveGearRatio = 5.902777777777778;
+  private static final double kSteerGearRatio = 21.428571428571427;
   private static final Distance kWheelRadius = Inches.of(2);
 
   private static final boolean kInvertLeftSide = false;
@@ -92,11 +92,11 @@ public class TunerConstants {
   private static final int kPigeonId = 13;
 
   // These are only used for simulation
-  private static final double kSteerInertia = 0.004;
-  private static final double kDriveInertia = 0.025;
+  private static final MomentOfInertia kSteerInertia = KilogramSquareMeters.of(0.004);
+  private static final MomentOfInertia kDriveInertia = KilogramSquareMeters.of(0.025);
   // Simulated voltage necessary to overcome friction
-  private static final Voltage kSteerFrictionVoltage = Volts.of(0.25);
-  private static final Voltage kDriveFrictionVoltage = Volts.of(0.25);
+  private static final Voltage kSteerFrictionVoltage = Volts.of(0.2);
+  private static final Voltage kDriveFrictionVoltage = Volts.of(0.2);
 
   public static final SwerveDrivetrainConstants DrivetrainConstants =
       new SwerveDrivetrainConstants()
@@ -129,7 +129,7 @@ public class TunerConstants {
   private static final int kFrontLeftDriveMotorId = 1;
   private static final int kFrontLeftSteerMotorId = 2;
   private static final int kFrontLeftEncoderId = 3;
-  private static final Angle kFrontLeftEncoderOffset = Rotations.of(-0.472900390625);
+  private static final Angle kFrontLeftEncoderOffset = Rotations.of(-0.47265625);
   private static final boolean kFrontLeftSteerMotorInverted = true;
   private static final boolean kFrontLeftCANcoderInverted = false;
 
@@ -151,7 +151,7 @@ public class TunerConstants {
   private static final int kBackLeftDriveMotorId = 7;
   private static final int kBackLeftSteerMotorId = 8;
   private static final int kBackLeftEncoderId = 9;
-  private static final Angle kBackLeftEncoderOffset = Rotations.of(0.4091796875);
+  private static final Angle kBackLeftEncoderOffset = Rotations.of(0.411376953125);
   private static final boolean kBackLeftSteerMotorInverted = true;
   private static final boolean kBackLeftCANcoderInverted = false;
 
@@ -162,7 +162,7 @@ public class TunerConstants {
   private static final int kBackRightDriveMotorId = 10;
   private static final int kBackRightSteerMotorId = 11;
   private static final int kBackRightEncoderId = 12;
-  private static final Angle kBackRightEncoderOffset = Rotations.of(0.086181640625);
+  private static final Angle kBackRightEncoderOffset = Rotations.of(0.086669921875);
   private static final boolean kBackRightSteerMotorInverted = true;
   private static final boolean kBackRightCANcoderInverted = false;
 

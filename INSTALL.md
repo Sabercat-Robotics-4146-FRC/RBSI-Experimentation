@@ -24,13 +24,26 @@ recommended to **not** select the "Include all branches" checkbox.
 
 --------
 
-### Setting up your new project
+### Software Requirements
 
-**The Az-RBSI requires the 2025 WPILib Installer (VSCode and associated tools),
-2025 firmware installed on all hardware (motors, encoders, power distribution,
-etc.), the 2025 NI FRC Game Tools (Driver Station and associated tools), and
-the 2025 CTRE Phoenix Tuner X.  Take a moment to update all software and
-firmware before attempting to load your new robot project.**
+The Az-RBSI requires the [2025 WPILib Installer](
+https://github.com/wpilibsuite/allwpilib/releases) (VSCode and associated
+tools), 2025 firmware installed on all hardware (motors, encoders, power
+distribution, etc.), the [2025 NI FRC Game Tools](
+https://www.ni.com/en/support/downloads/drivers/download.frc-game-tools.html)
+(Driver Station and associated tools), and the [2025 CTRE Phoenix Tuner X](
+https://v6.docs.ctr-electronics.com/en/stable/docs/tuner/index.html).  Take a
+moment to update all software and firmware before attempting to load your new
+robot project.
+
+Please note that you need these _minimum_ versions of the following components:
+
+* WPILib `2025.1.1`
+* RoboRIO image `FRC_roboRIO_2025_v2.0`
+
+--------
+
+### Setting up your new project
 
 When your new robot code respository is created, it will have a single commit
 that contains the entire Az-RBSI template for the current release.  (See the
@@ -42,8 +55,8 @@ steps you need to complete:
 
 1. Add your team number to the `.wpilib/wpilib_preferences.json` file.  The
    generic Az-RBSI template contains a team number "0", and your code will not
-   deploy properly if this variable is not set (*e.g.*, VSCode looks for the
-   RoboRIO on IP address `10.TE.AM.2`, and it will not find anything if it
+   deploy properly if this variable is not set (*i.e.*, since VSCode looks for
+   the RoboRIO on IP address `10.TE.AM.2`, it will not find anything if it
    tries to contact `10.0.0.2`.)  If you forget to change this value, you will
    get an error message when deploying code to your robot like:
 
@@ -86,14 +99,24 @@ method are encouraged to submit bug reports and code fixes to the [Az-RBSI
 repository](https://github.com/AZ-First/Az-RBSI).
 
 6. The Az-RBSI expects an Xbox-style controller -- if you have a PS4 or other,
-   change this at the top of the `RobotContainer.java` file in the
-   `src/main/java/frc/robot` directory.
+   substitute the proper command-based controller class for
+   `CommandXboxController` near the top of the `RobotContainer.java` file in
+   the `src/main/java/frc/robot` directory.
 
-7. Power ports...
+7. Power monitoring by subsystem is included in the Az-RBSI.  In order to
+   properly match subsystems to ports on your Power Distribution Module,
+   carefully edit the `CANandPowerPorts` of `Constants.java` to include the
+   proper power ports for each motor in your drivetrain, and include any
+   motors from additional subsystems you add to your robot.  To include
+   additional subsystems in the monitoring, add them to the [`m_power`
+   instantiation](
+   https://github.com/AZ-First/Az-RBSI/blob/38f6391cb70c4caa90502710f591682815064677/src/main/java/frc/robot/RobotContainer.java#L154-L157) in the `RobotContainer.java` file.
 
 8. All of the constants for needed for tuning your robot should be in the
    `Constants.java` file in the `src/main/java/frc/robot` directory.  This file
-   should be thoroughly edited to match the particulars of your robot.
+   should be thoroughly edited to match the particulars of your robot.  Be sure
+   to work through each section of this file and include the proper values for
+   your robot.
 
 
 --------
