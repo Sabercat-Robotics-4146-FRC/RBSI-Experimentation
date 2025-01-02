@@ -127,7 +127,7 @@ public final class Constants {
     // of YOUR ROBOT, and replace the estimate here with your measured value!
     public static final double kMaxLinearSpeed = Units.feetToMeters(18);
 
-    // Set 3/4 of a rotation per second as the max angular velocity
+    // Set 3/4 of a rotation per second as the max angular velocity (radians/sec)
     public static final double kMaxAngularSpeed = 1.5 * Math.PI;
 
     // Maximum chassis accelerations desired for robot motion  -- metric / radians

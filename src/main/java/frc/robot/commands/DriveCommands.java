@@ -116,7 +116,7 @@ public class DriveCommands {
    * Possible use cases include snapping to an angle, aiming at a vision target, or controlling
    * absolute rotation with a joystick.
    */
-  public static Command joystickDriveAtAngle(
+  public static Command fieldRelativeDriveAtAngle(
       Drive drive,
       DoubleSupplier xSupplier,
       DoubleSupplier ySupplier,
@@ -173,9 +173,10 @@ public class DriveCommands {
   private static Translation2d getLinearVelocity(double x, double y) {
     // Apply deadband
     double linearMagnitude = MathUtil.applyDeadband(Math.hypot(x, y), OperatorConstants.kDeadband);
-    Rotation2d linearDirection = new Rotation2d(Math.atan2(y, x));
+    Rotation2d linearDirection = new Rotation2d(x, y);
 
     // Square magnitude for more precise control
+    // NOTE: The x & y values range from -1 to +1, so their squares are as well
     linearMagnitude = linearMagnitude * linearMagnitude;
 
     // Return new linear velocity
@@ -194,7 +195,7 @@ public class DriveCommands {
   }
 
   /***************************************************************************/
-  /** DRIVEBASE CHARACTERIZATION ROUTINES ********************************** */
+  /** DRIVEBASE CHARACTERIZATION COMMANDS ********************************** */
   /**
    * Measures the velocity feedforward constants for the drive motors.
    *
