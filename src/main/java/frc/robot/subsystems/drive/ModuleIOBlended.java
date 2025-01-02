@@ -1,6 +1,6 @@
-// Copyright (c) 2024 Az-FIRST
+// Copyright (c) 2024-2025 Az-FIRST
 // http://github.com/AZ-First
-// Copyright 2024 FRC 2486
+// Copyright 2024-2025 FRC 2486
 // https://github.com/Coconuts2486-FRC
 //
 // This program is free software; you can redistribute it and/or
