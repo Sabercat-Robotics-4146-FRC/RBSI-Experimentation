@@ -143,6 +143,8 @@ public class Robot extends LoggedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
+
+    // TODO: Make sure Gyro inits here with whatever is in the path planning thingie
     m_robotContainer.setMotorBrake(true);
     switch (Constants.getAutoType()) {
       case PATHPLANNER:

@@ -10,7 +10,7 @@ with AdvantageKit.  The structure of the subsystem directory is:
     
     * FlywheelIO.java
         The base subsystem I/O (input/output) interface that contains the
-        structure and class varibales needed by the library-specific modules.
+        structure and class variables needed by the library-specific modules.
     
     * FlywheelIOSim.java
         Simulated flywheel module, for use with robot simulations, does not
