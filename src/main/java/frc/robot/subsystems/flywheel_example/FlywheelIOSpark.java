@@ -19,6 +19,7 @@ import static frc.robot.Constants.FlywheelConstants.*;
 import static frc.robot.util.SparkUtil.*;
 
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
@@ -109,7 +110,7 @@ public class FlywheelIOSpark implements FlywheelIO {
     pid.setReference(
         Units.radiansPerSecondToRotationsPerMinute(velocityRadPerSec) * kFlywheelGearRatio,
         ControlType.kVelocity,
-        0,
+        ClosedLoopSlot.kSlot0,
         ffVolts,
         ArbFFUnits.kVoltage);
   }

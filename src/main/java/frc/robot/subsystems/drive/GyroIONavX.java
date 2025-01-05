@@ -15,17 +15,18 @@
 
 package frc.robot.subsystems.drive;
 
-import com.kauailabs.navx.frc.AHRS;
+import com.studica.frc.AHRS;
+import com.studica.frc.AHRS.NavXComType;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.SPI;
 import java.util.Queue;
 
 /** IO implementation for Pigeon2 */
 public class GyroIONavX implements GyroIO<AHRS> {
-  private final AHRS navx = new AHRS(SPI.Port.kMXP, (byte) SwerveConstants.kOdometryFrequency);
+  private final AHRS navx =
+      new AHRS(NavXComType.kMXP_SPI, (byte) SwerveConstants.kOdometryFrequency);
   private final Queue<Double> yawPositionQueue;
   private final Queue<Double> yawTimestampQueue;
 

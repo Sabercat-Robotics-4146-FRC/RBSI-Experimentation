@@ -23,7 +23,6 @@ import static frc.robot.Constants.Cameras.*;
 
 import choreo.auto.AutoChooser;
 import choreo.auto.AutoFactory;
-import choreo.auto.AutoFactory.AutoBindings;
 import choreo.auto.AutoRoutine;
 import choreo.auto.AutoTrajectory;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -173,8 +172,7 @@ public class RobotContainer {
                 // provided Pose2d
                 m_drivebase::followTrajectory, // The drive subsystem trajectory follower
                 true, // If alliance flipping should be enabled
-                m_drivebase, // The drive subsystem
-                new AutoBindings() // An empty AutoBindings object
+                m_drivebase // The drive subsystem
                 );
         autoChooserChoreo = new AutoChooser();
         autoChooserChoreo.addRoutine("twoPieceAuto", this::twoPieceAuto);
@@ -376,7 +374,7 @@ public class RobotContainer {
     AutoTrajectory scoreTraj = routine.trajectory("scoreGamepiece");
 
     // When the routine begins, reset odometry and start the first trajectory
-    routine.active().onTrue(Commands.sequence(routine.resetOdometry(pickupTraj), pickupTraj.cmd()));
+    routine.active().onTrue(Commands.sequence(pickupTraj.resetOdometry(), pickupTraj.cmd()));
 
     // Starting at the event marker named "intake", run the intake
     // pickupTraj.atTime("intake").onTrue(intakeSubsystem.intake());

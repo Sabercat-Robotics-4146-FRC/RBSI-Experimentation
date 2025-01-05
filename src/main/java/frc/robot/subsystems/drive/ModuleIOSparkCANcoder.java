@@ -22,6 +22,7 @@ import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
@@ -286,7 +287,11 @@ public class ModuleIOSparkCANcoder implements ModuleIO {
         SwerveConstants.kDriveFrictionVoltage * Math.signum(velocityRadPerSec)
             + driveKv * velocityRadPerSec;
     driveController.setReference(
-        velocityRadPerSec, ControlType.kVelocity, 0, ffVolts, ArbFFUnits.kVoltage);
+        velocityRadPerSec,
+        ControlType.kVelocity,
+        ClosedLoopSlot.kSlot0,
+        ffVolts,
+        ArbFFUnits.kVoltage);
   }
 
   @Override

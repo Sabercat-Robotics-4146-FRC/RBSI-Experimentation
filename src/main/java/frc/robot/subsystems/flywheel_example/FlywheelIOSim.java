@@ -29,7 +29,7 @@ public class FlywheelIOSim implements FlywheelIO {
   // spins slower than the motors, this number should be greater than one.
   private static final double kFlywheelGearing = 1.0;
 
-  // 1/2 MR²
+  // 1/2 MR^2
   private static final double kFlywheelMomentOfInertia =
       0.5 * Units.lbsToKilograms(1.5) * Math.pow(Units.inchesToMeters(4), 2);
 
