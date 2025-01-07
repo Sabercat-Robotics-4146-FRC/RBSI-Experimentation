@@ -20,6 +20,7 @@ import static frc.robot.subsystems.drive.SwerveConstants.*;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityVoltage;
@@ -67,7 +68,9 @@ import java.util.Queue;
  * "/Drive/ModuleX/TurnAbsolutePositionRad"
  */
 public class ModuleIOBlended implements ModuleIO {
-  private final SwerveModuleConstants constants;
+  private final SwerveModuleConstants<
+          TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>
+      constants;
 
   // CAN Devices
   private final TalonFX driveTalon;
@@ -165,7 +168,7 @@ public class ModuleIOBlended implements ModuleIO {
 
     driveTalon = new TalonFX(constants.DriveMotorId, SwerveConstants.kCANbusName);
     turnSpark = new SparkMax(constants.SteerMotorId, MotorType.kBrushless);
-    cancoder = new CANcoder(constants.CANcoderId, SwerveConstants.kCANbusName);
+    cancoder = new CANcoder(constants.EncoderId, SwerveConstants.kCANbusName);
 
     turnController = turnSpark.getClosedLoopController();
 
@@ -194,7 +197,7 @@ public class ModuleIOBlended implements ModuleIO {
         .voltageCompensation(12.0);
     turnConfig
         .absoluteEncoder
-        .inverted(constants.CANcoderInverted)
+        .inverted(constants.EncoderInverted)
         .positionConversionFactor(turnEncoderPositionFactor)
         .velocityConversionFactor(turnEncoderVelocityFactor)
         .averageDepth(2);
@@ -225,10 +228,10 @@ public class ModuleIOBlended implements ModuleIO {
                 turnConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters));
 
     // Configure CANCoder
-    CANcoderConfiguration cancoderConfig = constants.CANcoderInitialConfigs;
-    cancoderConfig.MagnetSensor.MagnetOffset = constants.CANcoderOffset;
+    CANcoderConfiguration cancoderConfig = constants.EncoderInitialConfigs;
+    cancoderConfig.MagnetSensor.MagnetOffset = constants.EncoderOffset;
     cancoderConfig.MagnetSensor.SensorDirection =
-        constants.CANcoderInverted
+        constants.EncoderInverted
             ? SensorDirectionValue.Clockwise_Positive
             : SensorDirectionValue.CounterClockwise_Positive;
     cancoder.getConfigurator().apply(cancoderConfig);
@@ -331,20 +334,23 @@ public class ModuleIOBlended implements ModuleIO {
   public void setTurnPosition(Rotation2d rotation) {
     double setpoint =
         MathUtil.inputModulus(
-            rotation.plus(Rotation2d.fromRotations(constants.CANcoderOffset)).getRadians(),
+            rotation.plus(Rotation2d.fromRotations(constants.EncoderOffset)).getRadians(),
             turnPIDMinInput,
             turnPIDMaxInput);
     turnController.setReference(setpoint, ControlType.kPosition);
   }
 
-  private SwerveModuleConstantsFactory ConstantCreator =
-      new SwerveModuleConstantsFactory()
-          .withDriveMotorGearRatio(kDriveGearRatio)
-          .withSteerMotorGearRatio(kSteerGearRatio)
-          .withCouplingGearRatio(kCoupleRatio)
-          .withWheelRadius(kWheelRadiusMeters)
-          .withSteerInertia(kSteerInertia)
-          .withDriveInertia(kDriveInertia)
-          .withSteerFrictionVoltage(kSteerFrictionVoltage)
-          .withDriveFrictionVoltage(kDriveFrictionVoltage);
+  private SwerveModuleConstantsFactory<
+          TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>
+      ConstantCreator =
+          new SwerveModuleConstantsFactory<
+                  TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>()
+              .withDriveMotorGearRatio(kDriveGearRatio)
+              .withSteerMotorGearRatio(kSteerGearRatio)
+              .withCouplingGearRatio(kCoupleRatio)
+              .withWheelRadius(kWheelRadiusMeters)
+              .withSteerInertia(kSteerInertia)
+              .withDriveInertia(kDriveInertia)
+              .withSteerFrictionVoltage(kSteerFrictionVoltage)
+              .withDriveFrictionVoltage(kDriveFrictionVoltage);
 }

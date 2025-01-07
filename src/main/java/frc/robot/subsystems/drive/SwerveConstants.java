@@ -123,9 +123,10 @@ public class SwerveConstants {
         kDriveCurrentLimit = 120.0; // Example from CTRE documentation
         kDriveSlipCurrent = TunerConstants.FrontLeft.SlipCurrent;
         kOptimalVoltage = 12.0; // Assumed Ideal
+        // Front Left
         kFLDriveMotorId = TunerConstants.FrontLeft.DriveMotorId;
         kFLSteerMotorId = TunerConstants.FrontLeft.SteerMotorId;
-        kFLEncoderId = TunerConstants.FrontLeft.CANcoderId;
+        kFLEncoderId = TunerConstants.FrontLeft.EncoderId;
         kFLDriveCanbus = TunerConstants.DrivetrainConstants.CANBusName;
         kFLSteerCanbus = TunerConstants.DrivetrainConstants.CANBusName;
         kFLEncoderCanbus = TunerConstants.DrivetrainConstants.CANBusName;
@@ -133,30 +134,32 @@ public class SwerveConstants {
         kFLSteerType = "kraken";
         kFLEncoderType = "cancoder";
         kFLEncoderOffset =
-            -Units.rotationsToRadians(TunerConstants.FrontLeft.CANcoderOffset) + Math.PI;
+            -Units.rotationsToRadians(TunerConstants.FrontLeft.EncoderOffset) + Math.PI;
         kFLDriveInvert = TunerConstants.FrontLeft.DriveMotorInverted;
         kFLSteerInvert = TunerConstants.FrontLeft.SteerMotorInverted;
         kFLEncoderInvert = false;
         kFLXPosMeters = TunerConstants.FrontLeft.LocationX;
         kFLYPosMeters = TunerConstants.FrontLeft.LocationY;
+        // Front Right
         kFRDriveMotorId = TunerConstants.FrontRight.DriveMotorId;
         kFRSteerMotorId = TunerConstants.FrontRight.SteerMotorId;
-        kFREncoderId = TunerConstants.FrontRight.CANcoderId;
+        kFREncoderId = TunerConstants.FrontRight.EncoderId;
         kFRDriveCanbus = TunerConstants.DrivetrainConstants.CANBusName;
         kFRSteerCanbus = TunerConstants.DrivetrainConstants.CANBusName;
         kFREncoderCanbus = TunerConstants.DrivetrainConstants.CANBusName;
         kFRDriveType = "kraken";
         kFRSteerType = "kraken";
         kFREncoderType = "cancoder";
-        kFREncoderOffset = -Units.rotationsToRadians(TunerConstants.FrontRight.CANcoderOffset);
+        kFREncoderOffset = -Units.rotationsToRadians(TunerConstants.FrontRight.EncoderOffset);
         kFRDriveInvert = TunerConstants.FrontRight.DriveMotorInverted;
         kFRSteerInvert = TunerConstants.FrontRight.SteerMotorInverted;
         kFREncoderInvert = false;
         kFRXPosMeters = TunerConstants.FrontRight.LocationX;
         kFRYPosMeters = TunerConstants.FrontRight.LocationY;
+        // Back Left
         kBLDriveMotorId = TunerConstants.BackLeft.DriveMotorId;
         kBLSteerMotorId = TunerConstants.BackLeft.SteerMotorId;
-        kBLEncoderId = TunerConstants.BackLeft.CANcoderId;
+        kBLEncoderId = TunerConstants.BackLeft.EncoderId;
         kBLDriveCanbus = TunerConstants.DrivetrainConstants.CANBusName;
         kBLSteerCanbus = TunerConstants.DrivetrainConstants.CANBusName;
         kBLEncoderCanbus = TunerConstants.DrivetrainConstants.CANBusName;
@@ -164,22 +167,23 @@ public class SwerveConstants {
         kBLSteerType = "kraken";
         kBLEncoderType = "cancoder";
         kBLEncoderOffset =
-            -Units.rotationsToRadians(TunerConstants.BackLeft.CANcoderOffset) + Math.PI;
+            -Units.rotationsToRadians(TunerConstants.BackLeft.EncoderOffset) + Math.PI;
         kBLDriveInvert = TunerConstants.BackLeft.DriveMotorInverted;
         kBLSteerInvert = TunerConstants.BackLeft.SteerMotorInverted;
         kBLEncoderInvert = false;
         kBLXPosMeters = TunerConstants.BackLeft.LocationX;
         kBLYPosMeters = TunerConstants.BackLeft.LocationY;
+        // Back Right
         kBRDriveMotorId = TunerConstants.BackRight.DriveMotorId;
         kBRSteerMotorId = TunerConstants.BackRight.SteerMotorId;
-        kBREncoderId = TunerConstants.BackRight.CANcoderId;
+        kBREncoderId = TunerConstants.BackRight.EncoderId;
         kBRDriveCanbus = TunerConstants.DrivetrainConstants.CANBusName;
         kBRSteerCanbus = TunerConstants.DrivetrainConstants.CANBusName;
         kBREncoderCanbus = TunerConstants.DrivetrainConstants.CANBusName;
         kBRDriveType = "kraken";
         kBRSteerType = "kraken";
         kBREncoderType = "cancoder";
-        kBREncoderOffset = -Units.rotationsToRadians(TunerConstants.BackRight.CANcoderOffset);
+        kBREncoderOffset = -Units.rotationsToRadians(TunerConstants.BackRight.EncoderOffset);
         kBRDriveInvert = TunerConstants.BackRight.DriveMotorInverted;
         kBRSteerInvert = TunerConstants.BackRight.SteerMotorInverted;
         kBREncoderInvert = false;
@@ -203,6 +207,7 @@ public class SwerveConstants {
         kDriveCurrentLimit = YagslConstants.kDriveCurrentLimit;
         kDriveSlipCurrent = 120.0;
         kOptimalVoltage = YagslConstants.kOptimalVoltage;
+        // Front Left
         kFLDriveMotorId = YagslConstants.kFrontLeftDriveMotorId;
         kFLSteerMotorId = YagslConstants.kFrontLeftSteerMotorId;
         kFLEncoderId = YagslConstants.kFrontLeftEncoderId;
@@ -218,6 +223,7 @@ public class SwerveConstants {
         kFLEncoderInvert = YagslConstants.kFrontLeftEncoderInvert;
         kFLXPosMeters = Units.inchesToMeters(YagslConstants.kFrontLeftXPosInches);
         kFLYPosMeters = Units.inchesToMeters(YagslConstants.kFrontLeftYPosInches);
+        // Front Right
         kFRDriveMotorId = YagslConstants.kFrontRightDriveMotorId;
         kFRSteerMotorId = YagslConstants.kFrontRightSteerMotorId;
         kFREncoderId = YagslConstants.kFrontRightEncoderId;
@@ -233,6 +239,7 @@ public class SwerveConstants {
         kFREncoderInvert = YagslConstants.kFrontRightEncoderInvert;
         kFRXPosMeters = Units.inchesToMeters(YagslConstants.kFrontRightXPosInches);
         kFRYPosMeters = Units.inchesToMeters(YagslConstants.kFrontRightYPosInches);
+        // Back Left
         kBLDriveMotorId = YagslConstants.kBackLeftDriveMotorId;
         kBLSteerMotorId = YagslConstants.kBackLeftSteerMotorId;
         kBLEncoderId = YagslConstants.kBackLeftEncoderId;
@@ -248,6 +255,7 @@ public class SwerveConstants {
         kBLEncoderInvert = YagslConstants.kBackLeftEncoderInvert;
         kBLXPosMeters = Units.inchesToMeters(YagslConstants.kBackLeftXPosInches);
         kBLYPosMeters = Units.inchesToMeters(YagslConstants.kBackLeftYPosInches);
+        // Back Right
         kBRDriveMotorId = YagslConstants.kBackRightDriveMotorId;
         kBRSteerMotorId = YagslConstants.kBackRightSteerMotorId;
         kBREncoderId = YagslConstants.kBackRightEncoderId;
