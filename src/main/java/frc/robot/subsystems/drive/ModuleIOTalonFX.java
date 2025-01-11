@@ -128,8 +128,6 @@ public class ModuleIOTalonFX implements ModuleIO {
         constants.DriveMotorInverted
             ? InvertedValue.Clockwise_Positive
             : InvertedValue.CounterClockwise_Positive;
-    tryUntilOk(5, () -> driveTalon.getConfigurator().apply(driveConfig, 0.25));
-    tryUntilOk(5, () -> driveTalon.setPosition(0.0, 0.25));
 
     // Configure turn motor
     var turnConfig = new TalonFXConfiguration();
@@ -147,7 +145,6 @@ public class ModuleIOTalonFX implements ModuleIO {
         constants.SteerMotorInverted
             ? InvertedValue.Clockwise_Positive
             : InvertedValue.CounterClockwise_Positive;
-    tryUntilOk(5, () -> turnTalon.getConfigurator().apply(turnConfig, 0.25));
 
     // Configure CANCoder
     CANcoderConfiguration cancoderConfig = constants.EncoderInitialConfigs;
@@ -156,7 +153,6 @@ public class ModuleIOTalonFX implements ModuleIO {
         constants.EncoderInverted
             ? SensorDirectionValue.Clockwise_Positive
             : SensorDirectionValue.CounterClockwise_Positive;
-    cancoder.getConfigurator().apply(cancoderConfig);
 
     // Set motor Closed Loop Output type and CANCoder feedback type based on Phoenix Pro status
     switch (Constants.getPhoenixPro()) {
@@ -169,6 +165,12 @@ public class ModuleIOTalonFX implements ModuleIO {
         constants.DriveMotorClosedLoopOutput = ClosedLoopOutputType.Voltage;
         constants.SteerMotorClosedLoopOutput = ClosedLoopOutputType.Voltage;
     }
+
+    // Finally, apply the configs to the motor controllers
+    tryUntilOk(5, () -> driveTalon.getConfigurator().apply(driveConfig, 0.25));
+    tryUntilOk(5, () -> driveTalon.setPosition(0.0, 0.25));
+    tryUntilOk(5, () -> turnTalon.getConfigurator().apply(turnConfig, 0.25));
+    cancoder.getConfigurator().apply(cancoderConfig);
 
     // Create timestamp queue
     timestampQueue = PhoenixOdometryThread.getInstance().makeTimestampQueue();

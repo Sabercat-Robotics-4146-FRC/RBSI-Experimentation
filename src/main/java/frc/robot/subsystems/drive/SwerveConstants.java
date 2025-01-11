@@ -137,7 +137,7 @@ public class SwerveConstants {
             -Units.rotationsToRadians(TunerConstants.FrontLeft.EncoderOffset) + Math.PI;
         kFLDriveInvert = TunerConstants.FrontLeft.DriveMotorInverted;
         kFLSteerInvert = TunerConstants.FrontLeft.SteerMotorInverted;
-        kFLEncoderInvert = false;
+        kFLEncoderInvert = TunerConstants.FrontLeft.EncoderInverted;
         kFLXPosMeters = TunerConstants.FrontLeft.LocationX;
         kFLYPosMeters = TunerConstants.FrontLeft.LocationY;
         // Front Right
@@ -153,7 +153,7 @@ public class SwerveConstants {
         kFREncoderOffset = -Units.rotationsToRadians(TunerConstants.FrontRight.EncoderOffset);
         kFRDriveInvert = TunerConstants.FrontRight.DriveMotorInverted;
         kFRSteerInvert = TunerConstants.FrontRight.SteerMotorInverted;
-        kFREncoderInvert = false;
+        kFREncoderInvert = TunerConstants.FrontRight.EncoderInverted;
         kFRXPosMeters = TunerConstants.FrontRight.LocationX;
         kFRYPosMeters = TunerConstants.FrontRight.LocationY;
         // Back Left
@@ -170,7 +170,7 @@ public class SwerveConstants {
             -Units.rotationsToRadians(TunerConstants.BackLeft.EncoderOffset) + Math.PI;
         kBLDriveInvert = TunerConstants.BackLeft.DriveMotorInverted;
         kBLSteerInvert = TunerConstants.BackLeft.SteerMotorInverted;
-        kBLEncoderInvert = false;
+        kBLEncoderInvert = TunerConstants.BackLeft.EncoderInverted;
         kBLXPosMeters = TunerConstants.BackLeft.LocationX;
         kBLYPosMeters = TunerConstants.BackLeft.LocationY;
         // Back Right
@@ -186,7 +186,7 @@ public class SwerveConstants {
         kBREncoderOffset = -Units.rotationsToRadians(TunerConstants.BackRight.EncoderOffset);
         kBRDriveInvert = TunerConstants.BackRight.DriveMotorInverted;
         kBRSteerInvert = TunerConstants.BackRight.SteerMotorInverted;
-        kBREncoderInvert = false;
+        kBREncoderInvert = TunerConstants.BackRight.EncoderInverted;
         kBRXPosMeters = TunerConstants.BackRight.LocationX;
         kBRYPosMeters = TunerConstants.BackRight.LocationY;
         break;

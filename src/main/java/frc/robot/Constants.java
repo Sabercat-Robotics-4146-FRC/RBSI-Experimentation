@@ -69,7 +69,7 @@ public final class Constants {
   //       under strict caveat emptor -- and submit any error and bugfixes
   //       via GitHub issues.
   private static SwerveType swerveType = SwerveType.PHOENIX6; // PHOENIX6, YAGSL
-  private static CTREPro phoenixPro = CTREPro.UNLICENSED; // LICENSED, UNLICENSED
+  private static CTREPro phoenixPro = CTREPro.LICENSED; // LICENSED, UNLICENSED
   private static AutoType autoType = AutoType.PATHPLANNER; // PATHPLANNER, CHOREO
   private static VisionType visionType = VisionType.NONE; // PHOTON, LIMELIGHT, NONE
 
@@ -137,7 +137,7 @@ public final class Constants {
 
     // Drive and Turn PID constants
     public static final PIDConstants drivePID = new PIDConstants(0.05, 0.0, 0.0);
-    public static final PIDConstants steerPID = new PIDConstants(5.0, 0.0, 0.4);
+    public static final PIDConstants steerPID = new PIDConstants(2.0, 0.0, 0.4);
 
     // Hold time on motor brakes when disabled
     public static final double kWheelLockTime = 10; // seconds

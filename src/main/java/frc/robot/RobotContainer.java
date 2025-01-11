@@ -228,7 +228,7 @@ public class RobotContainer {
             m_drivebase,
             () -> -driveStickY.value(),
             () -> -driveStickX.value(),
-            () -> turnStickX.value()));
+            () -> -turnStickX.value()));
 
     // ** Example Commands -- Remap, remove, or change as desired **
     // Press B button while driving --> ROBOT-CENTRIC

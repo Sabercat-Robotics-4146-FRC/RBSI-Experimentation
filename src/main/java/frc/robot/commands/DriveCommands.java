@@ -179,7 +179,7 @@ public class DriveCommands {
   private static Translation2d getLinearVelocity(double x, double y) {
     // Apply deadband
     double linearMagnitude = MathUtil.applyDeadband(Math.hypot(x, y), OperatorConstants.kDeadband);
-    Rotation2d linearDirection = new Rotation2d(x, y);
+    Rotation2d linearDirection = new Rotation2d(Math.atan2(y, x));
 
     // Square magnitude for more precise control
     // NOTE: The x & y values range from -1 to +1, so their squares are as well
@@ -187,8 +187,7 @@ public class DriveCommands {
 
     // Return new linear velocity
     return new Pose2d(new Translation2d(), linearDirection)
-        .transformBy(
-            new Transform2d(linearVelocityFilter.calculate(linearMagnitude), 0.0, new Rotation2d()))
+        .transformBy(new Transform2d(linearMagnitude, 0.0, new Rotation2d()))
         .getTranslation();
   }
 
@@ -198,7 +197,7 @@ public class DriveCommands {
    */
   private static double getOmega(double omega) {
     omega = MathUtil.applyDeadband(omega, OperatorConstants.kDeadband);
-    return omegaFilter.calculate(Math.copySign(omega * omega, omega));
+    return Math.copySign(omega * omega, omega);
   }
 
   /***************************************************************************/

@@ -185,8 +185,6 @@ public class ModuleIOBlended implements ModuleIO {
         constants.DriveMotorInverted
             ? InvertedValue.Clockwise_Positive
             : InvertedValue.CounterClockwise_Positive;
-    PhoenixUtil.tryUntilOk(5, () -> driveTalon.getConfigurator().apply(driveConfig, 0.25));
-    PhoenixUtil.tryUntilOk(5, () -> driveTalon.setPosition(0.0, 0.25));
 
     // Configure turn motor
     var turnConfig = new SparkMaxConfig();
@@ -234,7 +232,6 @@ public class ModuleIOBlended implements ModuleIO {
         constants.EncoderInverted
             ? SensorDirectionValue.Clockwise_Positive
             : SensorDirectionValue.CounterClockwise_Positive;
-    cancoder.getConfigurator().apply(cancoderConfig);
 
     // Set motor Closed Loop Output type based on Phoenix Pro status
     constants.DriveMotorClosedLoopOutput =
@@ -242,6 +239,11 @@ public class ModuleIOBlended implements ModuleIO {
           case LICENSED -> ClosedLoopOutputType.TorqueCurrentFOC;
           case UNLICENSED -> ClosedLoopOutputType.Voltage;
         };
+
+    // Finally, apply the configs to the motor controllers
+    PhoenixUtil.tryUntilOk(5, () -> driveTalon.getConfigurator().apply(driveConfig, 0.25));
+    PhoenixUtil.tryUntilOk(5, () -> driveTalon.setPosition(0.0, 0.25));
+    cancoder.getConfigurator().apply(cancoderConfig);
 
     // Create timestamp queue
     timestampQueue = PhoenixOdometryThread.getInstance().makeTimestampQueue();
