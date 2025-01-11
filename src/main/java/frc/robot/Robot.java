@@ -1,4 +1,4 @@
-// Copyright (c) 2024 Az-FIRST
+// Copyright (c) 2024-2025 Az-FIRST
 // http://github.com/AZ-First
 //
 // This program is free software; you can redistribute it and/or
@@ -13,18 +13,14 @@
 
 package frc.robot;
 
-import choreo.auto.AutoRoutine;
 import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.Constants.PowerConstants;
-import frc.robot.RobotContainer.Ports;
 import frc.robot.util.VirtualSubsystem;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.inputs.LoggedPowerDistribution;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
@@ -37,7 +33,6 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
  */
 public class Robot extends LoggedRobot {
   private Command m_autoCommandPathPlanner;
-  private AutoRoutine m_autoCommandChoreo;
   private RobotContainer m_robotContainer;
   private Timer m_disabledTimer;
 
@@ -74,8 +69,6 @@ public class Robot extends LoggedRobot {
         // Running on a real robot, log to a USB stick ("/U/logs")
         Logger.addDataReceiver(new WPILOGWriter());
         Logger.addDataReceiver(new NT4Publisher());
-        LoggedPowerDistribution.getInstance(
-            Ports.POWER_CAN_DEVICE_ID.getDeviceNumber(), PowerConstants.kPowerModule);
         break;
 
       case SIM:
@@ -150,6 +143,8 @@ public class Robot extends LoggedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
+
+    // TODO: Make sure Gyro inits here with whatever is in the path planning thingie
     m_robotContainer.setMotorBrake(true);
     switch (Constants.getAutoType()) {
       case PATHPLANNER:
@@ -160,11 +155,7 @@ public class Robot extends LoggedRobot {
         }
         break;
       case CHOREO:
-        m_autoCommandChoreo = m_robotContainer.getAutonomousCommandChoreo();
-        // schedule the autonomous command (example)
-        if (m_autoCommandChoreo != null) {
-          CommandScheduler.getInstance().schedule(m_autoCommandChoreo.cmd());
-        }
+        m_robotContainer.getAutonomousCommandChoreo();
         break;
       default:
         throw new RuntimeException(

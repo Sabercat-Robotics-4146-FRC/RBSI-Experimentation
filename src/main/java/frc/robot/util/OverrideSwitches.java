@@ -1,4 +1,4 @@
-// Copyright (c) 2024 Az-FIRST
+// Copyright (c) 2024-2025 Az-FIRST
 // http://github.com/AZ-First
 // Copyright (c) 2024 FRC 6328
 // http://github.com/Mechanical-Advantage
@@ -18,7 +18,7 @@
 //       https://www.chiefdelphi.com/t/frc-6328-mechanical-advantage-2024-build-thread/442736/72
 //
 // The "Arcade Controller" used by 6328 (https://www.amazon.com/gp/product/B00UUROWWK)
-// enumerates as a “Generic USB Controller”, mapped in this modules as a GenericHID.
+// enumerates as a "Generic USB Controller", mapped in this modules as a GenericHID.
 //
 // If another type of controller is used, swap in the proper class.
 

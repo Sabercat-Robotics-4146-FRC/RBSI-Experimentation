@@ -1,6 +1,6 @@
-// Copyright (c) 2024 Az-FIRST
+// Copyright (c) 2024-2025 Az-FIRST
 // http://github.com/AZ-First
-// Copyright 2021-2024 FRC 6328
+// Copyright (c) 2021-2025 FRC 6328
 // http://github.com/Mechanical-Advantage
 //
 // This program is free software; you can redistribute it and/or
@@ -16,10 +16,9 @@
 package frc.robot.subsystems.drive;
 
 import static edu.wpi.first.units.Units.*;
-import static frc.robot.subsystems.drive.DriveConstants.*;
+import static frc.robot.subsystems.drive.SwerveConstants.*;
 
 import choreo.trajectory.SwerveSample;
-import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.ModuleConfig;
@@ -54,6 +53,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.Constants.DrivebaseConstants;
+import frc.robot.Constants.PhysicalConstants;
 import frc.robot.util.LocalADStarAK;
 import frc.robot.util.RBSIEnum.Mode;
 import java.util.concurrent.locks.Lock;
@@ -63,23 +63,15 @@ import org.littletonrobotics.junction.Logger;
 
 public class Drive extends SubsystemBase {
 
-  // TunerConstants doesn't include these constants, so they are declared locally
-  public static final double DRIVE_BASE_RADIUS = kDriveBaseRadiusMeters;
-  // Are we on the CANivore or not?
-  static final double ODOMETRY_FREQUENCY = new CANBus(kCANbusName).isNetworkFD() ? 250.0 : 100.0;
-
   // PathPlanner config constants
-  private static final double ROBOT_MASS_KG = 74.088;
-  private static final double ROBOT_MOI = 6.883;
-  private static final double WHEEL_COF = 1.2;
   private static final RobotConfig PP_CONFIG =
       new RobotConfig(
-          ROBOT_MASS_KG,
-          ROBOT_MOI,
+          PhysicalConstants.kRobotMassKg,
+          PhysicalConstants.kRobotMOI,
           new ModuleConfig(
               kWheelRadiusMeters,
-              DrivebaseConstants.kMaxLinearSpeed.magnitude(),
-              WHEEL_COF,
+              DrivebaseConstants.kMaxLinearSpeed,
+              PhysicalConstants.kWheelCOF,
               DCMotor.getKrakenX60Foc(1).withReduction(kDriveGearRatio),
               kDriveSlipCurrent,
               1),
@@ -104,6 +96,9 @@ public class Drive extends SubsystemBase {
       };
   private SwerveDrivePoseEstimator m_PoseEstimator =
       new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
+
+  // Choreo drive controller
+  private final PIDController xController = new PIDController(10.0, 0.0, 0.0);
 
   // Constructor
   public Drive() {
@@ -134,8 +129,12 @@ public class Drive extends SubsystemBase {
         for (int i = 0; i < 4; i++) {
           switch (modType) {
             case 0b00000000: // ALL-CTRE
-              throw new RuntimeException(
-                  "For an all-CTRE drive base, use Phoenix Tuner X Swerve Generator instead of YAGSL!");
+              if (kImuType == "navx" || kImuType == "navx_spi") {
+                modules[i] = new Module(new ModuleIOTalonFX(i), i);
+              } else {
+                throw new RuntimeException(
+                    "For an all-CTRE drive base, use Phoenix Tuner X Swerve Generator instead of YAGSL!");
+              }
             case 0b00010000: // Blended Talon Drive / NEO Steer
               modules[i] = new Module(new ModuleIOBlended(i), i);
               break;
@@ -282,13 +281,13 @@ public class Drive extends SubsystemBase {
    */
   public void runVelocity(ChassisSpeeds speeds) {
     // Calculate module setpoints
-    speeds.discretize(Constants.loopPeriodSecs);
-    SwerveModuleState[] setpointStates = kinematics.toSwerveModuleStates(speeds);
+    ChassisSpeeds discreteSpeeds = ChassisSpeeds.discretize(speeds, Constants.loopPeriodSecs);
+    SwerveModuleState[] setpointStates = kinematics.toSwerveModuleStates(discreteSpeeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(setpointStates, DrivebaseConstants.kMaxLinearSpeed);
 
     // Log unoptimized setpoints and setpoint speeds
     Logger.recordOutput("SwerveStates/Setpoints", setpointStates);
-    Logger.recordOutput("SwerveChassisSpeeds/Setpoints", speeds);
+    Logger.recordOutput("SwerveChassisSpeeds/Setpoints", discreteSpeeds);
 
     // Send setpoints to modules
     for (int i = 0; i < 4; i++) {
@@ -411,21 +410,21 @@ public class Drive extends SubsystemBase {
 
   /** Returns the maximum linear speed in meters per sec. */
   public double getMaxLinearSpeedMetersPerSec() {
-    return DrivebaseConstants.kMaxLinearSpeed.in(MetersPerSecond);
+    return DrivebaseConstants.kMaxLinearSpeed;
   }
 
   /** Returns the maximum angular speed in radians per sec. */
   public double getMaxAngularSpeedRadPerSec() {
-    return getMaxLinearSpeedMetersPerSec() / DRIVE_BASE_RADIUS;
+    return getMaxLinearSpeedMetersPerSec() / kDriveBaseRadiusMeters;
   }
 
   /** Returns an array of module translations. */
   public static Translation2d[] getModuleTranslations() {
     return new Translation2d[] {
-      new Translation2d(kFrontLeftXPosMeters, kFrontLeftYPosMeters),
-      new Translation2d(kFrontRightXPosMeters, kFrontRightYPosMeters),
-      new Translation2d(kBackLeftXPosMeters, kBackLeftYPosMeters),
-      new Translation2d(kBackRightXPosMeters, kBackRightYPosMeters)
+      new Translation2d(kFLXPosMeters, kFLYPosMeters),
+      new Translation2d(kFRXPosMeters, kFRYPosMeters),
+      new Translation2d(kBLXPosMeters, kBLYPosMeters),
+      new Translation2d(kBRXPosMeters, kBRYPosMeters)
     };
   }
 
@@ -468,6 +467,21 @@ public class Drive extends SubsystemBase {
     //         .withWheelForceFeedforwardsY(sample.moduleForcesY()));
   }
 
+  public void followTrajectory(SwerveSample sample) {
+    // Get the current pose of the robot
+    Pose2d pose = getPose();
+
+    // Generate the next speeds for the robot
+    ChassisSpeeds speeds =
+        new ChassisSpeeds(
+            sample.vx + xController.calculate(pose.getX(), sample.x),
+            sample.vy + xController.calculate(pose.getX(), sample.y),
+            sample.omega + xController.calculate(pose.getRotation().getRadians(), sample.heading));
+
+    // Apply the generated speeds
+    runVelocity(speeds);
+  }
+
   /**
    * Parse the module type given the type information for the FL module
    *
@@ -478,7 +492,7 @@ public class Drive extends SubsystemBase {
     Byte b_drive; // [x,x,-,-,-,-,-,-]
     Byte b_steer; // [-,-,x,x,-,-,-,-]
     Byte b_encoder; // [-,-,-,-,x,x,-,-]
-    switch (kFrontLeftDriveType) {
+    switch (kFLDriveType) {
       case "falcon":
       case "kraken":
       case "talonfx":
@@ -493,7 +507,7 @@ public class Drive extends SubsystemBase {
       default:
         throw new RuntimeException("Invalid drive motor type");
     }
-    switch (kFrontLeftSteerType) {
+    switch (kFLSteerType) {
       case "falcon":
       case "kraken":
       case "talonfx":
@@ -508,7 +522,7 @@ public class Drive extends SubsystemBase {
       default:
         throw new RuntimeException("Invalid steer motor type");
     }
-    switch (kFrontLeftEncoderType) {
+    switch (kFLEncoderType) {
       case "cancoder":
         // CTRE CANcoder
         b_encoder = 0b00;

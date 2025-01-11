@@ -1,7 +1,5 @@
 // Copyright (c) 2024-2025 Az-FIRST
 // http://github.com/AZ-First
-// Copyright (c) 2021-2025 FRC 6328
-// http://github.com/Mechanical-Advantage
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -15,15 +13,12 @@
 
 package frc.robot.util;
 
-import com.ctre.phoenix6.StatusCode;
-import java.util.function.Supplier;
-
-public class PhoenixUtil {
-  /** Attempts to run the command until no error is produced. */
-  public static void tryUntilOk(int maxAttempts, Supplier<StatusCode> command) {
-    for (int i = 0; i < maxAttempts; i++) {
-      var error = command.get();
-      if (error.isOK()) break;
-    }
-  }
+/**
+ * Interface needed to abstraxct away which joystick is used for driving and which for steering with
+ * a swerve base. Teams may specify to use the left joystick for either driving or steering in the
+ * `Constants.java` file under OperatorConstants.
+ */
+@FunctionalInterface
+public interface GetJoystickValue {
+  double value();
 }

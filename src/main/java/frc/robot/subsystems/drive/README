@@ -12,10 +12,10 @@ Existing IO files:
   - ``GyroIONavX.java``: NavX as the swerve IMU, connected via SPI
 
   - ``ModuleIOTalonFX.java``: 2x TalonFX motors + CANcoder
-  - ``ModuleIOSparkMax.java``: 2x Rev NEO motors + analog absolute encoder connected to the RIO
+  - ``ModuleIOSpark.java``: 2x Rev NEO motors + analog absolute encoder connected to the RIO
   - ``ModuleIOSparkCANcoder.java``: 2x Rv NEO motors + CANcoder
   - ``ModuleIOBlended.java``: TalonFX drive, Rev NEO steer motors + CANcoder
 
 
 --------------------
-Last Modified: 22 Nov 2024, TPEB
+Last Modified: 2 Jan 2025, TPEB

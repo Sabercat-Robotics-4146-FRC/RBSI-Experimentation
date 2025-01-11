@@ -1,6 +1,6 @@
-// Copyright (c) 2024 Az-FIRST
+// Copyright (c) 2024-2025 Az-FIRST
 // http://github.com/AZ-First
-// Copyright 2021-2024 FRC 6328
+// Copyright (c) 2021-2025 FRC 6328
 // http://github.com/Mechanical-Advantage
 //
 // This program is free software; you can redistribute it and/or
@@ -19,6 +19,7 @@ import static frc.robot.Constants.FlywheelConstants.*;
 import static frc.robot.util.SparkUtil.*;
 
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
@@ -31,8 +32,8 @@ import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkFlexConfig;
 import edu.wpi.first.math.util.Units;
-import frc.robot.RobotContainer.Ports;
-import frc.robot.subsystems.drive.DriveConstants;
+import frc.robot.Constants.CANandPowerPorts;
+import frc.robot.subsystems.drive.SwerveConstants;
 
 /**
  * NOTE: To use the Spark Flex / NEO Vortex, replace all instances of "CANSparkMax" with
@@ -42,14 +43,15 @@ public class FlywheelIOSpark implements FlywheelIO {
 
   // Define the leader / follower motors from the Ports section of RobotContainer
   private final SparkBase leader =
-      new SparkMax(Ports.FLYWHEEL_LEADER.getDeviceNumber(), MotorType.kBrushless);
+      new SparkMax(CANandPowerPorts.FLYWHEEL_LEADER.getDeviceNumber(), MotorType.kBrushless);
   private final SparkBase follower =
-      new SparkMax(Ports.FLYWHEEL_LEADER.getDeviceNumber(), MotorType.kBrushless);
+      new SparkMax(CANandPowerPorts.FLYWHEEL_LEADER.getDeviceNumber(), MotorType.kBrushless);
   private final RelativeEncoder encoder = leader.getEncoder();
   private final SparkClosedLoopController pid = leader.getClosedLoopController();
   // IMPORTANT: Include here all devices listed above that are part of this mechanism!
   public final int[] powerPorts = {
-    Ports.FLYWHEEL_LEADER.getPowerPort(), Ports.FLYWHEEL_FOLLOWER.getPowerPort()
+    CANandPowerPorts.FLYWHEEL_LEADER.getPowerPort(),
+    CANandPowerPorts.FLYWHEEL_FOLLOWER.getPowerPort()
   };
 
   public FlywheelIOSpark() {
@@ -57,8 +59,12 @@ public class FlywheelIOSpark implements FlywheelIO {
     // Configure leader motor
     var leaderConfig = new SparkFlexConfig();
     leaderConfig
-        .idleMode(IdleMode.kBrake)
-        .smartCurrentLimit(DriveConstants.driveMotorCurrentLimit)
+        .idleMode(
+            switch (kFlywheelIdleMode) {
+              case COAST -> IdleMode.kCoast;
+              case BRAKE -> IdleMode.kBrake;
+            })
+        .smartCurrentLimit((int) SwerveConstants.kDriveCurrentLimit)
         .voltageCompensation(12.0);
     leaderConfig.encoder.uvwMeasurementPeriod(10).uvwAverageDepth(2);
     leaderConfig
@@ -70,7 +76,7 @@ public class FlywheelIOSpark implements FlywheelIO {
     leaderConfig
         .signals
         .primaryEncoderPositionAlwaysOn(true)
-        .primaryEncoderPositionPeriodMs((int) (1000.0 / DriveConstants.odometryFrequency))
+        .primaryEncoderPositionPeriodMs((int) (1000.0 / SwerveConstants.kOdometryFrequency))
         .primaryEncoderVelocityAlwaysOn(true)
         .primaryEncoderVelocityPeriodMs(20)
         .appliedOutputPeriodMs(20)
@@ -104,7 +110,7 @@ public class FlywheelIOSpark implements FlywheelIO {
     pid.setReference(
         Units.radiansPerSecondToRotationsPerMinute(velocityRadPerSec) * kFlywheelGearRatio,
         ControlType.kVelocity,
-        0,
+        ClosedLoopSlot.kSlot0,
         ffVolts,
         ArbFFUnits.kVoltage);
   }
