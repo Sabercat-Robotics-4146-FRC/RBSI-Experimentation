@@ -222,7 +222,6 @@ public class RobotContainer {
     }
 
     // SET STANDARD DRIVING AS DEFAULT COMMAND FOR THE DRIVEBASE
-    // TODO: With a re-do of Phoenix Tuner X on George, ensure the signs are all correct!!!!!
     m_drivebase.setDefaultCommand(
         DriveCommands.fieldRelativeDrive(
             m_drivebase,
