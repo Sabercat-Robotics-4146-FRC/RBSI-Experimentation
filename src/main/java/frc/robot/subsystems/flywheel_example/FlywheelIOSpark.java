@@ -1,6 +1,6 @@
-// Copyright (c) 2024 Az-FIRST
+// Copyright (c) 2024-2025 Az-FIRST
 // http://github.com/AZ-First
-// Copyright 2021-2024 FRC 6328
+// Copyright (c) 2021-2025 FRC 6328
 // http://github.com/Mechanical-Advantage
 //
 // This program is free software; you can redistribute it and/or
@@ -19,6 +19,7 @@ import static frc.robot.Constants.FlywheelConstants.*;
 import static frc.robot.util.SparkUtil.*;
 
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
@@ -58,7 +59,11 @@ public class FlywheelIOSpark implements FlywheelIO {
     // Configure leader motor
     var leaderConfig = new SparkFlexConfig();
     leaderConfig
-        .idleMode(IdleMode.kBrake)
+        .idleMode(
+            switch (kFlywheelIdleMode) {
+              case COAST -> IdleMode.kCoast;
+              case BRAKE -> IdleMode.kBrake;
+            })
         .smartCurrentLimit((int) SwerveConstants.kDriveCurrentLimit)
         .voltageCompensation(12.0);
     leaderConfig.encoder.uvwMeasurementPeriod(10).uvwAverageDepth(2);
@@ -105,7 +110,7 @@ public class FlywheelIOSpark implements FlywheelIO {
     pid.setReference(
         Units.radiansPerSecondToRotationsPerMinute(velocityRadPerSec) * kFlywheelGearRatio,
         ControlType.kVelocity,
-        0,
+        ClosedLoopSlot.kSlot0,
         ffVolts,
         ArbFFUnits.kVoltage);
   }

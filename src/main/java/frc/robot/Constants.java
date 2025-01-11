@@ -1,4 +1,4 @@
-// Copyright (c) 2024 Az-FIRST
+// Copyright (c) 2024-2025 Az-FIRST
 // http://github.com/AZ-First
 //
 // This program is free software; you can redistribute it and/or
@@ -34,7 +34,9 @@ import frc.robot.subsystems.drive.SwerveConstants;
 import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
 import frc.robot.util.RBSIEnum.AutoType;
+import frc.robot.util.RBSIEnum.CTREPro;
 import frc.robot.util.RBSIEnum.Mode;
+import frc.robot.util.RBSIEnum.MotorIdleMode;
 import frc.robot.util.RBSIEnum.RobotType;
 import frc.robot.util.RBSIEnum.SwerveType;
 import frc.robot.util.RBSIEnum.VisionType;
@@ -67,7 +69,7 @@ public final class Constants {
   //       under strict caveat emptor -- and submit any error and bugfixes
   //       via GitHub issues.
   private static SwerveType swerveType = SwerveType.PHOENIX6; // PHOENIX6, YAGSL
-  private static boolean phoenixPro = false; // CTRE Pro License?  true, false
+  private static CTREPro phoenixPro = CTREPro.LICENSED; // LICENSED, UNLICENSED
   private static AutoType autoType = AutoType.PATHPLANNER; // PATHPLANNER, CHOREO
   private static VisionType visionType = VisionType.NONE; // PHOTON, LIMELIGHT, NONE
 
@@ -125,7 +127,7 @@ public final class Constants {
     // of YOUR ROBOT, and replace the estimate here with your measured value!
     public static final double kMaxLinearSpeed = Units.feetToMeters(18);
 
-    // Set 3/4 of a rotation per second as the max angular velocity
+    // Set 3/4 of a rotation per second as the max angular velocity (radians/sec)
     public static final double kMaxAngularSpeed = 1.5 * Math.PI;
 
     // Maximum chassis accelerations desired for robot motion  -- metric / radians
@@ -135,7 +137,7 @@ public final class Constants {
 
     // Drive and Turn PID constants
     public static final PIDConstants drivePID = new PIDConstants(0.05, 0.0, 0.0);
-    public static final PIDConstants steerPID = new PIDConstants(5.0, 0.0, 0.4);
+    public static final PIDConstants steerPID = new PIDConstants(2.0, 0.0, 0.4);
 
     // Hold time on motor brakes when disabled
     public static final double kWheelLockTime = 10; // seconds
@@ -155,6 +157,9 @@ public final class Constants {
 
   /** Example Flywheel Mechanism Constants ********************************* */
   public static final class FlywheelConstants {
+
+    // Mechanism idle mode
+    public static final MotorIdleMode kFlywheelIdleMode = MotorIdleMode.COAST; // BRAKE, COAST
 
     // Mechanism motor gear ratio
     public static final double kFlywheelGearRatio = 1.5;
@@ -200,13 +205,15 @@ public final class Constants {
   public static class OperatorConstants {
 
     // Joystick Functions
-    // Set to TRUE for Drive = Left, Turn = Right; else FALSE
+    // Set to TRUE for Drive = Left Stick, Turn = Right Stick; else FALSE
     public static final boolean kDriveLeftTurnRight = true;
 
     // Joystick Deadbands
-    public static final double kLeftDeadband = 0.1;
-    public static final double kRightDeadband = 0.1;
+    public static final double kDeadband = 0.1;
     public static final double kTurnConstant = 6;
+
+    // Joystick slew rate limiters to smooth erratic joystick motions, measured in units per second
+    public static final double kJoystickSlewLimit = 0.5;
 
     // Override and Console Toggle Switches
     // Assumes this controller: https://www.amazon.com/gp/product/B00UUROWWK
@@ -433,7 +440,7 @@ public final class Constants {
   }
 
   /** Get the current CTRE/Phoenix Pro License state */
-  public static boolean getPhoenixPro() {
+  public static CTREPro getPhoenixPro() {
     return phoenixPro;
   }
 

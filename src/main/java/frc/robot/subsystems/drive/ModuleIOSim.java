@@ -1,6 +1,6 @@
-// Copyright (c) 2024 Az-FIRST
+// Copyright (c) 2024-2025 Az-FIRST
 // http://github.com/AZ-First
-// Copyright 2021-2024 FRC 6328
+// Copyright (c) 2021-2025 FRC 6328
 // http://github.com/Mechanical-Advantage
 //
 // This program is free software; you can redistribute it and/or
@@ -15,6 +15,8 @@
 
 package frc.robot.subsystems.drive;
 
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
@@ -53,7 +55,9 @@ public class ModuleIOSim implements ModuleIO {
   private double driveAppliedVolts = 0.0;
   private double turnAppliedVolts = 0.0;
 
-  public ModuleIOSim(SwerveModuleConstants constants) {
+  public ModuleIOSim(
+      SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>
+          constants) {
     // Create drive and turn sim models
     driveSim =
         new DCMotorSim(

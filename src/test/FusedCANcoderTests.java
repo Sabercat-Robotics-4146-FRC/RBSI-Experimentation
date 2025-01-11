@@ -1,6 +1,6 @@
-// Copyright (c) 2024 Az-FIRST
+// Copyright (c) 2024-2025 Az-FIRST
 // http://github.com/AZ-First
-// Copyright (c) 2024 Cross The Road Electronics
+// Copyright (c) 2024-2025 Cross The Road Electronics
 // https://github.com/CrossTheRoadElec/Phoenix6-Examples
 //
 // This program is free software; you can redistribute it and/or

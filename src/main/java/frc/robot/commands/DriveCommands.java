@@ -1,6 +1,6 @@
-// Copyright (c) 2024 Az-FIRST
+// Copyright (c) 2024-2025 Az-FIRST
 // http://github.com/AZ-First
-// Copyright 2021-2024 FRC 6328
+// Copyright (c) 2021-2025 FRC 6328
 // http://github.com/Mechanical-Advantage
 //
 // This program is free software; you can redistribute it and/or
@@ -50,6 +50,12 @@ public class DriveCommands {
   private static final double WHEEL_RADIUS_MAX_VELOCITY = 0.25; // Rad/Sec
   private static final double WHEEL_RADIUS_RAMP_RATE = 0.05; // Rad/Sec^2
 
+  // Create slew rate limiters for smoothing erratic joystick motions
+  private static final SlewRateLimiter linearVelocityFilter =
+      new SlewRateLimiter(OperatorConstants.kJoystickSlewLimit);
+  private static final SlewRateLimiter omegaFilter =
+      new SlewRateLimiter(OperatorConstants.kJoystickSlewLimit);
+
   private DriveCommands() {}
 
   /**
@@ -63,18 +69,22 @@ public class DriveCommands {
     return Commands.run(
         () -> {
           // Get the Linear Velocity & Omega from inputs
-          Translation2d linearVelocity = getLinearVelocity(xSupplier, ySupplier);
-          double omega = getOmega(omegaSupplier);
+          Translation2d linearVelocity =
+              getLinearVelocity(xSupplier.getAsDouble(), ySupplier.getAsDouble());
+          double omega = getOmega(omegaSupplier.getAsDouble());
 
           // Convert to field relative speeds & send command
+          ChassisSpeeds speeds =
+              new ChassisSpeeds(
+                  linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
+                  linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
+                  omega * drive.getMaxAngularSpeedRadPerSec());
           boolean isFlipped =
               DriverStation.getAlliance().isPresent()
                   && DriverStation.getAlliance().get() == Alliance.Red;
           drive.runVelocity(
               ChassisSpeeds.fromFieldRelativeSpeeds(
-                  linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
-                  linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
-                  omega * drive.getMaxAngularSpeedRadPerSec(),
+                  speeds,
                   isFlipped
                       ? drive.getRotation().plus(new Rotation2d(Math.PI))
                       : drive.getRotation()));
@@ -92,10 +102,10 @@ public class DriveCommands {
       DoubleSupplier omegaSupplier) {
     return Commands.run(
         () -> {
-
           // Get the Linear Velocity & Omega from inputs
-          Translation2d linearVelocity = getLinearVelocity(xSupplier, ySupplier);
-          double omega = getOmega(omegaSupplier);
+          Translation2d linearVelocity =
+              getLinearVelocity(xSupplier.getAsDouble(), ySupplier.getAsDouble());
+          double omega = getOmega(omegaSupplier.getAsDouble());
 
           // Run with straight-up velocities w.r.t. the robot!
           drive.runVelocity(
@@ -108,58 +118,11 @@ public class DriveCommands {
   }
 
   /**
-   * Compute the new linear velocity from inputs, including applying deadbands and squaring for
-   * smoothness
-   */
-  private static Translation2d getLinearVelocity(
-      DoubleSupplier xSupplier, DoubleSupplier ySupplier) {
-
-    // Apply deadband
-    double linearMagnitude =
-        MathUtil.applyDeadband(
-            Math.hypot(xSupplier.getAsDouble(), ySupplier.getAsDouble()),
-            OperatorConstants.kLeftDeadband);
-    Rotation2d linearDirection = new Rotation2d(xSupplier.getAsDouble(), ySupplier.getAsDouble());
-
-    // Square values
-    linearMagnitude = linearMagnitude * linearMagnitude;
-
-    return new Pose2d(new Translation2d(), linearDirection)
-        .transformBy(new Transform2d(linearMagnitude, 0.0, new Rotation2d()))
-        .getTranslation();
-  }
-
-  /**
-   * Compute the new angular velocity from inputs, including applying deadbands and squaring for
-   * smoothness
-   */
-  private static double getOmega(DoubleSupplier omegaSupplier) {
-    double omega =
-        MathUtil.applyDeadband(omegaSupplier.getAsDouble(), OperatorConstants.kRightDeadband);
-    return Math.copySign(omega * omega, omega);
-  }
-
-  private static Translation2d getLinearVelocityFromJoysticks(double x, double y) {
-    // Apply deadband
-    double linearMagnitude =
-        MathUtil.applyDeadband(Math.hypot(x, y), OperatorConstants.kLeftDeadband);
-    Rotation2d linearDirection = new Rotation2d(Math.atan2(y, x));
-
-    // Square magnitude for more precise control
-    linearMagnitude = linearMagnitude * linearMagnitude;
-
-    // Return new linear velocity
-    return new Pose2d(new Translation2d(), linearDirection)
-        .transformBy(new Transform2d(linearMagnitude, 0.0, new Rotation2d()))
-        .getTranslation();
-  }
-
-  /**
    * Field relative drive command using joystick for linear control and PID for angular control.
    * Possible use cases include snapping to an angle, aiming at a vision target, or controlling
    * absolute rotation with a joystick.
    */
-  public static Command joystickDriveAtAngle(
+  public static Command fieldRelativeDriveAtAngle(
       Drive drive,
       DoubleSupplier xSupplier,
       DoubleSupplier ySupplier,
@@ -180,7 +143,7 @@ public class DriveCommands {
             () -> {
               // Get linear velocity
               Translation2d linearVelocity =
-                  getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble());
+                  getLinearVelocity(xSupplier.getAsDouble(), ySupplier.getAsDouble());
 
               // Calculate angular speed
               double omega =
@@ -209,6 +172,36 @@ public class DriveCommands {
         .beforeStarting(() -> angleController.reset(drive.getRotation().getRadians()));
   }
 
+  /**
+   * Compute the new linear velocity from inputs, including applying deadbands and squaring for
+   * smoothness. Also apply the linear velocity Slew Rate Limiter.
+   */
+  private static Translation2d getLinearVelocity(double x, double y) {
+    // Apply deadband
+    double linearMagnitude = MathUtil.applyDeadband(Math.hypot(x, y), OperatorConstants.kDeadband);
+    Rotation2d linearDirection = new Rotation2d(Math.atan2(y, x));
+
+    // Square magnitude for more precise control
+    // NOTE: The x & y values range from -1 to +1, so their squares are as well
+    linearMagnitude = linearMagnitude * linearMagnitude;
+
+    // Return new linear velocity
+    return new Pose2d(new Translation2d(), linearDirection)
+        .transformBy(new Transform2d(linearMagnitude, 0.0, new Rotation2d()))
+        .getTranslation();
+  }
+
+  /**
+   * Compute the new angular velocity from inputs, including applying deadbands and squaring for
+   * smoothness. Also apply the angular Slew Rate Limiter.
+   */
+  private static double getOmega(double omega) {
+    omega = MathUtil.applyDeadband(omega, OperatorConstants.kDeadband);
+    return Math.copySign(omega * omega, omega);
+  }
+
+  /***************************************************************************/
+  /** DRIVEBASE CHARACTERIZATION COMMANDS ********************************** */
   /**
    * Measures the velocity feedforward constants for the drive motors.
    *

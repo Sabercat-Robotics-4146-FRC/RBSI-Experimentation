@@ -1,6 +1,6 @@
-// Copyright (c) 2024 Az-FIRST
+// Copyright (c) 2024-2025 Az-FIRST
 // http://github.com/AZ-First
-// Copyright 2021-2024 FRC 6328
+// Copyright (c) 2021-2025 FRC 6328
 // http://github.com/Mechanical-Advantage
 //
 // This program is free software; you can redistribute it and/or
@@ -129,8 +129,12 @@ public class Drive extends SubsystemBase {
         for (int i = 0; i < 4; i++) {
           switch (modType) {
             case 0b00000000: // ALL-CTRE
-              throw new RuntimeException(
-                  "For an all-CTRE drive base, use Phoenix Tuner X Swerve Generator instead of YAGSL!");
+              if (kImuType == "navx" || kImuType == "navx_spi") {
+                modules[i] = new Module(new ModuleIOTalonFX(i), i);
+              } else {
+                throw new RuntimeException(
+                    "For an all-CTRE drive base, use Phoenix Tuner X Swerve Generator instead of YAGSL!");
+              }
             case 0b00010000: // Blended Talon Drive / NEO Steer
               modules[i] = new Module(new ModuleIOBlended(i), i);
               break;
@@ -277,7 +281,7 @@ public class Drive extends SubsystemBase {
    */
   public void runVelocity(ChassisSpeeds speeds) {
     // Calculate module setpoints
-    ChassisSpeeds discreteSpeeds = ChassisSpeeds.discretize(speeds, 0.02);
+    ChassisSpeeds discreteSpeeds = ChassisSpeeds.discretize(speeds, Constants.loopPeriodSecs);
     SwerveModuleState[] setpointStates = kinematics.toSwerveModuleStates(discreteSpeeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(setpointStates, DrivebaseConstants.kMaxLinearSpeed);
 

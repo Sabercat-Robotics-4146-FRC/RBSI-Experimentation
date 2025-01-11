@@ -1,6 +1,6 @@
-// Copyright (c) 2024 Az-FIRST
+// Copyright (c) 2024-2025 Az-FIRST
 // http://github.com/AZ-First
-// Copyright 2021-2024 FRC 6328
+// Copyright (c) 2021-2025 FRC 6328
 // http://github.com/Mechanical-Advantage
 //
 // This program is free software; you can redistribute it and/or
@@ -23,11 +23,12 @@ import static frc.robot.Constants.Cameras.*;
 
 import choreo.auto.AutoChooser;
 import choreo.auto.AutoFactory;
-import choreo.auto.AutoFactory.AutoBindings;
 import choreo.auto.AutoRoutine;
 import choreo.auto.AutoTrajectory;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -171,8 +172,7 @@ public class RobotContainer {
                 // provided Pose2d
                 m_drivebase::followTrajectory, // The drive subsystem trajectory follower
                 true, // If alliance flipping should be enabled
-                m_drivebase, // The drive subsystem
-                new AutoBindings() // An empty AutoBindings object
+                m_drivebase // The drive subsystem
                 );
         autoChooserChoreo = new AutoChooser();
         autoChooserChoreo.addRoutine("twoPieceAuto", this::twoPieceAuto);
@@ -222,14 +222,15 @@ public class RobotContainer {
     }
 
     // SET STANDARD DRIVING AS DEFAULT COMMAND FOR THE DRIVEBASE
+    // TODO: With a re-do of Phoenix Tuner X on George, ensure the signs are all correct!!!!!
     m_drivebase.setDefaultCommand(
         DriveCommands.fieldRelativeDrive(
             m_drivebase,
             () -> -driveStickY.value(),
             () -> -driveStickX.value(),
-            () -> turnStickX.value()));
+            () -> -turnStickX.value()));
 
-    // Example Commands
+    // ** Example Commands -- Remap, remove, or change as desired **
     // Press B button while driving --> ROBOT-CENTRIC
     driverController
         .b()
@@ -252,7 +253,15 @@ public class RobotContainer {
     driverController.x().onTrue(Commands.runOnce(m_drivebase::stopWithX, m_drivebase));
 
     // Press Y button --> Manually Re-Zero the Gyro
-    driverController.y().onTrue(Commands.runOnce(() -> m_drivebase.zero()));
+    driverController
+        .y()
+        .onTrue(
+            Commands.runOnce(
+                    () ->
+                        m_drivebase.setPose(
+                            new Pose2d(m_drivebase.getPose().getTranslation(), new Rotation2d())),
+                    m_drivebase)
+                .ignoringDisable(true));
 
     // Press RIGHT BUMPER --> Run the example flywheel
     driverController
@@ -365,7 +374,7 @@ public class RobotContainer {
     AutoTrajectory scoreTraj = routine.trajectory("scoreGamepiece");
 
     // When the routine begins, reset odometry and start the first trajectory
-    routine.active().onTrue(Commands.sequence(routine.resetOdometry(pickupTraj), pickupTraj.cmd()));
+    routine.active().onTrue(Commands.sequence(pickupTraj.resetOdometry(), pickupTraj.cmd()));
 
     // Starting at the event marker named "intake", run the intake
     // pickupTraj.atTime("intake").onTrue(intakeSubsystem.intake());
