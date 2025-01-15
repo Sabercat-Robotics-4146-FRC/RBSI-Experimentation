@@ -144,6 +144,9 @@ public class Robot extends LoggedRobot {
   @Override
   public void autonomousInit() {
 
+    // Just in case, cancel all running commands
+    CommandScheduler.getInstance().cancelAll();
+
     // TODO: Make sure Gyro inits here with whatever is in the path planning thingie
     m_robotContainer.setMotorBrake(true);
     switch (Constants.getAutoType()) {

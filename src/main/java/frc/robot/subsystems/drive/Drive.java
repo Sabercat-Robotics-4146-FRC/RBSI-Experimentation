@@ -22,7 +22,6 @@ import choreo.trajectory.SwerveSample;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.ModuleConfig;
-import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.pathfinding.Pathfinding;
@@ -97,9 +96,6 @@ public class Drive extends SubsystemBase {
   private SwerveDrivePoseEstimator m_PoseEstimator =
       new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
 
-  // Choreo drive controller
-  private final PIDController xController = new PIDController(10.0, 0.0, 0.0);
-
   // Constructor
   public Drive() {
     switch (Constants.getSwerveType()) {
@@ -169,7 +165,7 @@ public class Drive extends SubsystemBase {
             this::getChassisSpeeds,
             this::runVelocity,
             new PPHolonomicDriveController(
-                new PIDConstants(5.0, 0.0, 0.0), new PIDConstants(5.0, 0.0, 0.0)),
+                DrivebaseConstants.drivePID, DrivebaseConstants.steerPID),
             PP_CONFIG,
             () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
             this);
@@ -441,6 +437,7 @@ public class Drive extends SubsystemBase {
   private final SwerveRequest.ApplyFieldSpeeds m_pathApplyFieldSpeeds =
       new SwerveRequest.ApplyFieldSpeeds();
 
+  // Choreo Controller Values
   private final PIDController m_pathXController = new PIDController(10, 0, 0);
   private final PIDController m_pathYController = new PIDController(10, 0, 0);
   private final PIDController m_pathThetaController = new PIDController(7, 0, 0);
@@ -474,9 +471,10 @@ public class Drive extends SubsystemBase {
     // Generate the next speeds for the robot
     ChassisSpeeds speeds =
         new ChassisSpeeds(
-            sample.vx + xController.calculate(pose.getX(), sample.x),
-            sample.vy + xController.calculate(pose.getX(), sample.y),
-            sample.omega + xController.calculate(pose.getRotation().getRadians(), sample.heading));
+            sample.vx + m_pathXController.calculate(pose.getX(), sample.x),
+            sample.vy + m_pathXController.calculate(pose.getX(), sample.y),
+            sample.omega
+                + m_pathXController.calculate(pose.getRotation().getRadians(), sample.heading));
 
     // Apply the generated speeds
     runVelocity(speeds);
