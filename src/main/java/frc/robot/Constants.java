@@ -136,8 +136,8 @@ public final class Constants {
     public static final double kMaxAngularAccel = Units.degreesToRadians(720);
 
     // Drive and Turn PID constants used for PathPlanner
-    public static final PIDConstants drivePID = new PIDConstants(0.05, 0.0, 0.0);
-    public static final PIDConstants steerPID = new PIDConstants(2.0, 0.0, 0.4);
+    public static final PIDConstants drivePID = new PIDConstants(5.0, 0.0, 0.0);
+    public static final PIDConstants steerPID = new PIDConstants(5.0, 0.0, 0.0);
 
     // Hold time on motor brakes when disabled
     public static final double kWheelLockTime = 10; // seconds

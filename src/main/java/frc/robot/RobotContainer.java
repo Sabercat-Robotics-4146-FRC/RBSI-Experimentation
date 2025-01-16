@@ -185,12 +185,12 @@ public class RobotContainer {
             "Incorrect AUTO type selected in Constants: " + Constants.getAutoType());
     }
 
-    // Configure the trigger bindings
-    configureBindings();
     // Define Auto commands
     defineAutoCommands();
     // Define SysIs Routines
     definesysIdRoutines();
+    // Configure the button and trigger bindings
+    configureBindings();
   }
 
   /** Use this method to define your Autonomous commands for use with PathPlanner / Choreo */
@@ -293,10 +293,6 @@ public class RobotContainer {
 
     // Schedule the selected auto during the autonomous period
     RobotModeTriggers.autonomous().whileTrue(autoChooserChoreo.selectedCommandScheduler());
-  }
-
-  public void setDriveMode() {
-    configureBindings();
   }
 
   /** Set the motor neutral mode to BRAKE / COAST for T/F */
