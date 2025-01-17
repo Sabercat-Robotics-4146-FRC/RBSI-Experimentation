@@ -26,7 +26,6 @@ import choreo.auto.AutoFactory;
 import choreo.auto.AutoRoutine;
 import choreo.auto.AutoTrajectory;
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -164,6 +163,7 @@ public class RobotContainer {
         autoChooserChoreo = null;
         autoFactoryChoreo = null;
         break;
+
       case CHOREO:
         autoFactoryChoreo =
             new AutoFactory(
@@ -179,6 +179,7 @@ public class RobotContainer {
         // Set the others to null
         autoChooserPathPlanner = null;
         break;
+
       default:
         // Then, throw the error
         throw new RuntimeException(
@@ -196,7 +197,7 @@ public class RobotContainer {
   /** Use this method to define your Autonomous commands for use with PathPlanner / Choreo */
   private void defineAutoCommands() {
 
-    NamedCommands.registerCommand("Zero", Commands.runOnce(() -> m_drivebase.zero()));
+    // NamedCommands.registerCommand("Zero", Commands.runOnce(() -> m_drivebase.zero()));
   }
 
   /**

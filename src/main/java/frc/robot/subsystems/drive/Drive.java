@@ -301,10 +301,10 @@ public class Drive extends SubsystemBase {
     }
   }
 
-  /** Re-zero the gyro at the present heading */
-  public void zero() {
-    gyroIO.zero();
-  }
+  // /** Re-zero the gyro at the present heading */
+  // public void zero() {
+  //   gyroIO.zero();
+  // }
 
   /** Stops the drive. */
   public void stop() {
@@ -428,6 +428,8 @@ public class Drive extends SubsystemBase {
     return gyroIO.getGyro();
   }
 
+  /** CHOREO SECTION (Ignore if AutoType == PATHPLANNER) ******************* */
+  /** Choreo: Reset odometry */
   public Command resetOdometry(Pose2d orElseGet) {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Unimplemented method 'resetOdometry'");
