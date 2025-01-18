@@ -19,17 +19,21 @@ package frc.robot;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.config.RobotConfig;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
 import frc.robot.Constants.AprilTagConstants.AprilTagLayoutType;
+import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.SwerveConstants;
 import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
@@ -239,6 +243,24 @@ public final class Constants {
     public static final PIDConstants kAutoDrivePID = new PIDConstants(0.7, 0, 0);
     // PathPlanner Rotation PID constants
     public static final PIDConstants kAutoSteerPID = new PIDConstants(0.4, 0, 0.01);
+
+    // PathPlanner Config constants
+    public static final RobotConfig kPathPlannerConfig =
+        new RobotConfig(
+            PhysicalConstants.kRobotMassKg,
+            PhysicalConstants.kRobotMOI,
+            new ModuleConfig(
+                SwerveConstants.kWheelRadiusMeters,
+                DrivebaseConstants.kMaxLinearSpeed,
+                PhysicalConstants.kWheelCOF,
+                DCMotor.getKrakenX60Foc(1).withReduction(SwerveConstants.kDriveGearRatio),
+                SwerveConstants.kDriveSlipCurrent,
+                1),
+            Drive.getModuleTranslations());
+
+    // Alternatively, we can build this from the PathPlanner GUI:
+    // public static final RobotConfig kPathPlannerConfig = RobotConfig.fromGUISettings();
+
   }
 
   /** Vision Constants (Assuming PhotonVision) ***************************** */

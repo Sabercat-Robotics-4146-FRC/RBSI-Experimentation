@@ -258,7 +258,7 @@ public class RobotContainer {
         .onTrue(
             Commands.runOnce(
                     () ->
-                        m_drivebase.setPose(
+                        m_drivebase.resetPose(
                             new Pose2d(m_drivebase.getPose().getTranslation(), new Rotation2d())),
                     m_drivebase)
                 .ignoringDisable(true));

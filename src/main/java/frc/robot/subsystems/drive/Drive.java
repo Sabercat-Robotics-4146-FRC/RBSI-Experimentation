@@ -21,8 +21,6 @@ import static frc.robot.subsystems.drive.SwerveConstants.*;
 import choreo.trajectory.SwerveSample;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.config.ModuleConfig;
-import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.PathPlannerLogging;
@@ -42,7 +40,6 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
-import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -51,30 +48,17 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
+import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DrivebaseConstants;
-import frc.robot.Constants.PhysicalConstants;
 import frc.robot.util.LocalADStarAK;
 import frc.robot.util.RBSIEnum.Mode;
+import frc.robot.util.RBSIParsing;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Drive extends SubsystemBase {
-
-  // PathPlanner config constants
-  private static final RobotConfig PP_CONFIG =
-      new RobotConfig(
-          PhysicalConstants.kRobotMassKg,
-          PhysicalConstants.kRobotMOI,
-          new ModuleConfig(
-              kWheelRadiusMeters,
-              DrivebaseConstants.kMaxLinearSpeed,
-              PhysicalConstants.kWheelCOF,
-              DCMotor.getKrakenX60Foc(1).withReduction(kDriveGearRatio),
-              kDriveSlipCurrent,
-              1),
-          getModuleTranslations());
 
   static final Lock odometryLock = new ReentrantLock();
   private final GyroIO gyroIO;
@@ -98,6 +82,7 @@ public class Drive extends SubsystemBase {
 
   // Constructor
   public Drive() {
+
     switch (Constants.getSwerveType()) {
       case PHOENIX6:
         // This one is easy because it's all CTRE all the time
@@ -121,7 +106,7 @@ public class Drive extends SubsystemBase {
             throw new RuntimeException("Invalid IMU type");
         }
         // Then parse the module(s)
-        Byte modType = parseModuleType();
+        Byte modType = RBSIParsing.parseModuleType();
         for (int i = 0; i < 4; i++) {
           switch (modType) {
             case 0b00000000: // ALL-CTRE
@@ -158,17 +143,22 @@ public class Drive extends SubsystemBase {
     // Configure Autonomous Path Building for PathPlanner based on `AutoType`
     switch (Constants.getAutoType()) {
       case PATHPLANNER:
-        // Configure AutoBuilder for PathPlanner
-        AutoBuilder.configure(
-            this::getPose,
-            this::setPose,
-            this::getChassisSpeeds,
-            this::runVelocity,
-            new PPHolonomicDriveController(
-                DrivebaseConstants.drivePID, DrivebaseConstants.steerPID),
-            PP_CONFIG,
-            () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
-            this);
+        try {
+          // Configure AutoBuilder for PathPlanner
+          AutoBuilder.configure(
+              this::getPose,
+              this::resetPose,
+              this::getChassisSpeeds,
+              (speeds, feedforwards) -> runVelocity(speeds),
+              new PPHolonomicDriveController(
+                  DrivebaseConstants.drivePID, DrivebaseConstants.steerPID),
+              AutoConstants.kPathPlannerConfig,
+              () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
+              this);
+        } catch (Exception e) {
+          DriverStation.reportError(
+              "Failed to load PathPlanner config and configure AutoBuilder", e.getStackTrace());
+        }
         Pathfinding.setPathfinder(new LocalADStarAK());
         PathPlannerLogging.setLogActivePathCallback(
             (activePath) -> {
@@ -199,6 +189,7 @@ public class Drive extends SubsystemBase {
                 (voltage) -> runCharacterization(voltage.in(Volts)), null, this));
   }
 
+  /** Periodic function that is called each robot cycle by the command scheduler */
   @Override
   public void periodic() {
     odometryLock.lock(); // Prevents odometry updates while reading data
@@ -257,6 +248,8 @@ public class Drive extends SubsystemBase {
     gyroDisconnectedAlert.set(!gyroInputs.connected && Constants.getMode() != Mode.SIM);
   }
 
+  /** Drive Base Action Functions ****************************************** */
+
   /**
    * Sets the swerve drive motors to brake/coast mode.
    *
@@ -268,6 +261,24 @@ public class Drive extends SubsystemBase {
         swerveModule.setBrakeMode(brake);
       }
     }
+  }
+
+  /** Stops the drive. */
+  public void stop() {
+    runVelocity(new ChassisSpeeds());
+  }
+
+  /**
+   * Stops the drive and turns the modules to an X arrangement to resist movement. The modules will
+   * return to their normal orientations the next time a nonzero velocity is requested.
+   */
+  public void stopWithX() {
+    Rotation2d[] headings = new Rotation2d[4];
+    for (int i = 0; i < 4; i++) {
+      headings[i] = getModuleTranslations()[i].getAngle();
+    }
+    kinematics.resetHeadings(headings);
+    stop();
   }
 
   /**
@@ -301,28 +312,7 @@ public class Drive extends SubsystemBase {
     }
   }
 
-  // /** Re-zero the gyro at the present heading */
-  // public void zero() {
-  //   gyroIO.zero();
-  // }
-
-  /** Stops the drive. */
-  public void stop() {
-    runVelocity(new ChassisSpeeds());
-  }
-
-  /**
-   * Stops the drive and turns the modules to an X arrangement to resist movement. The modules will
-   * return to their normal orientations the next time a nonzero velocity is requested.
-   */
-  public void stopWithX() {
-    Rotation2d[] headings = new Rotation2d[4];
-    for (int i = 0; i < 4; i++) {
-      headings[i] = getModuleTranslations()[i].getAngle();
-    }
-    kinematics.resetHeadings(headings);
-    stop();
-  }
+  /** SysId Characterization Routines ************************************** */
 
   /** Returns a command to run a quasistatic test in the specified direction. */
   public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
@@ -335,6 +325,8 @@ public class Drive extends SubsystemBase {
   public Command sysIdDynamic(SysIdRoutine.Direction direction) {
     return run(() -> runCharacterization(0.0)).withTimeout(1.0).andThen(sysId.dynamic(direction));
   }
+
+  /** Getter Functions ***************************************************** */
 
   /** Returns the module states (turn angles and drive velocities) for all of the modules. */
   @AutoLogOutput(key = "SwerveStates/Measured")
@@ -361,6 +353,27 @@ public class Drive extends SubsystemBase {
     return kinematics.toChassisSpeeds(getModuleStates());
   }
 
+  /** Returns the current odometry pose. */
+  @AutoLogOutput(key = "Odometry/Robot")
+  public Pose2d getPose() {
+    return m_PoseEstimator.getEstimatedPosition();
+  }
+
+  /** Returns the current odometry rotation. */
+  public Rotation2d getRotation() {
+    return getPose().getRotation();
+  }
+
+  /** Returns an array of module translations. */
+  public static Translation2d[] getModuleTranslations() {
+    return new Translation2d[] {
+      new Translation2d(kFLXPosMeters, kFLYPosMeters),
+      new Translation2d(kFRXPosMeters, kFRYPosMeters),
+      new Translation2d(kBLXPosMeters, kBLYPosMeters),
+      new Translation2d(kBRXPosMeters, kBRYPosMeters)
+    };
+  }
+
   /** Returns the position of each module in radians. */
   public double[] getWheelRadiusCharacterizationPositions() {
     double[] values = new double[4];
@@ -379,31 +392,6 @@ public class Drive extends SubsystemBase {
     return output;
   }
 
-  /** Returns the current odometry pose. */
-  @AutoLogOutput(key = "Odometry/Robot")
-  public Pose2d getPose() {
-    return m_PoseEstimator.getEstimatedPosition();
-  }
-
-  /** Returns the current odometry rotation. */
-  public Rotation2d getRotation() {
-    return getPose().getRotation();
-  }
-
-  /** Resets the current odometry pose. */
-  public void setPose(Pose2d pose) {
-    m_PoseEstimator.resetPosition(rawGyroRotation, getModulePositions(), pose);
-  }
-
-  /** Adds a new timestamped vision measurement. */
-  public void addVisionMeasurement(
-      Pose2d visionRobotPoseMeters,
-      double timestampSeconds,
-      Matrix<N3, N1> visionMeasurementStdDevs) {
-    m_PoseEstimator.addVisionMeasurement(
-        visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
-  }
-
   /** Returns the maximum linear speed in meters per sec. */
   public double getMaxLinearSpeedMetersPerSec() {
     return DrivebaseConstants.kMaxLinearSpeed;
@@ -414,18 +402,24 @@ public class Drive extends SubsystemBase {
     return getMaxLinearSpeedMetersPerSec() / kDriveBaseRadiusMeters;
   }
 
-  /** Returns an array of module translations. */
-  public static Translation2d[] getModuleTranslations() {
-    return new Translation2d[] {
-      new Translation2d(kFLXPosMeters, kFLYPosMeters),
-      new Translation2d(kFRXPosMeters, kFRYPosMeters),
-      new Translation2d(kBLXPosMeters, kBLYPosMeters),
-      new Translation2d(kBRXPosMeters, kBRYPosMeters)
-    };
-  }
-
   public Object getGyro() {
     return gyroIO.getGyro();
+  }
+
+  /* Setter Functions ****************************************************** */
+
+  /** Resets the current odometry pose. */
+  public void resetPose(Pose2d pose) {
+    m_PoseEstimator.resetPosition(rawGyroRotation, getModulePositions(), pose);
+  }
+
+  /** Adds a new timestamped vision measurement. */
+  public void addVisionMeasurement(
+      Pose2d visionRobotPoseMeters,
+      double timestampSeconds,
+      Matrix<N3, N1> visionMeasurementStdDevs) {
+    m_PoseEstimator.addVisionMeasurement(
+        visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
   }
 
   /** CHOREO SECTION (Ignore if AutoType == PATHPLANNER) ******************* */
@@ -480,60 +474,5 @@ public class Drive extends SubsystemBase {
 
     // Apply the generated speeds
     runVelocity(speeds);
-  }
-
-  /**
-   * Parse the module type given the type information for the FL module
-   *
-   * @return Byte The module type as bits in a byte.
-   */
-  private Byte parseModuleType() {
-    // NOTE: This assumes all 4 modules have the same arrangement!
-    Byte b_drive; // [x,x,-,-,-,-,-,-]
-    Byte b_steer; // [-,-,x,x,-,-,-,-]
-    Byte b_encoder; // [-,-,-,-,x,x,-,-]
-    switch (kFLDriveType) {
-      case "falcon":
-      case "kraken":
-      case "talonfx":
-        // CTRE Drive Motor
-        b_drive = 0b00;
-        break;
-      case "sparkmax":
-      case "sparkflex":
-        // REV Drive Motor
-        b_drive = 0b01;
-        break;
-      default:
-        throw new RuntimeException("Invalid drive motor type");
-    }
-    switch (kFLSteerType) {
-      case "falcon":
-      case "kraken":
-      case "talonfx":
-        // CTRE Drive Motor
-        b_steer = 0b00;
-        break;
-      case "sparkmax":
-      case "sparkflex":
-        // REV Drive Motor
-        b_steer = 0b01;
-        break;
-      default:
-        throw new RuntimeException("Invalid steer motor type");
-    }
-    switch (kFLEncoderType) {
-      case "cancoder":
-        // CTRE CANcoder
-        b_encoder = 0b00;
-        break;
-      case "analog":
-        // Analog Encoder
-        b_encoder = 0b01;
-        break;
-      default:
-        throw new RuntimeException("Invalid swerve encoder type");
-    }
-    return (byte) (0b00000000 | b_drive << 6 | b_steer << 4 | b_encoder << 2);
   }
 }
