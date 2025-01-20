@@ -139,10 +139,6 @@ public final class Constants {
     public static final double kMaxLinearAccel = 4.0; // m/s/s
     public static final double kMaxAngularAccel = Units.degreesToRadians(720);
 
-    // Drive and Turn PID constants used for PathPlanner
-    public static final PIDConstants drivePID = new PIDConstants(5.0, 0.0, 0.0);
-    public static final PIDConstants steerPID = new PIDConstants(5.0, 0.0, 0.0);
-
     // Hold time on motor brakes when disabled
     public static final double kWheelLockTime = 10; // seconds
 
@@ -239,10 +235,9 @@ public final class Constants {
   /** Autonomous Action Constants ****************************************** */
   public static final class AutoConstants {
 
-    // PathPlanner Translation PID constants
-    public static final PIDConstants kAutoDrivePID = new PIDConstants(0.7, 0, 0);
-    // PathPlanner Rotation PID constants
-    public static final PIDConstants kAutoSteerPID = new PIDConstants(0.4, 0, 0.01);
+    // Drive and Turn PID constants used for PathPlanner
+    public static final PIDConstants kPPdrivePID = new PIDConstants(5.0, 0.0, 0.0);
+    public static final PIDConstants kPPsteerPID = new PIDConstants(5.0, 0.0, 0.0);
 
     // PathPlanner Config constants
     public static final RobotConfig kPathPlannerConfig =
@@ -261,6 +256,9 @@ public final class Constants {
     // Alternatively, we can build this from the PathPlanner GUI:
     // public static final RobotConfig kPathPlannerConfig = RobotConfig.fromGUISettings();
 
+    // Drive and Turn PID constants used for Chorep
+    public static final PIDConstants kChoreoDrivePID = new PIDConstants(10.0, 0.0, 0.0);
+    public static final PIDConstants kChoreoSteerPID = new PIDConstants(7.5, 0.0, 0.0);
   }
 
   /** Vision Constants (Assuming PhotonVision) ***************************** */
