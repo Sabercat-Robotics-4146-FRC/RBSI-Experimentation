@@ -73,9 +73,9 @@ public final class Constants {
   //       under strict caveat emptor -- and submit any error and bugfixes
   //       via GitHub issues.
   private static SwerveType swerveType = SwerveType.PHOENIX6; // PHOENIX6, YAGSL
-  private static CTREPro phoenixPro = CTREPro.UNLICENSED; // LICENSED, UNLICENSED
+  private static CTREPro phoenixPro = CTREPro.LICENSED; // LICENSED, UNLICENSED
   private static AutoType autoType = AutoType.PATHPLANNER; // PATHPLANNER, CHOREO
-  private static VisionType visionType = VisionType.NONE; // PHOTON, LIMELIGHT, NONE
+  private static VisionType visionType = VisionType.PHOTON; // PHOTON, LIMELIGHT, NONE
 
   /** Checks whether the correct robot is selected when deploying. */
   public static void main(String... args) {
@@ -290,7 +290,7 @@ public final class Constants {
   /** Vision Camera Posses ************************************************* */
   public static class Cameras {
     // Camera names, must match names configured on coprocessor
-    public static String camera0Name = "camera_0";
+    public static String camera0Name = "Arducam_OV9281_USB_Camera";
     public static String camera1Name = "camera_1";
     // ... And more, if needed
 
@@ -381,10 +381,11 @@ public final class Constants {
 
     @Getter
     public enum AprilTagLayoutType {
-      OFFICIAL("2024-official"),
-      SPEAKERS_ONLY("2024-speakers"),
-      AMPS_ONLY("2024-amps"),
-      WPI("2024-wpi");
+      OFFICIAL("2025-official");
+
+      // SPEAKERS_ONLY("2024-speakers"),
+      // AMPS_ONLY("2024-amps"),
+      // WPI("2024-wpi");
 
       private AprilTagLayoutType(String name) {
         if (Constants.disableHAL) {
